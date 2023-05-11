@@ -30,5 +30,12 @@ namespace QuickTabs.Songwriting
                 return new string(tuning).ToUpper();
             }
         }
+        public string this[int i]
+        {
+            get
+            {
+                return tuning[i].ToString();
+            }
+        }
     }
 }

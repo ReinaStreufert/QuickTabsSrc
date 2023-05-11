@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.UI
+namespace QuickTabs.Enums
 {
-    internal class ContextMenu : Control
+    internal enum StepType
     {
+        Beat,
+        Comment,
+        SectionHead
     }
 }

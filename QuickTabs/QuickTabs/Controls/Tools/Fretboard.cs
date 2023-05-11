@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.Enums
+namespace QuickTabs.Controls.Tools
 {
-    internal enum UIStepType
+    internal class Fretboard
     {
-        Beat,
-        MeasureBar,
-        SectionHead,
-        Comment
     }
 }

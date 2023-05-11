@@ -4,20 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.UI
+namespace QuickTabs.Controls
 {
-    internal class TabEditor : Control
+    internal class ToolMenu : Control
     {
-        private MouseTracker mouseTracker;
-        public TabEditor()
+        public ToolMenu()
         {
-            mouseTracker = new MouseTracker(this);
-            this.BackColor = Color.FromArgb(0x22, 0x22, 0x22);
+            this.BackColor = Color.FromArgb(0xFF, 0x1A, 0x1A, 0x1A);
         }
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
+            Console.WriteLine(this.Size);
         }
     }
 }
