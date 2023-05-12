@@ -29,6 +29,8 @@ namespace QuickTabs.Controls
 
         private List<UIRow> tabUI = new List<UIRow>();
         private UIStep currentlyHighlighted = null;
+        private Point selectionStartPoint;
+        private bool mouseDown = false;
         public TabEditor()
         {
             this.DoubleBuffered = true;
@@ -48,6 +50,7 @@ namespace QuickTabs.Controls
             int usableWidth = this.Width - DrawingConstants.LargeMargin * 2 - DrawingConstants.LeftMargin;
             int usableHeight = this.Height - DrawingConstants.LargeMargin * 2;
             int rowsPerStaff = tab.Tuning.Count;
+            int beatsPerMeasure = Song.TimeSignature.T1 * 2;
 
             UIRow currentRow = new UIRow();
             int sinceLastMeasureBar = 0;
@@ -79,7 +82,7 @@ namespace QuickTabs.Controls
                     case StepType.Beat:
                         Beat beat = (Beat)step;
                         UIStep uiStep = new UIStep(UIStepType.Beat, beat);
-                        if (Selection.Contains(stepIndex))
+                        if (Selection != null && Selection.Contains(stepIndex))
                         {
                             uiStep.Selected = true;
                         }
@@ -88,7 +91,7 @@ namespace QuickTabs.Controls
                     case StepType.Comment:
                         Comment comment = (Comment)step;
                         uiStep = new UIStep(UIStepType.Comment, comment);
-                        if (Selection.Contains(stepIndex))
+                        if (Selection != null && Selection.Contains(stepIndex))
                         {
                             uiStep.Selected = true;
                         }
@@ -101,7 +104,7 @@ namespace QuickTabs.Controls
                     continue;
                 }
                 sinceLastMeasureBar++;
-                if (sinceLastMeasureBar >= 8)
+                if (sinceLastMeasureBar >= beatsPerMeasure)
                 {
                     if ((currentRow.Steps.Count + 2) * DrawingConstants.StepWidth < usableWidth)
                     {
@@ -173,9 +176,18 @@ namespace QuickTabs.Controls
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
             UIStep uiStep;
             if (tryGetStepFromPoint(e.Location, out uiStep) && uiStep.Type == UIStepType.Beat)
             {
+                if (mouseDown)
+                {
+                    if (updateSelectionFromPoints(selectionStartPoint, e.Location))
+                    {
+                        this.Invalidate();
+                    }
+                }
+
                 if (currentlyHighlighted != null)
                 {
                     currentlyHighlighted.Highlighted = false;
@@ -209,11 +221,26 @@ namespace QuickTabs.Controls
             updateUI();
             this.Invalidate();
         }
-        protected override void OnMouseClick(MouseEventArgs e)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
-            base.OnMouseClick(e);
-            UIStep uiStep;
-            if (tryGetStepFromPoint(e.Location, out uiStep) && uiStep.Type != UIStepType.MeasureBar)
+            base.OnMouseDown(e);
+            selectionStartPoint = e.Location;
+            mouseDown = true;
+        }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            mouseDown = false;
+            if (updateSelectionFromPoints(selectionStartPoint, e.Location))
+            {
+                this.Invalidate();
+            }
+        }
+        private bool updateSelectionFromPoints(Point p1, Point p2) // output is whether anything changed.
+        {
+            bool selectionWasNull = (Selection == null);
+            // clear current selection
+            if (Selection != null)
             {
                 for (int i = Selection.SelectionStart; i < Selection.SelectionStart + Selection.SelectionLength; i++)
                 {
@@ -222,9 +249,39 @@ namespace QuickTabs.Controls
                         uiStepFromTabStep(Song.Tab[i]).Selected = false;
                     }
                 }
-                Selection = new Selection(uiStep.AssociatedStep.IndexWithinTab, 1);
-                uiStep.Selected = true;
-                this.Invalidate();
+            }
+
+            UIStep p1Step;
+            UIStep p2Step;
+            if (tryGetStepFromPoint(p1, out p1Step) && tryGetStepFromPoint(p2, out p2Step))
+            {
+                if (p1Step.Type == UIStepType.MeasureBar || p2Step.Type == UIStepType.MeasureBar)
+                {
+                    Selection = null;
+                    return !selectionWasNull;
+                }
+                UIStep earliestStep;
+                UIStep latestStep;
+                if (p1Step.AssociatedStep.IndexWithinTab < p2Step.AssociatedStep.IndexWithinTab)
+                {
+                    earliestStep = p1Step;
+                    latestStep = p2Step;
+                } else
+                {
+                    earliestStep = p2Step;
+                    latestStep = p1Step;
+                }
+                for (int i = earliestStep.AssociatedStep.IndexWithinTab; i <= latestStep.AssociatedStep.IndexWithinTab; i++)
+                {
+                    UIStep uiStep = uiStepFromTabStep(Song.Tab[i]);
+                    uiStep.Selected = true;
+                }
+                Selection = new Selection(earliestStep.AssociatedStep.IndexWithinTab, latestStep.AssociatedStep.IndexWithinTab - earliestStep.AssociatedStep.IndexWithinTab + 1);
+                return true;
+            } else
+            {
+                Selection = null;
+                return !selectionWasNull;
             }
         }
         public override void Refresh()
@@ -246,12 +303,16 @@ namespace QuickTabs.Controls
             using (Pen forePen = new Pen(Color.FromArgb(0x00, 0x9A, 0xE7), DrawingConstants.BoldPenWidth))
             using (Font font = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (Font twoDigitFont = new Font("Montserrat", DrawingConstants.TwoDigitTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             {
                 int stringCount = Song.Tab.Tuning.Count;
                 int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2);
 
                 int startX = DrawingConstants.LargeMargin;
                 int startY = DrawingConstants.LargeMargin;
+
+                int[] currentlyHeldStrings = new int[0];
+                int holdFor = 0;
                 foreach (UIRow row in tabUI)
                 {
                     int rowWidth = DrawingConstants.LeftMargin + (row.Steps.Count * DrawingConstants.StepWidth);
@@ -272,8 +333,6 @@ namespace QuickTabs.Controls
                         g.DrawString(Song.Tab.Tuning[i].ToString(), boldFont, textBrush, startX, y - DrawingConstants.SmallTextYOffset);
                     }
                     // steps
-                    int[] currentlyHeldStrings = new int[0];
-                    int holdFor = 0;
                     for (int i = 0; i < row.Steps.Count; i++)
                     {
                         UIStep uiStep = row.Steps[i];
@@ -305,8 +364,19 @@ namespace QuickTabs.Controls
                                 foreach (Fret heldFret in beat)
                                 {
                                     int y = startY + (heldFret.String * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
-                                    g.FillRectangle(backBrush, x - DrawingConstants.StepWidth / 2 - 1, y - DrawingConstants.RowHeight / 2, DrawingConstants.StepWidth + 2, DrawingConstants.RowHeight);
-                                    g.DrawString(heldFret.Space.ToString(), boldFont, textBrush, x - DrawingConstants.FretNotationXOffset, y - DrawingConstants.SmallTextYOffset);
+                                    g.FillRectangle(backBrush, x - DrawingConstants.StepWidth / 2, y - DrawingConstants.RowHeight / 2, DrawingConstants.StepWidth, DrawingConstants.RowHeight);
+                                    Font usedFont = boldFont;
+                                    int yOffset;
+                                    if (heldFret.Space > 9)
+                                    {
+                                        usedFont = twoDigitFont;
+                                        yOffset = DrawingConstants.TwoDigitTextYOffset;
+                                    } else
+                                    {
+                                        usedFont = boldFont;
+                                        yOffset = DrawingConstants.SmallTextYOffset;
+                                    }
+                                    g.DrawString(heldFret.Space.ToString(), usedFont, textBrush, x - DrawingConstants.FretNotationXOffset, y - yOffset);
                                 }
                                 break;
                             case UIStepType.Comment:

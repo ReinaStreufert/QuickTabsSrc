@@ -1,3 +1,4 @@
+using QuickTabs.Controls;
 using QuickTabs.Songwriting;
 
 namespace QuickTabs
@@ -12,31 +13,17 @@ namespace QuickTabs
         public Editor()
         {
             InitializeComponent();
+            DrawingIcons.LoadAll();
             Controls.Add(contextMenu);
             Controls.Add(tabEditor);
             Controls.Add(toolMenu);
             this.Width = 1500;
             this.Height = 1200;
-            /*song.Tab.SetLength(99);
-            song.Tab[0] = new SectionHead() { Name = "First one!" };
-            song.Tab[49] = new SectionHead() { Name = "Test" };
-            song.Tab[82] = new SectionHead() { Name = "Another one" };*/
-            song.Tab.SetLength(65);
+            song.Tab.SetLength(9);
+            song.TimeSignature = new TimeSignature(4, 4);
             ((SectionHead)song.Tab[0]).Name = "Untitled Section";
-            int currentString = 0;
-            for (int i = 1; i < 9; i += 2)
-            {
-                Beat beat = (Beat)song.Tab[i];
-                beat[new Fret(currentString, i)] = true;
-                currentString++;
-                beat.NoteLength = 2;
-                if (currentString >= 6)
-                {
-                    currentString = 0;
-                }
-            }
-            ((Beat)song.Tab[3])[new Fret(2, 7)] = true;
             tabEditor.Song = song;
+            tabEditor.Selection = new Selection(1, 1);
             tabEditor.Refresh();
         }
         protected override void OnSizeChanged(EventArgs e)

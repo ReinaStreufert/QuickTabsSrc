@@ -15,9 +15,13 @@ namespace QuickTabs.Controls
         public const int PenWidth = 4;
         public const int BoldPenWidth = 6;
         public const float SmallTextSizePx = RowHeight * 0.8F;
+        public const float TwoDigitTextSizePx = RowHeight * 0.5F;
         public const int SmallTextYOffset = 14;
+        public const int TwoDigitTextYOffset = 10;
         //public const int SmallTextXOffset = 14;
         public const int StringOffsetForLetters = 30;
         public const int FretNotationXOffset = 11;
+        public const int ToolSelectorWidth = 90;
+        public static readonly Color FadedGray = Color.FromArgb(0x3D, 0x3D, 0x3D);
     }
 }

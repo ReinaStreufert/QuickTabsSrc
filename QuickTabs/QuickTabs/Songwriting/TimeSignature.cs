@@ -10,5 +10,10 @@ namespace QuickTabs.Songwriting
     {
         public int T1 { get; set; }
         public int T2 { get; set; }
+        public TimeSignature(int t1, int t2)
+        {
+            T1 = t1;
+            T2 = t2;
+        }
     }
 }
