@@ -12,7 +12,20 @@ namespace QuickTabs.Controls
     internal class TabEditor : Control
     {
         public Song Song { get; set; }
-        public Selection Selection { get; set; }
+        private Selection selection;
+        public Selection Selection
+        {
+            get
+            {
+                return selection;
+            }
+            set
+            {
+                selection = value;
+                SelectionChanged?.Invoke();
+            }
+        }
+        public event Action SelectionChanged;
         private Color selectionColor = Color.FromArgb(0x77, 0xFF, 0xFF, 0xFF);
         public Color SelectionColor
         {
@@ -296,11 +309,11 @@ namespace QuickTabs.Controls
 
             Graphics g = e.Graphics;
             using (SolidBrush backBrush = new SolidBrush(BackColor))
-            using (SolidBrush higlightBrush = new SolidBrush(Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF)))
+            using (SolidBrush higlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
             using (SolidBrush selectionBrush = new SolidBrush(SelectionColor))
             using (SolidBrush textBrush = new SolidBrush(Color.White))
             using (Pen backPen = new Pen(Color.White, DrawingConstants.PenWidth))
-            using (Pen forePen = new Pen(Color.FromArgb(0x00, 0x9A, 0xE7), DrawingConstants.BoldPenWidth))
+            using (Pen forePen = new Pen(DrawingConstants.HighlightBlue, DrawingConstants.BoldPenWidth))
             using (Font font = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (Font twoDigitFont = new Font("Montserrat", DrawingConstants.TwoDigitTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))

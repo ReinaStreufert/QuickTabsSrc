@@ -10,6 +10,9 @@
     <Compile Update="Controls\ToolMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Controls\Tools\Fretboard.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Forms\Editor.cs">
       <SubType>Form</SubType>
     </Compile>

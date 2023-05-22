@@ -23,5 +23,13 @@ namespace QuickTabs.Controls
         public const int FretNotationXOffset = 11;
         public const int ToolSelectorWidth = 90;
         public static readonly Color FadedGray = Color.FromArgb(0x3D, 0x3D, 0x3D);
+        public static readonly Color FretAreaColor = Color.FromArgb(0x1A, 0x1A, 0x1A);
+        public static readonly Color HighlightBlue = Color.FromArgb(0x00, 0x9A, 0xE7);
+        public static readonly Color StringColor = Color.FromArgb(0x25, 0x25, 0x25);
+        public static readonly Color HighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
+        public const int ButtonAreaWidth = 200;
+        public const int FretZeroAreaWidth = 25;
+        public const int FretLineWidth = 5;
+        public const int FretMarkerRadius = 10;
     }
 }
