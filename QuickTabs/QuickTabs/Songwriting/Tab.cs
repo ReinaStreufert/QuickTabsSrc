@@ -18,6 +18,13 @@ namespace QuickTabs.Songwriting
                 return steps.Count;
             }
         }
+        public int BeatCount
+        {
+            get
+            {
+                return steps.OfType<Beat>().Count();
+            }
+        }
         public Step this[int i]
         {
             get
@@ -30,7 +37,29 @@ namespace QuickTabs.Songwriting
                 value.IndexWithinTab = i;
             }
         }
-
+        public void InsertBeats(int index, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Beat beat = new Beat();
+                steps.Insert(index, beat);
+            }
+            for (int i = index; i < steps.Count; i++)
+            {
+                steps[i].IndexWithinTab = i;
+            }
+        }
+        public void RemoveBeats(int index, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                steps.RemoveAt(index);
+            }
+            for (int i = index; i < steps.Count; i++)
+            {
+                steps[i].IndexWithinTab = i;
+            }
+        }
         public void SetLength(int length)
         {
             if (steps.Count == 0 && length > 0)

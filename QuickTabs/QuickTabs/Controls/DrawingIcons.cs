@@ -33,6 +33,12 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap Dots { get; private set; } = null;
         public static MultiColorBitmap Counter { get; private set; } = null;
 
+        public static MultiColorBitmap Plus { get; private set; } = null;
+        public static MultiColorBitmap Minus { get; private set; } = null;
+        public static MultiColorBitmap PlusSection { get; private set; } = null;
+        public static MultiColorBitmap MinusSection { get; private set; } = null;
+        public static MultiColorBitmap Rename { get; private set; } = null;
+
         public static void LoadAll()
         {
             QuickTabsLogo = loadIcon("logo", Color.White);
@@ -49,14 +55,20 @@ namespace QuickTabs.Controls
             PlayPause = loadIcon("play-pause", Color.White, DrawingConstants.FadedGray);
             Record = loadIcon("record-circle", Color.White, DrawingConstants.FadedGray);
 
-            OpenFile = loadIcon("folder-open-outline", Color.White, DrawingConstants.FadedGray);
-            SaveFile = loadIcon("content-save-all-outline", Color.White, DrawingConstants.FadedGray);
-            SaveFileAs = loadIcon("content-save-plus-outline", Color.White, DrawingConstants.FadedGray);
-            NewFile = loadIcon("reload", Color.White, DrawingConstants.FadedGray);
-            EditMetadata = loadIcon("pencil-outline", Color.White, DrawingConstants.FadedGray);
+            OpenFile = loadIcon("folder-open-outline", Color.White);
+            SaveFile = loadIcon("content-save-all-outline", Color.White);
+            SaveFileAs = loadIcon("content-save-plus-outline", Color.White);
+            NewFile = loadIcon("reload", Color.White);
+            EditMetadata = loadIcon("pencil-outline", Color.White);
 
             Dots = loadIcon("circle-small", Color.White, DrawingConstants.FadedGray);
             Counter = loadIcon("numeric", Color.White, DrawingConstants.FadedGray);
+
+            Plus = loadIcon("plus-box-outline", Color.White);
+            Minus = loadIcon("minus-box-outline", Color.White, DrawingConstants.FadedGray);
+            PlusSection = loadIcon("plus-box-multiple-outline", Color.White, DrawingConstants.FadedGray);
+            MinusSection = loadIcon("minus-box-multiple-outline", Color.White, DrawingConstants.FadedGray);
+            Rename = loadIcon("rename-outline", Color.White);
         }
         private static MultiColorBitmap loadIcon(string iconName, params Color[] colors)
         {

@@ -263,7 +263,10 @@ namespace QuickTabs.Controls
                 {
                     if (i < Song.Tab.Count)
                     {
-                        uiStepFromTabStep(Song.Tab[i]).Selected = false;
+                        if (Song.Tab[i].Type == StepType.Beat)
+                        {
+                            uiStepFromTabStep(Song.Tab[i]).Selected = false;
+                        }
                     }
                 }
             }
@@ -290,8 +293,11 @@ namespace QuickTabs.Controls
                 }
                 for (int i = earliestStep.AssociatedStep.IndexWithinTab; i <= latestStep.AssociatedStep.IndexWithinTab; i++)
                 {
-                    UIStep uiStep = uiStepFromTabStep(Song.Tab[i]);
-                    uiStep.Selected = true;
+                    if (Song.Tab[i].Type == StepType.Beat)
+                    {
+                        UIStep uiStep = uiStepFromTabStep(Song.Tab[i]);
+                        uiStep.Selected = true;
+                    }
                 }
                 Selection = new Selection(earliestStep.AssociatedStep.IndexWithinTab, latestStep.AssociatedStep.IndexWithinTab - earliestStep.AssociatedStep.IndexWithinTab + 1);
                 return true;

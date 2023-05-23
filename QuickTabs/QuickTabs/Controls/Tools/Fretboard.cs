@@ -32,6 +32,7 @@ namespace QuickTabs.Controls.Tools
         private int noteLength = 1;
         private Dictionary<MultiColorBitmap, int> noteLengthButtonsPrototype = new Dictionary<MultiColorBitmap, int>();
         private Dictionary<int, Button> noteLengthButtons = new Dictionary<int, Button>();
+        private List<Fret> starredFrets = new List<Fret>();
 
         public Fretboard()
         {
@@ -257,9 +258,9 @@ namespace QuickTabs.Controls.Tools
             }
             this.Invalidate();
         }
-        protected override void OnMouseClick(MouseEventArgs e)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
-            base.OnMouseClick(e);
+            base.OnMouseDown(e);
             if (editor.Selection == null)
             {
                 return;
@@ -269,14 +270,28 @@ namespace QuickTabs.Controls.Tools
             {
                 int stringIndex;
                 int fretIndex = getFretFromPoint(e.Location, out stringIndex);
-                if (strings[stringIndex].SelectedFret == fretIndex)
+                if (e.Button == MouseButtons.Left)
                 {
-                    strings[stringIndex].SelectedFret = -1;
-                } else
+                    if (strings[stringIndex].SelectedFret == fretIndex)
+                    {
+                        strings[stringIndex].SelectedFret = -1;
+                    }
+                    else
+                    {
+                        strings[stringIndex].SelectedFret = fretIndex;
+                    }
+                    updateSelectedBeat();
+                } else if (e.Button == MouseButtons.Right)
                 {
-                    strings[stringIndex].SelectedFret = fretIndex;
+                    Fret fret = new Fret(stringIndex, fretIndex);
+                    if (starredFrets.Contains(fret))
+                    {
+                        starredFrets.Remove(fret);
+                    } else
+                    {
+                        starredFrets.Add(fret);
+                    }
                 }
-                updateSelectedBeat();
             } else
             {
                 foreach (Button button in buttons)
@@ -399,13 +414,33 @@ namespace QuickTabs.Controls.Tools
                                 }
                             }
                         }
-                        if (s.HoveredFret > -1)
+                    }
+                }
+                // draw stars
+                using (Pen starPen = new Pen(DrawingConstants.StarColor, DrawingConstants.FretLineWidth))
+                {
+                    foreach (Fret fret in starredFrets)
+                    {
+                        if (fret.Space >= viewportStart && fret.Space < viewportStart + viewportLength)
                         {
-                            float x = getFretX(s.HoveredFret);
-                            if (x >= 0 && x < fretAreaWidth)
-                            {
-                                g.FillRectangle(hoverBrush, x - fretWidth / 2, y - stringHeight / 2, fretWidth, stringHeight);
-                            }
+                            float y = (fret.String * stringHeight) + stringHeight / 2;
+                            float x = getFretX(fret.Space);
+                            g.FillEllipse(fretAreaBrush, x - DrawingConstants.FretMarkerRadius, y - DrawingConstants.FretMarkerRadius, DrawingConstants.FretMarkerRadius * 2, DrawingConstants.FretMarkerRadius * 2);
+                            g.DrawEllipse(starPen, x - DrawingConstants.FretMarkerRadius, y - DrawingConstants.FretMarkerRadius, DrawingConstants.FretMarkerRadius * 2, DrawingConstants.FretMarkerRadius * 2);
+                        }
+                    }
+                }
+                // draw hovered frets
+                for (int i = 0; i < strings.Count; i++)
+                {
+                    String s = strings[i];
+                    float y = (i * stringHeight) + stringHeight / 2;
+                    if (s.HoveredFret > -1)
+                    {
+                        float x = getFretX(s.HoveredFret);
+                        if (x >= 0 && x < fretAreaWidth)
+                        {
+                            g.FillRectangle(hoverBrush, x - fretWidth / 2, y - stringHeight / 2, fretWidth, stringHeight);
                         }
                     }
                 }

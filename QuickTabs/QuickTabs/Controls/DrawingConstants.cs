@@ -29,6 +29,7 @@ namespace QuickTabs.Controls
         public static readonly Color StringColor = Color.FromArgb(0x25, 0x25, 0x25);
         public static readonly Color HighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
         public static readonly Color ButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
+        public static readonly Color StarColor = Color.FromArgb(0xe7, 0x70, 0x00);
         public const int ButtonOutlineWidth = 3;
         public const int ButtonAreaWidth = 150;
         public const int FretCountAreaHeight = 50;

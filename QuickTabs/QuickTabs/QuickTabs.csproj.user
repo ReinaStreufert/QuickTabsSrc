@@ -19,5 +19,8 @@
     <Compile Update="Forms\Editor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\SectionName.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

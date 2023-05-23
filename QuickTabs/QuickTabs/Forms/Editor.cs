@@ -5,7 +5,7 @@ namespace QuickTabs
 {
     public partial class Editor : Form
     {
-        private Controls.ContextMenu contextMenu;
+        private QuickTabsContextMenu contextMenu;
         private Controls.TabEditor tabEditor;
         private Controls.ToolMenu toolMenu;
         private Controls.Tools.Fretboard fretboard;
@@ -29,11 +29,14 @@ namespace QuickTabs
             song.TimeSignature = new TimeSignature(4, 4);
             ((SectionHead)song.Tab[0]).Name = "Untitled Section";
             tabEditor.Song = song;
-            tabEditor.Selection = new Selection(1, 1);
-            tabEditor.Refresh();
             fretboard.Song = song;
             fretboard.Editor = tabEditor;
             fretboard.Refresh();
+            contextMenu.Song = song;
+            contextMenu.Editor = tabEditor;
+            contextMenu.Fretboard = fretboard;
+            tabEditor.Selection = new Selection(1, 1);
+            tabEditor.Refresh();
         }
         protected override void OnSizeChanged(EventArgs e)
         {

@@ -76,9 +76,20 @@ namespace QuickTabs.Controls
             this.Invalidate();
         }
 
-        protected override void OnClick(EventArgs e)
+        protected override void OnMouseLeave(EventArgs e)
         {
-            base.OnClick(e);
+            base.OnMouseLeave(e);
+            if (hoveredButton != null)
+            {
+                hoveredButton.Hovered = false;
+                hoveredButton = null;
+                this.Invalidate();
+            }
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
             if (hoveredButton != null)
             {
                 hoveredButton.ContextItem.InvokeClick();
