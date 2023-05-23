@@ -5,16 +5,20 @@ namespace QuickTabs
 {
     public partial class Editor : Form
     {
-        private Controls.ContextMenu contextMenu = new Controls.ContextMenu();
-        private Controls.TabEditor tabEditor = new Controls.TabEditor();
-        private Controls.ToolMenu toolMenu = new Controls.ToolMenu();
-        private Controls.Tools.Fretboard fretboard = new Controls.Tools.Fretboard();
+        private Controls.ContextMenu contextMenu;
+        private Controls.TabEditor tabEditor;
+        private Controls.ToolMenu toolMenu;
+        private Controls.Tools.Fretboard fretboard;
 
         private Song song = new Song();
         public Editor()
         {
             InitializeComponent();
             DrawingIcons.LoadAll();
+            contextMenu = new QuickTabsContextMenu();
+            tabEditor = new TabEditor();
+            toolMenu = new ToolMenu();
+            fretboard = new Controls.Tools.Fretboard();
             Controls.Add(contextMenu);
             Controls.Add(tabEditor);
             Controls.Add(fretboard);
@@ -34,12 +38,16 @@ namespace QuickTabs
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
+            if (contextMenu == null)
+            {
+                return;
+            }
             contextMenu.Location = new Point(0, 0);
-            contextMenu.Size = new Size(this.Width, 160);
+            contextMenu.Size = new Size(this.ClientSize.Width, 160);
             tabEditor.Location = new Point(0, 160);
-            tabEditor.Size = new Size(this.Width, this.Height - 160 - 270);
-            toolMenu.Location = new Point(0, this.Height - 270);
-            toolMenu.Size = new Size(this.Width, 270);
+            tabEditor.Size = new Size(this.ClientSize.Width, this.Height - 160 - 320);
+            toolMenu.Location = new Point(0, this.Height - 320);
+            toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
             fretboard.Size = toolMenu.Size;
         }

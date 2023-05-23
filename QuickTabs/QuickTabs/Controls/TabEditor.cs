@@ -60,8 +60,8 @@ namespace QuickTabs.Controls
             Songwriting.Tab tab = Song.Tab;
             tabUI.Clear();
 
-            int usableWidth = this.Width - DrawingConstants.LargeMargin * 2 - DrawingConstants.LeftMargin;
-            int usableHeight = this.Height - DrawingConstants.LargeMargin * 2;
+            int usableWidth = this.Width - DrawingConstants.MediumMargin * 2 - DrawingConstants.LeftMargin;
+            int usableHeight = this.Height - DrawingConstants.MediumMargin * 2;
             int rowsPerStaff = tab.Tuning.Count;
             int beatsPerMeasure = Song.TimeSignature.T1 * 2;
 
@@ -148,7 +148,7 @@ namespace QuickTabs.Controls
         }
         private bool tryGetStepFromPoint(Point point, out UIStep step)
         {
-            if (point.X < DrawingConstants.LargeMargin + DrawingConstants.LeftMargin)
+            if (point.X < DrawingConstants.MediumMargin + DrawingConstants.LeftMargin)
             {
                 step = null;
                 return false;
@@ -161,7 +161,7 @@ namespace QuickTabs.Controls
                 return false;
             }
             UIRow row = tabUI[rowIndex];
-            int stepIndex = (int)Math.Round(((float)point.X - (DrawingConstants.LargeMargin + DrawingConstants.LeftMargin)) / DrawingConstants.StepWidth);
+            int stepIndex = (int)Math.Round(((float)point.X - (DrawingConstants.MediumMargin + DrawingConstants.LeftMargin)) / DrawingConstants.StepWidth);
             if (stepIndex >= row.Steps.Count)
             {
                 step = null;
@@ -191,6 +191,10 @@ namespace QuickTabs.Controls
             base.OnMouseMove(e);
 
             UIStep uiStep;
+            if (e.X < 0 || e.Y < 0)
+            {
+                return;
+            }
             if (tryGetStepFromPoint(e.Location, out uiStep) && uiStep.Type == UIStepType.Beat)
             {
                 if (mouseDown)
@@ -321,11 +325,10 @@ namespace QuickTabs.Controls
                 int stringCount = Song.Tab.Tuning.Count;
                 int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2);
 
-                int startX = DrawingConstants.LargeMargin;
-                int startY = DrawingConstants.LargeMargin;
+                int startX = DrawingConstants.MediumMargin;
+                int startY = DrawingConstants.MediumMargin;
 
-                int[] currentlyHeldStrings = new int[0];
-                int holdFor = 0;
+                Dictionary<int[], int> currentlyHeldStrings = new Dictionary<int[], int>();
                 foreach (UIRow row in tabUI)
                 {
                     int rowWidth = DrawingConstants.LeftMargin + (row.Steps.Count * DrawingConstants.StepWidth);
@@ -349,30 +352,38 @@ namespace QuickTabs.Controls
                     for (int i = 0; i < row.Steps.Count; i++)
                     {
                         UIStep uiStep = row.Steps[i];
-                        int x = DrawingConstants.LargeMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth);
+                        int x = DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth);
                         switch (uiStep.Type)
                         {
                             case UIStepType.Beat:
                                 Beat beat = (Beat)uiStep.AssociatedStep;
-                                if (holdFor > 0)
+                                KeyValuePair<int[], int>[] pairs = currentlyHeldStrings.ToArray();
+                                foreach (KeyValuePair<int[], int> hold in pairs)
                                 {
-                                    foreach (int heldString in currentlyHeldStrings)
+                                    if (hold.Value > 0)
                                     {
-                                        int y = startY + (heldString * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
-                                        g.DrawLine(forePen, x - DrawingConstants.StepWidth / 2, y, x + DrawingConstants.StepWidth / 2, y);
+                                        foreach (int heldString in hold.Key)
+                                        {
+                                            int y = startY + (heldString * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
+                                            g.DrawLine(forePen, x - DrawingConstants.StepWidth / 2, y, x + DrawingConstants.StepWidth / 2, y);
+                                        }
+                                        currentlyHeldStrings[hold.Key]--;
+                                        if (currentlyHeldStrings[hold.Key] <= 0)
+                                        {
+                                            currentlyHeldStrings.Remove(hold.Key);
+                                        }
                                     }
-                                    holdFor--;
                                 }
                                 if (beat.NoteLength > 1 && beat.HeldCount > 0)
                                 {
-                                    holdFor = beat.NoteLength - 1;
-                                    currentlyHeldStrings = new int[beat.HeldCount];
+                                    int[] newHold = new int[beat.HeldCount];
                                     int ii = 0;
                                     foreach (Fret fret in beat)
                                     {
-                                        currentlyHeldStrings[ii] = fret.String;
+                                        newHold[ii] = fret.String;
                                         ii++;
                                     }
+                                    currentlyHeldStrings[newHold] = beat.NoteLength - 1;
                                 }
                                 foreach (Fret heldFret in beat)
                                 {
@@ -414,9 +425,9 @@ namespace QuickTabs.Controls
                     {
                         if (row.Steps[i].Type == UIStepType.Beat)
                         {
-                            points.Add(new Point(DrawingConstants.LargeMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
-                            points.Add(new Point(DrawingConstants.LargeMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY - DrawingConstants.RowHeight / 2));
-                            points.Add(new Point(DrawingConstants.LargeMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
+                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
+                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY - DrawingConstants.RowHeight / 2));
+                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
                         }
                     }
                     g.DrawLines(forePen, points.ToArray());

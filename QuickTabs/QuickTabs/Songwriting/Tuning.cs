@@ -8,8 +8,8 @@ namespace QuickTabs.Songwriting
 {
     internal struct Tuning
     {
-        public static readonly Tuning StandardGuitar = new Tuning('E', 'A', 'D', 'G', 'B', 'E');
-        public static readonly Tuning StandardUke = new Tuning('E', 'A', 'D', 'G');
+        public static readonly Tuning StandardGuitar = new Tuning('E', 'B', 'G', 'D', 'A', 'E');
+        public static readonly Tuning StandardUke = new Tuning('G', 'D', 'A', 'E');
 
         private char[] tuning;
         public Tuning(params char[] notes)

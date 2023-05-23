@@ -4,6 +4,9 @@
     <Compile Update="Controls\ContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Controls\QuickTabsContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Controls\TabEditor.cs">
       <SubType>Component</SubType>
     </Compile>

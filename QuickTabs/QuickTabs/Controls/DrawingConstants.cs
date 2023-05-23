@@ -8,7 +8,8 @@ namespace QuickTabs.Controls
 {
     internal static class DrawingConstants
     {
-        public const int LargeMargin = 30;
+        public const int LargeMargin = 40;
+        public const int MediumMargin = 30;
         public const int StepWidth = 26;
         public const int RowHeight = 30;
         public const int LeftMargin = 100; // pixels before beats start
@@ -27,9 +28,19 @@ namespace QuickTabs.Controls
         public static readonly Color HighlightBlue = Color.FromArgb(0x00, 0x9A, 0xE7);
         public static readonly Color StringColor = Color.FromArgb(0x25, 0x25, 0x25);
         public static readonly Color HighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
-        public const int ButtonAreaWidth = 200;
+        public static readonly Color ButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
+        public const int ButtonOutlineWidth = 3;
+        public const int ButtonAreaWidth = 150;
+        public const int FretCountAreaHeight = 50;
         public const int FretZeroAreaWidth = 25;
         public const int FretLineWidth = 5;
         public const int FretMarkerRadius = 10;
+        public const int MediumIconSize = 40;
+        public const int TwoDotSpacing = 60;
+        public const int DotRadius = 20;
+        public static readonly int[] DotPattern = new[] { 3, 0, 2, 0, 2, 0, 2, 0, 3, 1 }; // offs, [0 = 1 dot, 1 = 2 dots], ...
+        public const int SectionSpacing = 50;
+        public const int SeperatorLineWidth = 5;
+        public const int SmallIconSize = 30;
     }
 }

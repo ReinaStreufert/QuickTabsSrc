@@ -10,25 +10,53 @@ namespace QuickTabs.Controls
 {
     internal static class DrawingIcons
     {
-        public static MultiColorBitmap EighthNote { get; private set; }
-        public static MultiColorBitmap QuarterNote { get; private set; }
-        public static MultiColorBitmap HalfNote { get; private set; }
-        public static MultiColorBitmap WholeNote { get; private set; }
+        public static MultiColorBitmap QuickTabsLogo { get; private set; } = null;
 
-        public static MultiColorBitmap Guitar { get; private set; }
-        public static MultiColorBitmap PlayPause { get; private set; }
-        public static MultiColorBitmap Record { get; private set; }
+        public static MultiColorBitmap EighthNote { get; private set; } = null;
+        public static MultiColorBitmap QuarterNote { get; private set; } = null;
+        public static MultiColorBitmap HalfNote { get; private set; } = null;
+        public static MultiColorBitmap WholeNote { get; private set; } = null;
+
+        public static MultiColorBitmap LeftArrow { get; private set; } = null;
+        public static MultiColorBitmap RightArrow { get; private set; } = null;
+
+        public static MultiColorBitmap Guitar { get; private set; } = null;
+        public static MultiColorBitmap PlayPause { get; private set; } = null;
+        public static MultiColorBitmap Record { get; private set; } = null;
+
+        public static MultiColorBitmap OpenFile { get; private set; } = null;
+        public static MultiColorBitmap SaveFile { get; private set; } = null;
+        public static MultiColorBitmap SaveFileAs { get; private set; } = null;
+        public static MultiColorBitmap NewFile { get; private set; } = null;
+        public static MultiColorBitmap EditMetadata { get; private set; } = null;
+
+        public static MultiColorBitmap Dots { get; private set; } = null;
+        public static MultiColorBitmap Counter { get; private set; } = null;
 
         public static void LoadAll()
         {
-            EighthNote = loadIcon("music-note-eighth", Color.White);
-            QuarterNote = loadIcon("music-note-quarter", Color.White);
-            HalfNote = loadIcon("music-note-half", Color.White);
-            WholeNote = loadIcon("music-note-whole", Color.White);
+            QuickTabsLogo = loadIcon("logo", Color.White);
+
+            EighthNote = loadIcon("music-note-eighth", Color.White, DrawingConstants.FadedGray);
+            QuarterNote = loadIcon("music-note-quarter", Color.White, DrawingConstants.FadedGray);
+            HalfNote = loadIcon("music-note-half", Color.White, DrawingConstants.FadedGray);
+            WholeNote = loadIcon("music-note-whole", Color.White, DrawingConstants.FadedGray);
+
+            LeftArrow = loadIcon("arrow-left", Color.White, DrawingConstants.FadedGray);
+            RightArrow = loadIcon("arrow-right", Color.White, DrawingConstants.FadedGray);
 
             Guitar = loadIcon("guitar-acoustic", Color.White, DrawingConstants.FadedGray);
             PlayPause = loadIcon("play-pause", Color.White, DrawingConstants.FadedGray);
             Record = loadIcon("record-circle", Color.White, DrawingConstants.FadedGray);
+
+            OpenFile = loadIcon("folder-open-outline", Color.White, DrawingConstants.FadedGray);
+            SaveFile = loadIcon("content-save-all-outline", Color.White, DrawingConstants.FadedGray);
+            SaveFileAs = loadIcon("content-save-plus-outline", Color.White, DrawingConstants.FadedGray);
+            NewFile = loadIcon("reload", Color.White, DrawingConstants.FadedGray);
+            EditMetadata = loadIcon("pencil-outline", Color.White, DrawingConstants.FadedGray);
+
+            Dots = loadIcon("circle-small", Color.White, DrawingConstants.FadedGray);
+            Counter = loadIcon("numeric", Color.White, DrawingConstants.FadedGray);
         }
         private static MultiColorBitmap loadIcon(string iconName, params Color[] colors)
         {
@@ -55,6 +83,13 @@ namespace QuickTabs.Controls
                 return variations[color];
             }
         }
+        public Size Size
+        {
+            get
+            {
+                return originalBitmap.Size;
+            }
+        }
         public void AddColor(Color color)
         {
             Bitmap variation = new Bitmap(originalBitmap.Width, originalBitmap.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -62,7 +97,7 @@ namespace QuickTabs.Controls
             {
                 g.Clear(Color.Transparent);
                 g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-                g.DrawImage(originalBitmap, 0, 0);
+                g.DrawImage(originalBitmap, 0, 0, originalBitmap.Width, originalBitmap.Height);
             }
             BitmapData bmpData = variation.LockBits(new Rectangle(0, 0, variation.Width, variation.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int dataLength = Math.Abs(bmpData.Stride) * bmpData.Height;
@@ -78,6 +113,7 @@ namespace QuickTabs.Controls
                 }
             }
             variation.UnlockBits(bmpData);
+            variations[color] = variation;
         }
     }
 }
