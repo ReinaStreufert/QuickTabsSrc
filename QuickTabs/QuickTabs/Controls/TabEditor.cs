@@ -145,6 +145,8 @@ namespace QuickTabs.Controls
                 stepIndex++;
             }
             tabUI.Add(currentRow);
+            int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2); // +2 is for heading + spacing line
+            this.Height = (tallRowHeight * tabUI.Count) + DrawingConstants.MediumMargin;
         }
         private bool tryGetStepFromPoint(Point point, out UIStep step)
         {
@@ -316,7 +318,6 @@ namespace QuickTabs.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
             Graphics g = e.Graphics;
             using (SolidBrush backBrush = new SolidBrush(BackColor))
             using (SolidBrush higlightBrush = new SolidBrush(DrawingConstants.HighlightColor))

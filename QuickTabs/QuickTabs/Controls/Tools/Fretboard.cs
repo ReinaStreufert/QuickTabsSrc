@@ -10,6 +10,8 @@ namespace QuickTabs.Controls.Tools
     internal class Fretboard : Control
     {
         public Song Song { get; set; } = null;
+        public bool ViewFretCounter { get; set; } = true;
+        public bool ViewDots { get; set; } = true;
         private TabEditor editor;
         public TabEditor Editor
         {
@@ -185,6 +187,10 @@ namespace QuickTabs.Controls.Tools
         private int getFretFromPoint(Point point, out int stringIndex)
         {
             int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
+            if (!ViewFretCounter)
+            {
+                fretAreaHeight = this.Height;
+            }
             float fretWidth = fretAreaWidth / (float)viewportLength;
             float stringHeight = fretAreaHeight / ((float)strings.Count);
             int viewportFret = (int)Math.Floor(point.X / fretWidth);
@@ -221,7 +227,11 @@ namespace QuickTabs.Controls.Tools
                 s.HoveredFret = -1;
             }
             int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
-            if (e.X < fretAreaWidth && e.Y < fretAreaHeight)
+            if (!ViewFretCounter)
+            {
+                fretAreaHeight = this.Height;
+            }
+            if (e.X < fretAreaWidth && e.Y < fretAreaHeight && e.X > 0 && e.Y > 0)
             {
                 int stringIndex;
                 int fretIndex = getFretFromPoint(e.Location, out stringIndex);
@@ -266,6 +276,10 @@ namespace QuickTabs.Controls.Tools
                 return;
             }
             int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
+            if (!ViewFretCounter)
+            {
+                fretAreaHeight = this.Height;
+            }
             if (e.X < fretAreaWidth && e.Y < fretAreaHeight)
             {
                 int stringIndex;
@@ -328,6 +342,10 @@ namespace QuickTabs.Controls.Tools
             Graphics g = e.Graphics;
             float fretWidth = fretAreaWidth / (float)viewportLength;
             int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
+            if (!ViewFretCounter)
+            {
+                fretAreaHeight = this.Height;
+            }
             float stringHeight = fretAreaHeight / (strings.Count);
 
             using (SolidBrush fretAreaBrush = new SolidBrush(DrawingConstants.FretAreaColor))
@@ -347,49 +365,55 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
                 // draw fret numbers
-                using (SolidBrush textBrush = new SolidBrush(Color.White))
-                using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+                if (ViewFretCounter)
                 {
-                    for (int i = viewportStart; i < viewportStart + viewportLength; i++)
+                    using (SolidBrush textBrush = new SolidBrush(Color.White))
+                    using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
                     {
-                        float x = getFretX(i);
-                        SizeF textSize = g.MeasureString(i.ToString(), boldFont);
-                        g.DrawString(i.ToString(), boldFont, textBrush, x - textSize.Width / 2, fretAreaHeight + (DrawingConstants.FretCountAreaHeight / 2) - (textSize.Height / 2));
+                        for (int i = viewportStart; i < viewportStart + viewportLength; i++)
+                        {
+                            float x = getFretX(i);
+                            SizeF textSize = g.MeasureString(i.ToString(), boldFont);
+                            g.DrawString(i.ToString(), boldFont, textBrush, x - textSize.Width / 2, fretAreaHeight + (DrawingConstants.FretCountAreaHeight / 2) - (textSize.Height / 2));
+                        }
                     }
                 }
                 // draw dots
-                using (SolidBrush dotBrush = new SolidBrush(Color.White))
+                if (ViewDots)
                 {
-                    int currentFret = 0;
-                    for (; ; )
+                    using (SolidBrush dotBrush = new SolidBrush(Color.White))
                     {
-                        bool fullBreak = false;
-                        for (int i = 0; i < DrawingConstants.DotPattern.Length; i += 2)
+                        int currentFret = 0;
+                        for (; ; )
                         {
-                            currentFret += DrawingConstants.DotPattern[i];
-                            int dotType = DrawingConstants.DotPattern[i + 1];
-                            if (currentFret >= viewportStart + viewportLength)
+                            bool fullBreak = false;
+                            for (int i = 0; i < DrawingConstants.DotPattern.Length; i += 2)
                             {
-                                fullBreak = true;
+                                currentFret += DrawingConstants.DotPattern[i];
+                                int dotType = DrawingConstants.DotPattern[i + 1];
+                                if (currentFret >= viewportStart + viewportLength)
+                                {
+                                    fullBreak = true;
+                                    break;
+                                }
+                                if (currentFret >= viewportStart)
+                                {
+                                    float x = getFretX(currentFret);
+                                    float y = fretAreaHeight / 2F;
+                                    if (dotType == 0)
+                                    {
+                                        g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
+                                    }
+                                    else
+                                    {
+                                        g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2 - DrawingConstants.TwoDotSpacing, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
+                                        g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2 + DrawingConstants.TwoDotSpacing, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
+                                    }
+                                }
+                            }
+                            if (fullBreak)
                                 break;
-                            }
-                            if (currentFret >= viewportStart)
-                            {
-                                float x = getFretX(currentFret);
-                                float y = fretAreaHeight / 2F;
-                                if (dotType == 0)
-                                {
-                                    g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
-                                }
-                                else
-                                {
-                                    g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2 - DrawingConstants.TwoDotSpacing, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
-                                    g.FillEllipse(dotBrush, x - DrawingConstants.DotRadius / 2, y - DrawingConstants.DotRadius / 2 + DrawingConstants.TwoDotSpacing, DrawingConstants.DotRadius, DrawingConstants.DotRadius);
-                                }
-                            }
                         }
-                        if (fullBreak)
-                            break;
                     }
                 }
                 // draw strings

@@ -1,4 +1,5 @@
-﻿using QuickTabs.Enums;
+﻿using Newtonsoft.Json.Linq;
+using QuickTabs.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,13 @@ namespace QuickTabs.Songwriting
         public override StepType Type => StepType.SectionHead;
 
         public string Name { get; set; } = "";
+
+        public override JObject SaveAsJObject(Song Song)
+        {
+            JObject sectionHeadJson = new JObject();
+            sectionHeadJson.Add("type", "sh");
+            sectionHeadJson.Add("name", Name);
+            return sectionHeadJson;
+        }
     }
 }

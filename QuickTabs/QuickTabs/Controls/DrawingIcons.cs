@@ -39,6 +39,14 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap MinusSection { get; private set; } = null;
         public static MultiColorBitmap Rename { get; private set; } = null;
 
+        public static MultiColorBitmap Copy { get; private set; } = null;
+        public static MultiColorBitmap Paste { get; private set; } = null;
+        public static MultiColorBitmap ShiftLeft { get; private set; } = null;
+        public static MultiColorBitmap ShiftRight { get; private set; } = null;
+        public static MultiColorBitmap ShiftUp { get; private set; } = null;
+        public static MultiColorBitmap ShiftDown { get; private set; } = null;
+        public static MultiColorBitmap Clear { get; private set; } = null;
+
         public static void LoadAll()
         {
             QuickTabsLogo = loadIcon("logo", Color.White);
@@ -69,6 +77,14 @@ namespace QuickTabs.Controls
             PlusSection = loadIcon("plus-box-multiple-outline", Color.White, DrawingConstants.FadedGray);
             MinusSection = loadIcon("minus-box-multiple-outline", Color.White, DrawingConstants.FadedGray);
             Rename = loadIcon("rename-outline", Color.White);
+
+            Copy = loadIcon("content-copy", Color.White);
+            Paste = loadIcon("content-paste", Color.White, DrawingConstants.FadedGray);
+            ShiftLeft = loadIcon("pan-left", Color.White);
+            ShiftRight = loadIcon("pan-right", Color.White);
+            ShiftUp = loadIcon("pan-up", Color.White);
+            ShiftDown = loadIcon("pan-down", Color.White);
+            Clear = loadIcon("close", Color.White);
         }
         private static MultiColorBitmap loadIcon(string iconName, params Color[] colors)
         {

@@ -1,4 +1,5 @@
-﻿using QuickTabs.Enums;
+﻿using Newtonsoft.Json.Linq;
+using QuickTabs.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +41,35 @@ namespace QuickTabs.Songwriting
             {
                 return heldFrets.Count;
             }
+        }
+
+        public Beat Copy()
+        {
+            Beat copy = new Beat();
+            foreach (Fret fret in heldFrets)
+            {
+                copy.heldFrets.Add(fret);
+            }
+            copy.NoteLength = NoteLength;
+            return copy;
+        }
+
+        public override JObject SaveAsJObject(Song Song)
+        {
+            JObject beatJson = new JObject();
+            beatJson.Add("type", "b");
+            beatJson.Add("length", NoteLength);
+            JArray states = new JArray();
+            for (int i = 0; i < Song.Tab.Tuning.Count; i++)
+            {
+                states.Add(null);
+            }
+            foreach (Fret fret in heldFrets)
+            {
+                states[fret.String] = fret.Space;
+            }
+            beatJson.Add("states", states);
+            return beatJson;
         }
 
         public IEnumerator<Fret> GetEnumerator()
