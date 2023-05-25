@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs.Controls
 {
@@ -38,6 +39,9 @@ namespace QuickTabs.Controls
         private ContextItem addSection;
         private ContextItem paste;
 
+        private List<ShortcutManager.ShortcutController> measureShortcuts = new List<ShortcutManager.ShortcutController>();
+        private List<ShortcutManager.ShortcutController> selectionShortcuts = new List<ShortcutManager.ShortcutController>();
+
         private List<Beat> clipboard = null;
         public QuickTabsContextMenu()
         {
@@ -49,22 +53,30 @@ namespace QuickTabs.Controls
             ContextItem open = new ContextItem(DrawingIcons.OpenFile);
             open.Selected = true;
             open.Click += openClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.O, openClick);
             fileSection.AddItem(open);
             ContextItem save = new ContextItem(DrawingIcons.SaveFile);
             save.Selected = true;
             save.Click += saveClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.S, saveClick);
             fileSection.AddItem(save);
             ContextItem saveAs = new ContextItem(DrawingIcons.SaveFileAs);
             saveAs.Selected = true;
             saveAs.Click += saveAsClick;
+            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
             fileSection.AddItem(saveAs);
+            ContextItem export = new ContextItem(DrawingIcons.Export);
+            export.Selected = true;
+            export.Click += exportClick;
+            fileSection.AddItem(export);
             ContextItem newFile = new ContextItem(DrawingIcons.NewFile);
             newFile.Selected = true;
             newFile.Click += newClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.N, newClick);
             fileSection.AddItem(newFile);
-            ContextItem editMetadata = new ContextItem(DrawingIcons.EditMetadata);
-            editMetadata.Selected = true;
-            fileSection.AddItem(editMetadata);
+            ContextItem documentProperties = new ContextItem(DrawingIcons.EditDocumentProperties);
+            documentProperties.Selected = true;
+            fileSection.AddItem(documentProperties);
             Sections.Add(fileSection);
 
             viewSection = new ContextSection();
@@ -110,30 +122,48 @@ namespace QuickTabs.Controls
             ContextItem copy = new ContextItem(DrawingIcons.Copy);
             copy.Selected = true;
             copy.Click += copyClick;
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.C, copyClick));
             selectionSection.AddItem(copy);
             paste = new ContextItem(DrawingIcons.Paste);
             paste.Selected = false;
             paste.Click += pasteClick;
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.V, pasteClick));
             selectionSection.AddItem(paste);
             ContextItem shiftLeft = new ContextItem(DrawingIcons.ShiftLeft);
             shiftLeft.Selected = true;
             shiftLeft.Click += shiftLeftClick;
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.A, shiftLeftClick));
             selectionSection.AddItem(shiftLeft);
             ContextItem shiftRight = new ContextItem(DrawingIcons.ShiftRight);
             shiftRight.Selected = true;
             shiftRight.Click += shiftRightClick;
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.D, shiftRightClick));
             selectionSection.AddItem(shiftRight);
             ContextItem shiftUp = new ContextItem(DrawingIcons.ShiftUp);
             shiftUp.Selected = true;
             shiftUp.Click += () => { shiftStrings(-1); };
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.W, () => { shiftStrings(-1); }));
             selectionSection.AddItem(shiftUp);
             ContextItem shiftDown = new ContextItem(DrawingIcons.ShiftDown);
             shiftDown.Selected = true;
             shiftDown.Click += () => { shiftStrings(1); };
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.S, () => { shiftStrings(1); }));
             selectionSection.AddItem(shiftDown);
+            ContextItem fretUp = new ContextItem(DrawingIcons.FretUp);
+            fretUp.Selected = true;
+            fretUp.Click += () => { shiftFrets(1); };
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.Oemplus, () => { shiftFrets(1); }));
+            selectionSection.AddItem(fretUp);
+            ContextItem fretDown = new ContextItem(DrawingIcons.FretDown);
+            fretDown.Selected = true;
+            fretDown.Click += () => { shiftFrets(-1); };
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, (Keys)189, () => { shiftFrets(-1); }));
+            selectionSection.AddItem(fretDown);
             ContextItem clear = new ContextItem(DrawingIcons.Clear);
             clear.Selected = true;
             clear.Click += clearClick;
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.Space, clearClick));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.X, () => { copyClick(); clearClick(); }));
             selectionSection.AddItem(clear);
 
             updateUI();
@@ -149,6 +179,10 @@ namespace QuickTabs.Controls
                 if (!Sections.Contains(selectionSection))
                 {
                     Sections.Add(selectionSection);
+                }
+                foreach (ShortcutManager.ShortcutController shortcut in selectionShortcuts)
+                {
+                    shortcut.Enabled = true;
                 }
                 if (editor.Selection.SelectionStart - 1 != 0 && Song.Tab[editor.Selection.SelectionStart - 1].Type == Enums.StepType.SectionHead)
                 {
@@ -192,6 +226,10 @@ namespace QuickTabs.Controls
                 {
                     Sections.Remove(selectionSection);
                 }
+                foreach (ShortcutManager.ShortcutController shortcut in selectionShortcuts)
+                {
+                    shortcut.Enabled = false;
+                }
             }
             updateUI();
             Invalidate();
@@ -199,6 +237,16 @@ namespace QuickTabs.Controls
         private void saveClick()
         {
             FileManager.Save(Song);
+            MainForm.Cursor = Cursors.WaitCursor;
+            Timer t = new Timer();
+            t.Interval = 150;
+            t.Tick += (object sender, EventArgs e) =>
+            {
+                MainForm.Cursor = Cursors.Default;
+                t.Stop();
+                t.Dispose();
+            };
+            t.Start();
         }
         private void saveAsClick()
         {
@@ -206,7 +254,12 @@ namespace QuickTabs.Controls
         }
         private void openClick()
         {
-            Song = FileManager.Open();
+            Song openedSong = FileManager.Open();
+            if (openedSong == null)
+            {
+                return;
+            }
+            Song = openedSong;
             MainForm.song = Song;
             editor.Song = Song;
             Fretboard.Song = Song;
@@ -227,6 +280,21 @@ namespace QuickTabs.Controls
             editor.Selection = new Selection(1, 1);
             editor.Refresh();
             Fretboard.Refresh();
+        }
+        private void exportClick()
+        {
+            PlainTextTabWriter exporter = new PlainTextTabWriter(Song.Tab);
+            string exportText = exporter.WriteTab();
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "Text File (*.txt)|*.txt|All Files (*.*)|*.*";
+                saveDialog.DefaultExt = "txt";
+                DialogResult saveResult = saveDialog.ShowDialog();
+                if (saveResult == DialogResult.OK)
+                {
+                    File.WriteAllText(saveDialog.FileName, exportText);
+                }
+            }
         }
         private int findSectionHead(int stepIndex)
         {
@@ -419,6 +487,7 @@ namespace QuickTabs.Controls
                 if (i < 1)
                 {
                     indexInSource++;
+                    copied++;
                     if (indexInSource >= source.Count)
                     {
                         indexInSource = 0;
@@ -442,6 +511,18 @@ namespace QuickTabs.Controls
             }
             return i;
         }
+        private int countBeatsInSelection(Selection selection)
+        {
+            int count = 0;
+            for (int i = selection.SelectionStart; i < selection.SelectionStart + selection.SelectionLength; i++)
+            {
+                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
         private void pasteClick()
         {
             if (clipboard == null)
@@ -451,24 +532,13 @@ namespace QuickTabs.Controls
             Selection selection = editor.Selection;
             if (selection.SelectionLength == 1 && clipboard.Count > 1)
             {
-                int newSelectionEnd = selection.SelectionStart;
-                for (int i = 0; i < clipboard.Count; i++)
-                {
-                    newSelectionEnd++;
-                    if (newSelectionEnd >= Song.Tab.Count)
-                    {
-                        newSelectionEnd = Song.Tab.Count - 1;
-                        break;
-                    }
-                    if (Song.Tab[newSelectionEnd].Type != Enums.StepType.Beat)
-                    {
-                        newSelectionEnd++;
-                    }
-                }
-                selection = new Selection(selection.SelectionStart, newSelectionEnd - selection.SelectionStart + 1);
-                editor.Selection = selection;
+                selection.SelectionLength = clipboard.Count;
+            } else
+            {
+                selection.SelectionLength = countBeatsInSelection(selection);
             }
-            copyBeats(clipboard, selection);
+            int endIndex = copyBeats(clipboard, selection);
+            editor.Selection = new Selection(selection.SelectionStart, endIndex - selection.SelectionStart);
             editor.Refresh();
             Fretboard.Refresh();
         }
@@ -507,22 +577,17 @@ namespace QuickTabs.Controls
                 endIndex++;
             }
             Song.Tab[endIndex] = new Beat();
-            if (selection.SelectionStart - additive > 0)
+            int newSelectionStart = selection.SelectionStart - additive;
+            if (newSelectionStart < 1)
             {
-                editor.Selection = new Selection(selection.SelectionStart - additive, endIndex - selection.SelectionStart + 1);
+                newSelectionStart = 1;
+            }
+            if (endIndex - newSelectionStart > 0)
+            {
+                editor.Selection = new Selection(newSelectionStart, endIndex - newSelectionStart);
             } else
             {
-                if (selection.SelectionLength - additive < 1)
-                {
-                    editor.Selection = new Selection(selection.SelectionStart, 1);
-                } else
-                {
-                    editor.Selection = new Selection(selection.SelectionStart, endIndex - selection.SelectionStart + 1);
-                }
-            }
-            if (Song.Tab[editor.Selection.SelectionStart + editor.Selection.SelectionLength - 1].Type == Enums.StepType.SectionHead)
-            {
-                editor.Selection = new Selection(editor.Selection.SelectionStart, editor.Selection.SelectionLength + 2);
+                editor.Selection = null;
             }
             editor.Refresh();
             Fretboard.Refresh();
@@ -545,24 +610,13 @@ namespace QuickTabs.Controls
             }
             int endIndex = copyBeats(selectionBeats, new Selection(selection.SelectionStart + additive, selectionBeats.Count));
             Song.Tab[selection.SelectionStart] = new Beat();
-            if (endIndex >= Song.Tab.Count)
+            int newSelectionStart = selection.SelectionStart + additive;
+            if (newSelectionStart >= Song.Tab.Count)
             {
-                int start = selection.SelectionStart + additive;
-                if (start >= Song.Tab.Count)
-                {
-                    editor.Selection = new Selection(selection.SelectionStart, 1);
-                } else
-                {
-                    editor.Selection = new Selection(start, Song.Tab.Count - start);
-                }
-            }
-            else
+                editor.Selection = null;
+            } else
             {
-                editor.Selection = new Selection(selection.SelectionStart + additive, endIndex - selection.SelectionStart - 1);
-            }
-            if (Song.Tab[editor.Selection.SelectionStart + editor.Selection.SelectionLength - 1].Type == Enums.StepType.SectionHead)
-            {
-                editor.Selection = new Selection(editor.Selection.SelectionStart, editor.Selection.SelectionLength + additive);
+                editor.Selection = new Selection(newSelectionStart, endIndex - newSelectionStart);
             }
             editor.Refresh();
             Fretboard.Refresh();
@@ -583,6 +637,30 @@ namespace QuickTabs.Controls
                         if (newString >= 0 && newString < Song.Tab.Tuning.Count)
                         {
                             newBeat[new Fret(newString, fret.Space)] = true;
+                        }
+                    }
+                    Song.Tab[i] = newBeat;
+                }
+            }
+            editor.Refresh();
+            Fretboard.Refresh();
+        }
+        public void shiftFrets(int additive)
+        {
+            Selection selection = editor.Selection;
+            for (int i = selection.SelectionStart; i < selection.SelectionStart + selection.SelectionLength; i++)
+            {
+                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                {
+                    Beat srcBeat = (Beat)(Song.Tab[i]);
+                    Beat newBeat = new Beat();
+                    newBeat.NoteLength = srcBeat.NoteLength;
+                    foreach (Fret fret in srcBeat)
+                    {
+                        int newSpace = fret.Space + additive;
+                        if (newSpace >= 0)
+                        {
+                            newBeat[new Fret(fret.String, newSpace)] = true;
                         }
                     }
                     Song.Tab[i] = newBeat;

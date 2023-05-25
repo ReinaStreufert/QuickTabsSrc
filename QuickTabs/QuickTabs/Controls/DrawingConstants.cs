@@ -30,6 +30,7 @@ namespace QuickTabs.Controls
         public static readonly Color HighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
         public static readonly Color ButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
         public static readonly Color StarColor = Color.FromArgb(0xe7, 0x70, 0x00);
+        public static readonly Color LogoPatternColor = Color.FromArgb(0x30, 0x30, 0x30);
         public const int ButtonOutlineWidth = 3;
         public const int ButtonAreaWidth = 150;
         public const int FretCountAreaHeight = 50;
@@ -42,6 +43,10 @@ namespace QuickTabs.Controls
         public static readonly int[] DotPattern = new[] { 3, 0, 2, 0, 2, 0, 2, 0, 3, 1 }; // offs, [0 = 1 dot, 1 = 2 dots], ...
         public const int SectionSpacing = 50;
         public const int SeperatorLineWidth = 5;
-        public const int SmallIconSize = 30;
+        public const int SmallIconSize = 35;
+        public static int LogoPatternSpacingSmall = 200;
+        public static int LogoPatternSpacingLarge = 500;
+        public static readonly Size LogoPatternSize = new Size(500, 110);
+        public const float LogoPatternRotation = 20;
     }
 }

@@ -30,7 +30,7 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.textBox = new System.Windows.Forms.TextBox();
-            this.setButton = new System.Windows.Forms.Button();
+            this.saveButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -56,19 +56,19 @@
             this.textBox.Size = new System.Drawing.Size(605, 37);
             this.textBox.TabIndex = 1;
             // 
-            // setButton
+            // saveButton
             // 
-            this.setButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(154)))), ((int)(((byte)(231)))));
-            this.setButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.setButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.setButton.Location = new System.Drawing.Point(475, 88);
-            this.setButton.Name = "setButton";
-            this.setButton.Size = new System.Drawing.Size(150, 46);
-            this.setButton.TabIndex = 2;
-            this.setButton.Text = "Set";
-            this.setButton.UseVisualStyleBackColor = false;
-            this.setButton.Click += new System.EventHandler(this.setButton_Click);
+            this.saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(154)))), ((int)(((byte)(231)))));
+            this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.saveButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.saveButton.Location = new System.Drawing.Point(475, 88);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(150, 46);
+            this.saveButton.TabIndex = 2;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = false;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // cancelButton
             // 
@@ -91,7 +91,7 @@
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(644, 155);
             this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.setButton);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -110,7 +110,7 @@
 
         private Label label1;
         private TextBox textBox;
-        private Button setButton;
+        private Button saveButton;
         private Button cancelButton;
     }
 }

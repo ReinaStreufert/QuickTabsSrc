@@ -25,14 +25,14 @@ namespace QuickTabs.Forms
             textBox.Text = Name;
         }
 
-        private void setButton_Click(object sender, EventArgs e)
+        private void cancelButton_Click(object sender, EventArgs e)
         {
-            Name = textBox.Text;
             this.Close();
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        private void saveButton_Click(object sender, EventArgs e)
         {
+            Name = textBox.Text;
             this.Close();
         }
     }

@@ -28,7 +28,8 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap SaveFile { get; private set; } = null;
         public static MultiColorBitmap SaveFileAs { get; private set; } = null;
         public static MultiColorBitmap NewFile { get; private set; } = null;
-        public static MultiColorBitmap EditMetadata { get; private set; } = null;
+        public static MultiColorBitmap EditDocumentProperties { get; private set; } = null;
+        public static MultiColorBitmap Export { get; private set; } = null;
 
         public static MultiColorBitmap Dots { get; private set; } = null;
         public static MultiColorBitmap Counter { get; private set; } = null;
@@ -45,11 +46,13 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap ShiftRight { get; private set; } = null;
         public static MultiColorBitmap ShiftUp { get; private set; } = null;
         public static MultiColorBitmap ShiftDown { get; private set; } = null;
+        public static MultiColorBitmap FretUp { get; private set; } = null;
+        public static MultiColorBitmap FretDown { get; private set; } = null;
         public static MultiColorBitmap Clear { get; private set; } = null;
 
         public static void LoadAll()
         {
-            QuickTabsLogo = loadIcon("logo", Color.White);
+            QuickTabsLogo = loadIcon("logo", Color.White, DrawingConstants.LogoPatternColor);
 
             EighthNote = loadIcon("music-note-eighth", Color.White, DrawingConstants.FadedGray);
             QuarterNote = loadIcon("music-note-quarter", Color.White, DrawingConstants.FadedGray);
@@ -67,7 +70,8 @@ namespace QuickTabs.Controls
             SaveFile = loadIcon("content-save-all-outline", Color.White);
             SaveFileAs = loadIcon("content-save-plus-outline", Color.White);
             NewFile = loadIcon("reload", Color.White);
-            EditMetadata = loadIcon("pencil-outline", Color.White);
+            EditDocumentProperties = loadIcon("pencil-outline", Color.White);
+            Export = loadIcon("export", Color.White);
 
             Dots = loadIcon("circle-small", Color.White, DrawingConstants.FadedGray);
             Counter = loadIcon("numeric", Color.White, DrawingConstants.FadedGray);
@@ -84,6 +88,8 @@ namespace QuickTabs.Controls
             ShiftRight = loadIcon("pan-right", Color.White);
             ShiftUp = loadIcon("pan-up", Color.White);
             ShiftDown = loadIcon("pan-down", Color.White);
+            FretUp = loadIcon("plus", Color.White);
+            FretDown = loadIcon("minus", Color.White);
             Clear = loadIcon("close", Color.White);
         }
         private static MultiColorBitmap loadIcon(string iconName, params Color[] colors)

@@ -437,7 +437,10 @@ namespace QuickTabs.Controls
                             points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
                         }
                     }
-                    g.DrawLines(forePen, points.ToArray());
+                    if (points.Count > 1)
+                    {
+                        g.DrawLines(forePen, points.ToArray());
+                    }
                     startY += tallRowHeight;
                 }
             }

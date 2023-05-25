@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using QuickTabs.Forms;
 using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
@@ -29,19 +30,30 @@ namespace QuickTabs
         }
         public static void SaveAs(Song song)
         {
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
-            saveDialog.DefaultExt = "qtjson";
-            saveDialog.ShowDialog();
-            CurrentFilePath = saveDialog.FileName;
-            Save(song);
+            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            {
+                saveDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
+                saveDialog.DefaultExt = "qtjson";
+                DialogResult saveResult = saveDialog.ShowDialog();
+                if (saveResult == DialogResult.OK)
+                {
+                    CurrentFilePath = saveDialog.FileName;
+                    Save(song);
+                }
+            }
         }
         public static Song Open()
         {
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
-            openDialog.ShowDialog();
-            CurrentFilePath = openDialog.FileName;
+            using (OpenFileDialog openDialog = new OpenFileDialog())
+            {
+                openDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
+                DialogResult openResult = openDialog.ShowDialog();
+                if (openResult != DialogResult.OK)
+                {
+                    return null;
+                }
+                CurrentFilePath = openDialog.FileName;
+            }
             string fileText = File.ReadAllText(CurrentFilePath);
             JObject songJson;
             try

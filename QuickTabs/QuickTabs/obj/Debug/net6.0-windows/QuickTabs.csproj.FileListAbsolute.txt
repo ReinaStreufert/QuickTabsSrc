@@ -18,3 +18,4 @@ C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-w
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.SectionName.resources
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\Newtonsoft.Json.dll
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.csproj.CopyComplete
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.DebugOutputForm.resources
