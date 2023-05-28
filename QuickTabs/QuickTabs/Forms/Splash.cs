@@ -16,19 +16,91 @@ namespace QuickTabs.Forms
 {
     public partial class Splash : Form
     {
-        private const int CS_DROPSHADOW = 0x00020000;
         private const int logoWidth = 480;
+
+        [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn
+        (
+            int nLeftRect, // x-coordinate of upper-left corner
+            int nTopRect, // y-coordinate of upper-left corner
+            int nRightRect, // x-coordinate of lower-right corner
+            int nBottomRect, // y-coordinate of lower-right corner
+            int nWidthEllipse, // height of ellipse
+            int nHeightEllipse // width of ellipse
+         );
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmIsCompositionEnabled(ref int pfEnabled);
+
+        private bool m_aeroEnabled;                     // variables for box shadow
+        private const int CS_DROPSHADOW = 0x00020000;
+        private const int WM_NCPAINT = 0x0085;
+        private const int WM_ACTIVATEAPP = 0x001C;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MARGINS                           // struct for box shadow
+        {
+            public int leftWidth;
+            public int rightWidth;
+            public int topHeight;
+            public int bottomHeight;
+        }
 
         protected override CreateParams CreateParams
         {
             get
             {
-                // add the drop shadow flag for automatically drawing 
-                // a drop shadow around the form 
+                m_aeroEnabled = CheckAeroEnabled();
                 CreateParams cp = base.CreateParams;
-                cp.ClassStyle |= CS_DROPSHADOW;
+                if (!m_aeroEnabled)
+                    cp.ClassStyle |= CS_DROPSHADOW;
+
                 return cp;
             }
+        }
+
+        private bool CheckAeroEnabled()
+        {
+            if (Environment.OSVersion.Version.Major >= 6)
+            {
+                int enabled = 0;
+                DwmIsCompositionEnabled(ref enabled);
+                return (enabled == 1) ? true : false;
+            }
+            return false;
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case WM_NCPAINT:                        // box shadow
+                    Console.WriteLine("H!!");
+                    if (m_aeroEnabled)
+                    {
+                        var v = 2;
+                        DwmSetWindowAttribute(this.Handle, 2, ref v, 4);
+                        MARGINS margins = new MARGINS()
+                        {
+                            bottomHeight = 2,
+                            leftWidth = 2,
+                            rightWidth = 2,
+                            topHeight = 2
+                        };
+                        DwmExtendFrameIntoClientArea(this.Handle, ref margins);
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+            base.WndProc(ref m);
         }
 
         private Task iconLoader;
@@ -92,6 +164,20 @@ namespace QuickTabs.Forms
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+            if (m_aeroEnabled)
+            {
+                var v = 2;
+                DwmSetWindowAttribute(this.Handle, 2, ref v, 4);
+                MARGINS margins = new MARGINS()
+                {
+                    bottomHeight = 2,
+                    leftWidth = 2,
+                    rightWidth = 2,
+                    topHeight = 2
+                };
+                DwmExtendFrameIntoClientArea(this.Handle, ref margins);
+
+            }
             this.Invalidate();
             checkCompleteTimer.Start();
         }
