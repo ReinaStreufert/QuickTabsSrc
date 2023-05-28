@@ -17,6 +17,7 @@ namespace QuickTabs.Controls
         public const int BoldPenWidth = 6;
         public const float SmallTextSizePx = RowHeight * 0.8F;
         public const float TwoDigitTextSizePx = RowHeight * 0.5F;
+        public const float MediumTextSizePx = RowHeight * 1.3F;
         public const int SmallTextYOffset = 14;
         public const int TwoDigitTextYOffset = 10;
         //public const int SmallTextXOffset = 14;
@@ -37,16 +38,20 @@ namespace QuickTabs.Controls
         public const int FretZeroAreaWidth = 25;
         public const int FretLineWidth = 5;
         public const int FretMarkerRadius = 10;
-        public const int MediumIconSize = 40;
+        public const int LargeIconSize = 40;
         public const int TwoDotSpacing = 60;
         public const int DotRadius = 20;
         public static readonly int[] DotPattern = new[] { 3, 0, 2, 0, 2, 0, 2, 0, 3, 1 }; // offs, [0 = 1 dot, 1 = 2 dots], ...
         public const int SectionSpacing = 50;
         public const int SeperatorLineWidth = 5;
-        public const int SmallIconSize = 35;
+        public const int MediumIconSize = 35;
+        public const int SmallIconSize = 30;
         public static int LogoPatternSpacingSmall = 200;
         public static int LogoPatternSpacingLarge = 500;
         public static readonly Size LogoPatternSize = new Size(500, 110);
         public const float LogoPatternRotation = 20;
+        public const int DropdownWidth = 400;
+        public const int DropdownRowHeight = 60;
+        public const int DropdownIconArea = 70;
     }
 }

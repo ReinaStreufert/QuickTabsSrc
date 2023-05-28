@@ -1,3 +1,6 @@
+using QuickTabs.Controls;
+using QuickTabs.Synthesization;
+
 namespace QuickTabs
 {
     internal static class Program
@@ -11,7 +14,9 @@ namespace QuickTabs
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Editor());
+            Task iconLoader = new Task(DrawingIcons.LoadAll);
+            iconLoader.Start();
+            Application.Run(new Forms.Splash(iconLoader));
         }
     }
 }

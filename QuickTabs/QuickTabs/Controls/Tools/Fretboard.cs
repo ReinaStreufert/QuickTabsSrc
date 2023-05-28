@@ -1,4 +1,5 @@
 ﻿using QuickTabs.Songwriting;
+using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace QuickTabs.Controls.Tools
             }
         }
 
-        private List<String> strings;
+        private List<String> strings = new List<String>();
         private List<Button> buttons;
         private int viewportStart = 1;
         private int viewportLength = 10;
@@ -42,12 +43,19 @@ namespace QuickTabs.Controls.Tools
             this.DoubleBuffered = true;
             noteLengthButtonsPrototype[DrawingIcons.EighthNote] = 1;
             noteLengthButtonsPrototype[DrawingIcons.QuarterNote] = 2;
+            noteLengthButtonsPrototype[DrawingIcons.DottedQuarterNote] = 3;
             noteLengthButtonsPrototype[DrawingIcons.HalfNote] = 4;
+            noteLengthButtonsPrototype[DrawingIcons.DottedHalfNote] = 6;
             noteLengthButtonsPrototype[DrawingIcons.WholeNote] = 8;
+            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = noteLengthButtonsPrototype[DrawingIcons.WholeNote] + noteLengthButtonsPrototype[DrawingIcons.WholeNote] / 2;
         }
 
         private void loadStrings()
         {
+            if (strings.Count != Song.Tab.Tuning.Count)
+            {
+                starredFrets.Clear();
+            }
             strings = new List<String>();
             if (Song == null)
             {
@@ -66,6 +74,7 @@ namespace QuickTabs.Controls.Tools
             leftButton.Icon = DrawingIcons.LeftArrow;
             leftButton.Location = new Rectangle(fretAreaWidth, 0, DrawingConstants.ButtonAreaWidth / 2, this.Height / 2);
             leftButton.Highlighted = (viewportStart != 1);
+            leftButton.Large = true;
             leftButton.OnClick += () =>
             {
                 if (viewportStart > 1)
@@ -86,6 +95,7 @@ namespace QuickTabs.Controls.Tools
             rightButton.Icon = DrawingIcons.RightArrow;
             rightButton.Location = new Rectangle(fretAreaWidth, this.Height / 2, DrawingConstants.ButtonAreaWidth / 2, this.Height / 2);
             rightButton.Highlighted = true;
+            rightButton.Large = true;
             rightButton.OnClick += () =>
             {
                 viewportStart++;
@@ -107,6 +117,7 @@ namespace QuickTabs.Controls.Tools
                 Button button = new Button();
                 button.Icon = buttonPrototype.Key;
                 button.Highlighted = false;
+                button.Large = false;
                 button.Location = new Rectangle(fretAreaWidth + DrawingConstants.ButtonAreaWidth / 2, (int)(currentNoteLengthButton * noteLengthButtonHeight), DrawingConstants.ButtonAreaWidth / 2, (int)noteLengthButtonHeight);
                 button.OnClick += () =>
                 {
@@ -154,6 +165,7 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
                 Editor.Invalidate();
+                History.PushState(Song, editor.Selection);
             }
         }
         private void updateFromSelectedBeat()
@@ -271,6 +283,7 @@ namespace QuickTabs.Controls.Tools
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+            this.Focus();
             if (editor.Selection == null)
             {
                 return;
@@ -293,6 +306,7 @@ namespace QuickTabs.Controls.Tools
                     else
                     {
                         strings[stringIndex].SelectedFret = fretIndex;
+                        AudioEngine.PlayNote(Note.FromSemitones(Song.Tab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, 0.25F);
                     }
                     updateSelectedBeat();
                 } else if (e.Button == MouseButtons.Right)
@@ -478,7 +492,14 @@ namespace QuickTabs.Controls.Tools
                             g.FillRectangle(hoverBrush, button.Location);
                         }
                         g.DrawRectangle(buttonPen, button.Location);
-                        Rectangle iconRect = new Rectangle((button.Location.X + button.Location.Width / 2) - DrawingConstants.MediumIconSize / 2, (button.Location.Y + button.Location.Height / 2) - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                        Rectangle iconRect;
+                        if (button.Large)
+                        {
+                            iconRect = new Rectangle((button.Location.X + button.Location.Width / 2) - DrawingConstants.MediumIconSize / 2, (button.Location.Y + button.Location.Height / 2) - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                        } else
+                        {
+                            iconRect = new Rectangle((button.Location.X + button.Location.Width / 2) - DrawingConstants.SmallIconSize / 2, (button.Location.Y + button.Location.Height / 2) - DrawingConstants.SmallIconSize / 2, DrawingConstants.SmallIconSize, DrawingConstants.SmallIconSize);
+                        }
                         if (button.Highlighted)
                         {
                             g.DrawImage(button.Icon[Color.White], iconRect);
@@ -506,6 +527,7 @@ namespace QuickTabs.Controls.Tools
             public MultiColorBitmap Icon { get; set; }
             public bool Hovered { get; set; } = false;
             public bool Highlighted { get; set; } = false;
+            public bool Large { get; set; } = false;
             public event Action OnClick;
 
             public void InvokeClick()

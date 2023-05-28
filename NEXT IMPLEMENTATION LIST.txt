@@ -1,0 +1,4 @@
+NEXT IMPLEMENTATION LIST
+----
+Preferences
+Advanced export plain text + fix tuning character length misalignment bug

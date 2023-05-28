@@ -1,6 +1,7 @@
 ﻿using QuickTabs.Controls.Tools;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
+using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,85 +34,131 @@ namespace QuickTabs.Controls
         private ContextSection viewSection;
         private ContextSection measureSection;
         private ContextSection selectionSection;
+        private ContextSection historySection;
+        private ContextSection playbackSection;
 
         private ContextItem removeMeasure;
         private ContextItem removeSection;
         private ContextItem addSection;
         private ContextItem paste;
+        private ContextItem undo;
+        private ContextItem redo;
+        private ContextItem redoAlternate;
 
         private List<ShortcutManager.ShortcutController> measureShortcuts = new List<ShortcutManager.ShortcutController>();
         private List<ShortcutManager.ShortcutController> selectionShortcuts = new List<ShortcutManager.ShortcutController>();
 
         private List<Beat> clipboard = null;
+        private Synthesization.TabPlayer tabPlayer = null;
         public QuickTabsContextMenu()
         {
             Logo = DrawingIcons.QuickTabsLogo;
 
+            History.StateChange += historyStateChanged;
+
             fileSection = new ContextSection();
             fileSection.SectionName = "File";
             fileSection.ToggleType = ToggleType.NotTogglable;
-            ContextItem open = new ContextItem(DrawingIcons.OpenFile);
-            open.Selected = true;
-            open.Click += openClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.O, openClick);
-            fileSection.AddItem(open);
-            ContextItem save = new ContextItem(DrawingIcons.SaveFile);
-            save.Selected = true;
-            save.Click += saveClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.S, saveClick);
-            fileSection.AddItem(save);
-            ContextItem saveAs = new ContextItem(DrawingIcons.SaveFileAs);
-            saveAs.Selected = true;
-            saveAs.Click += saveAsClick;
-            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
-            fileSection.AddItem(saveAs);
-            ContextItem export = new ContextItem(DrawingIcons.Export);
-            export.Selected = true;
-            export.Click += exportClick;
-            fileSection.AddItem(export);
-            ContextItem newFile = new ContextItem(DrawingIcons.NewFile);
+            ContextItem newFile = new ContextItem(DrawingIcons.NewFile, "New");
             newFile.Selected = true;
             newFile.Click += newClick;
             ShortcutManager.AddShortcut(Keys.Control, Keys.N, newClick);
             fileSection.AddItem(newFile);
-            ContextItem documentProperties = new ContextItem(DrawingIcons.EditDocumentProperties);
+            ContextItem open = new ContextItem(DrawingIcons.OpenFile, "Open...");
+            open.Selected = true;
+            open.Click += openClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.O, openClick);
+            fileSection.AddItem(open);
+            ContextItem save = new ContextItem(DrawingIcons.SaveFile, "Save");
+            save.Selected = true;
+            save.Click += saveClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.S, saveClick);
+            fileSection.AddItem(save);
+            ContextItem saveAs = new ContextItem(DrawingIcons.SaveFileAs, "Save as...");
+            saveAs.Selected = true;
+            saveAs.Click += saveAsClick;
+            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
+            fileSection.AddItem(saveAs);
+            ContextItem export = new ContextItem(DrawingIcons.Export, "Export plain text");
+            export.Selected = true;
+            export.Click += exportClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.E, exportClick);
+            fileSection.AddItem(export);
+            ContextItem documentProperties = new ContextItem(DrawingIcons.EditDocumentProperties, "Document properties...");
             documentProperties.Selected = true;
+            documentProperties.Click += documentPropertiesClick;
+            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.D, documentPropertiesClick);
             fileSection.AddItem(documentProperties);
             Sections.Add(fileSection);
 
             viewSection = new ContextSection();
             viewSection.SectionName = "View";
             viewSection.ToggleType = ToggleType.Togglable;
-            ContextItem fretCounts = new ContextItem(DrawingIcons.Counter);
+            ContextItem fretCounts = new ContextItem(DrawingIcons.Counter, "Fret counter");
             fretCounts.Selected = true;
             fretCounts.Click += viewFretCountClick;
             viewSection.AddItem(fretCounts);
-            ContextItem dots = new ContextItem(DrawingIcons.Dots);
+            ContextItem dots = new ContextItem(DrawingIcons.Dots, "Fret navigation dots");
             dots.Selected = true;
             dots.Click += viewDotsClick;
             viewSection.AddItem(dots);
             Sections.Add(viewSection);
 
+            historySection = new ContextSection();
+            historySection.SectionName = "History";
+            historySection.ToggleType = ToggleType.NotTogglable;
+            undo = new ContextItem(DrawingIcons.Undo, "Undo");
+            undo.Selected = false;
+            undo.Click += undoClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.Z, undoClick);
+            historySection.AddItem(undo);
+            redo = new ContextItem(DrawingIcons.Redo, "Redo");
+            redo.Selected = false;
+            redo.Click += redoClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.Y, redoClick);
+            historySection.AddItem(redo);
+            redoAlternate = new ContextItem(DrawingIcons.RedoAlternate, "Alternate redo");
+            redoAlternate.Selected = false;
+            redoAlternate.Click += redoAlternateClick;
+            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.Y, redoAlternateClick);
+            historySection.AddItem(redoAlternate);
+            Sections.Add(historySection);
+
+            playbackSection = new ContextSection();
+            playbackSection.SectionName = "Player";
+            playbackSection.ToggleType = ToggleType.NotTogglable;
+            ContextItem playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
+            playPause.Selected = true;
+            playPause.Click += playPauseClick;
+            ShortcutManager.AddShortcut(Keys.None, Keys.Space, playPauseClick);
+            playbackSection.AddItem(playPause);
+            ContextItem playbackSettings = new ContextItem(DrawingIcons.Settings, "Playback settings");
+            playbackSettings.Selected = true;
+            playbackSettings.Click += playbackSettingsClick;
+            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.P, playbackSettingsClick);
+            playbackSection.AddItem(playbackSettings);
+            Sections.Add(playbackSection);
+
             measureSection = new ContextSection();
             measureSection.SectionName = "Measure";
             measureSection.ToggleType = ToggleType.NotTogglable;
-            ContextItem addMeasure = new ContextItem(DrawingIcons.Plus);
+            ContextItem addMeasure = new ContextItem(DrawingIcons.AddMeasure, "Add measure");
             addMeasure.Selected = true;
             addMeasure.Click += addMeasureClick;
             measureSection.AddItem(addMeasure);
-            removeMeasure = new ContextItem(DrawingIcons.Minus);
+            removeMeasure = new ContextItem(DrawingIcons.RemoveMeasure, "Remove measure");
             removeMeasure.Selected = true;
             removeMeasure.Click += removeMeasureClick;
             measureSection.AddItem(removeMeasure);
-            addSection = new ContextItem(DrawingIcons.PlusSection);
+            addSection = new ContextItem(DrawingIcons.AddSection, "Add or split section");
             addSection.Selected = true;
             addSection.Click += addSectionClick;
             measureSection.AddItem(addSection);
-            removeSection = new ContextItem(DrawingIcons.MinusSection);
+            removeSection = new ContextItem(DrawingIcons.RemoveSection, "Collate section");
             removeSection.Selected = false;
             removeSection.Click += removeSectionClick;
             measureSection.AddItem(removeSection);
-            ContextItem renameSection = new ContextItem(DrawingIcons.Rename);
+            ContextItem renameSection = new ContextItem(DrawingIcons.Rename, "Rename section...");
             renameSection.Selected = true;
             renameSection.Click += renameSectionClick;
             measureSection.AddItem(renameSection);
@@ -119,52 +166,60 @@ namespace QuickTabs.Controls
             selectionSection = new ContextSection();
             selectionSection.SectionName = "Selection";
             selectionSection.ToggleType = ToggleType.NotTogglable;
-            ContextItem copy = new ContextItem(DrawingIcons.Copy);
+            ContextItem copy = new ContextItem(DrawingIcons.Copy, "Copy");
             copy.Selected = true;
             copy.Click += copyClick;
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.C, copyClick));
             selectionSection.AddItem(copy);
-            paste = new ContextItem(DrawingIcons.Paste);
+            paste = new ContextItem(DrawingIcons.Paste, "Paste");
             paste.Selected = false;
             paste.Click += pasteClick;
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.V, pasteClick));
             selectionSection.AddItem(paste);
-            ContextItem shiftLeft = new ContextItem(DrawingIcons.ShiftLeft);
+            ContextItem shiftLeft = new ContextItem(DrawingIcons.ShiftLeft, "Shift beats left");
             shiftLeft.Selected = true;
+            shiftLeft.DontCloseDropdown = true;
             shiftLeft.Click += shiftLeftClick;
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.A, shiftLeftClick));
             selectionSection.AddItem(shiftLeft);
-            ContextItem shiftRight = new ContextItem(DrawingIcons.ShiftRight);
+            ContextItem shiftRight = new ContextItem(DrawingIcons.ShiftRight, "Shift beats right");
             shiftRight.Selected = true;
+            shiftRight.DontCloseDropdown = true;
             shiftRight.Click += shiftRightClick;
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.D, shiftRightClick));
             selectionSection.AddItem(shiftRight);
-            ContextItem shiftUp = new ContextItem(DrawingIcons.ShiftUp);
+            ContextItem shiftUp = new ContextItem(DrawingIcons.ShiftUp, "Shift strings up");
             shiftUp.Selected = true;
+            shiftUp.DontCloseDropdown = true;
             shiftUp.Click += () => { shiftStrings(-1); };
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.W, () => { shiftStrings(-1); }));
             selectionSection.AddItem(shiftUp);
-            ContextItem shiftDown = new ContextItem(DrawingIcons.ShiftDown);
+            ContextItem shiftDown = new ContextItem(DrawingIcons.ShiftDown, "Shift strings down");
             shiftDown.Selected = true;
+            shiftDown.DontCloseDropdown = true;
             shiftDown.Click += () => { shiftStrings(1); };
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.S, () => { shiftStrings(1); }));
             selectionSection.AddItem(shiftDown);
-            ContextItem fretUp = new ContextItem(DrawingIcons.FretUp);
+            ContextItem fretUp = new ContextItem(DrawingIcons.Plus, "Shift frets up");
             fretUp.Selected = true;
+            fretUp.DontCloseDropdown = true;
             fretUp.Click += () => { shiftFrets(1); };
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.Oemplus, () => { shiftFrets(1); }));
             selectionSection.AddItem(fretUp);
-            ContextItem fretDown = new ContextItem(DrawingIcons.FretDown);
+            ContextItem fretDown = new ContextItem(DrawingIcons.Minus, "Shift frets down");
             fretDown.Selected = true;
+            fretDown.DontCloseDropdown = true;
             fretDown.Click += () => { shiftFrets(-1); };
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, (Keys)189, () => { shiftFrets(-1); }));
             selectionSection.AddItem(fretDown);
-            ContextItem clear = new ContextItem(DrawingIcons.Clear);
+            ContextItem clear = new ContextItem(DrawingIcons.Clear, "Clear beats");
             clear.Selected = true;
             clear.Click += clearClick;
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.Space, clearClick));
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.X, () => { copyClick(); clearClick(); }));
             selectionSection.AddItem(clear);
+
+            ShortcutManager.AddShortcut(Keys.None, Keys.X, () => { if (tabPlayer == null || !tabPlayer.IsPlaying) { AudioEngine.SilenceAll(); } });
 
             updateUI();
         }
@@ -191,7 +246,8 @@ namespace QuickTabs.Controls
                 {
                     removeSection.Selected = false;
                 }
-                if (countBeatsInSection(editor.Selection.SelectionStart) > 8)
+                int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
+                if (countBeatsInSection(editor.Selection.SelectionStart) > beatsPerMeasure)
                 {
                     removeMeasure.Selected = true;
                 } else
@@ -234,6 +290,29 @@ namespace QuickTabs.Controls
             updateUI();
             Invalidate();
         }
+        private void historyStateChanged()
+        {
+            bool changed = false;
+            if (History.CanUndo != undo.Selected)
+            {
+                changed = true;
+                undo.Selected = History.CanUndo;
+            }
+            if (History.CanRedo != redo.Selected)
+            {
+                changed = true;
+                redo.Selected = History.CanRedo;
+            }
+            if (History.CanAlternateRedo != redoAlternate.Selected)
+            {
+                changed = true;
+                redoAlternate.Selected = History.CanAlternateRedo;
+            }
+            if (changed)
+            {
+                this.Invalidate();
+            }
+        }
         private void saveClick()
         {
             FileManager.Save(Song);
@@ -254,23 +333,54 @@ namespace QuickTabs.Controls
         }
         private void openClick()
         {
+            if (!FileManager.IsSaved)
+            {
+                using (UnsavedChanges unsavedChanges = new UnsavedChanges())
+                {
+                    unsavedChanges.Verb = "open a new file";
+                    unsavedChanges.ShowDialog();
+                    if (!unsavedChanges.Continue)
+                    {
+                        return;
+                    }
+                }
+            }
             Song openedSong = FileManager.Open();
             if (openedSong == null)
             {
                 return;
             }
+            History.ClearHistory();
             Song = openedSong;
+            editor.QuietlySelect(new Selection(1, 1));
             MainForm.song = Song;
             editor.Song = Song;
             Fretboard.Song = Song;
+            Fretboard.Refresh();
             editor.Refresh();
             editor.Selection = new Selection(1, 1);
-            editor.Refresh();
-            Fretboard.Refresh();
+            History.PushState(Song, editor.Selection, false);
         }
         private void newClick()
         {
+            if (!FileManager.IsSaved)
+            {
+                using (UnsavedChanges unsavedChanges = new UnsavedChanges())
+                {
+                    unsavedChanges.Verb = "start a new tab";
+                    unsavedChanges.ShowDialog();
+                    if (!unsavedChanges.Continue)
+                    {
+                        return;
+                    }
+                }
+            }
             FileManager.New();
+            History.ClearHistory();
+            Song.Name = "Untitled tab";
+            Song.Tempo = 120;
+            Song.TimeSignature = new TimeSignature(4, 4);
+            Song.Tab.Tuning = Tuning.StandardGuitar;
             Song.Tab.SetLength(17);
             ((SectionHead)Song.Tab[0]).Name = "Untitled Section";
             for (int i = 1; i < 17; i++)
@@ -280,11 +390,12 @@ namespace QuickTabs.Controls
             editor.Selection = new Selection(1, 1);
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection, false);
         }
         private void exportClick()
         {
             PlainTextTabWriter exporter = new PlainTextTabWriter(Song.Tab);
-            string exportText = exporter.WriteTab();
+            string exportText = exporter.WriteTab(Song.TimeSignature);
             using (SaveFileDialog saveDialog = new SaveFileDialog())
             {
                 saveDialog.Filter = "Text File (*.txt)|*.txt|All Files (*.*)|*.*";
@@ -295,6 +406,109 @@ namespace QuickTabs.Controls
                     File.WriteAllText(saveDialog.FileName, exportText);
                 }
             }
+        }
+        private void documentPropertiesClick()
+        {
+            bool changed;
+            using (DocumentProperties dp = new DocumentProperties())
+            {
+                dp.Song = Song;
+                dp.ShowDialog();
+                changed = dp.ChangesSaved;
+            }
+            if (changed)
+            {
+                if (editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.Tab.Count)
+                {
+                    editor.Selection = new Selection(1, 1);
+                }
+                editor.Refresh();
+                Fretboard.Refresh();
+                History.PushState(Song, editor.Selection);
+            }
+        }
+        private void undoClick()
+        {
+            if (!History.CanUndo)
+            {
+                return;
+            }
+            Selection newSelection;
+            History.Undo(Song, out newSelection);
+            editor.QuietlySelect(newSelection);
+            Fretboard.Refresh();
+            editor.Refresh();
+            editor.Selection = newSelection;
+        }
+        private void redoClick()
+        {
+            if (!History.CanRedo)
+            {
+                return;
+            }
+            Selection newSelection;
+            History.Redo(Song, out newSelection);
+            editor.QuietlySelect(newSelection);
+            Fretboard.Refresh();
+            editor.Refresh();
+            editor.Selection = newSelection;
+        }
+        private void redoAlternateClick()
+        {
+            if (!History.CanAlternateRedo)
+            {
+                return;
+            }
+            Selection newSelection;
+            History.RedoAlternate(Song, out newSelection);
+            editor.QuietlySelect(newSelection);
+            Fretboard.Refresh();
+            editor.Refresh();
+            editor.Selection = newSelection;
+        }
+        private void playPauseClick()
+        {
+            if (tabPlayer == null || !tabPlayer.IsPlaying)
+            {
+                tabPlayer = new Synthesization.TabPlayer(Song.Tab);
+                tabPlayer.BPM = Song.Tempo;
+                if (editor.Selection == null)
+                {
+                    tabPlayer.Position = 1;
+                } else
+                {
+                    tabPlayer.Position = editor.Selection.SelectionStart;
+                }
+                tabPlayer.Start();
+                Timer t = new Timer();
+                t.Interval = 50;
+                t.Tick += (object sender, EventArgs e) =>
+                {
+                    if (tabPlayer.IsPlaying)
+                    {
+                        int playerPosition = tabPlayer.Position;
+                        if (editor.Selection == null || editor.Selection.SelectionStart != playerPosition)
+                        {
+                            editor.Selection = new Selection(tabPlayer.Position, 1);
+                            editor.Refresh();
+                        }
+                    }
+                    else
+                    {
+                        t.Stop();
+                        t.Dispose();
+                    }
+                };
+                t.Start();
+            } else
+            {
+                tabPlayer.Stop();
+            }
+            
+        }
+        private void playbackSettingsClick()
+        {
+
         }
         private int findSectionHead(int stepIndex)
         {
@@ -337,19 +551,20 @@ namespace QuickTabs.Controls
                     }
                 }
             }
+            int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
             int beatCounter = 0;
             for (int i = 0; i < stepIndex; i++)
             {
                 if (Song.Tab[i].Type == Enums.StepType.Beat)
                 {
                     beatCounter++;
-                    if (beatCounter > 7)
+                    if (beatCounter >= beatsPerMeasure)
                     {
                         beatCounter = 0;
                     }
                 }
             }
-            int beatsFromStepIndex = (8 - beatCounter);
+            int beatsFromStepIndex = (beatsPerMeasure - beatCounter);
             int result = stepIndex;
             while (beatsFromStepIndex > 0)
             {
@@ -372,41 +587,46 @@ namespace QuickTabs.Controls
         }
         private void addMeasureClick()
         {
+            int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
             int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart, true);
             if (nextMeasure >= Song.Tab.Count)
             {
-                Song.Tab.SetLength(Song.Tab.Count + 8);
+                Song.Tab.SetLength(Song.Tab.Count + beatsPerMeasure);
             } else
             {
-                Song.Tab.InsertBeats(nextMeasure, 8);
+                Song.Tab.InsertBeats(nextMeasure, beatsPerMeasure);
             }
             editor.Selection = new Selection(nextMeasure, 1);
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void removeMeasureClick()
         {
-            if (countBeatsInSection(editor.Selection.SelectionStart) > 8)
+            int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
+            if (countBeatsInSection(editor.Selection.SelectionStart) > beatsPerMeasure)
             {
-                int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart - 8, false);
-                Song.Tab.RemoveBeats(nextMeasure, 8);
-                if (nextMeasure - 8 < 0)
+                int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart - beatsPerMeasure, false);
+                Song.Tab.RemoveBeats(nextMeasure, beatsPerMeasure);
+                if (nextMeasure - beatsPerMeasure < 0)
                 {
                     editor.Selection = new Selection(nextMeasure, 1);
                 } else
                 {
-                    editor.Selection = new Selection(nextMeasure - 8, 1);
+                    editor.Selection = new Selection(nextMeasure - beatsPerMeasure, 1);
                 }
                 editor.Refresh();
                 Fretboard.Refresh();
             }
+            History.PushState(Song, editor.Selection);
         }
         private void addSectionClick()
         {
+            int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
             int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart, false);
             if (nextMeasure >= Song.Tab.Count)
             {
-                Song.Tab.SetLength(Song.Tab.Count + 9);
+                Song.Tab.SetLength(Song.Tab.Count + beatsPerMeasure + 1);
             }
             else
             {
@@ -423,6 +643,7 @@ namespace QuickTabs.Controls
             editor.Selection = new Selection(nextMeasure + 1, 1);
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void removeSectionClick()
         {
@@ -436,6 +657,7 @@ namespace QuickTabs.Controls
                 editor.Selection = new Selection(editor.Selection.SelectionStart - 1, 1);
                 editor.Refresh();
                 Fretboard.Refresh();
+                History.PushState(Song, editor.Selection);
             }
         }
         private void renameSectionClick()
@@ -448,6 +670,7 @@ namespace QuickTabs.Controls
                 head.Name = sectionNameForm.Name;
                 editor.Refresh();
             }
+            History.PushState(Song, editor.Selection);
         }
         private void viewDotsClick()
         {
@@ -541,6 +764,7 @@ namespace QuickTabs.Controls
             editor.Selection = new Selection(selection.SelectionStart, endIndex - selection.SelectionStart);
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void clearClick()
         {
@@ -554,6 +778,7 @@ namespace QuickTabs.Controls
             }
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void shiftLeftClick()
         {
@@ -591,6 +816,7 @@ namespace QuickTabs.Controls
             }
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void shiftRightClick()
         {
@@ -620,6 +846,7 @@ namespace QuickTabs.Controls
             }
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         private void shiftStrings(int additive)
         {
@@ -644,6 +871,7 @@ namespace QuickTabs.Controls
             }
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
         public void shiftFrets(int additive)
         {
@@ -668,6 +896,7 @@ namespace QuickTabs.Controls
             }
             editor.Refresh();
             Fretboard.Refresh();
+            History.PushState(Song, editor.Selection);
         }
     }
 }

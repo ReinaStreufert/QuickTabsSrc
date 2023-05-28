@@ -18,7 +18,8 @@ namespace QuickTabs
         public Editor()
         {
             InitializeComponent();
-            DrawingIcons.LoadAll();
+            //DrawingIcons.LoadAll();
+            FileManager.Initialize();
             contextMenu = new QuickTabsContextMenu();
             tabEditor = new TabEditor();
             toolMenu = new ToolMenu();
@@ -48,9 +49,28 @@ namespace QuickTabs
             contextMenu.Fretboard = fretboard;
             contextMenu.MainForm = this;
             tabEditor.Selection = new Selection(1, 1);
+            History.PushState(song, tabEditor.Selection, false);
             tabEditor.Refresh();
             tabEditor.SizeChanged += TabEditor_SizeChanged;
+            FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
+        }
+
+        private void FileManager_FileStateChange()
+        {
+            string endChar = "";
+            string joinString = "";
+            string fileString = "";
+            if (!FileManager.IsSaved)
+            {
+                endChar = "*";
+            }
+            if (FileManager.CurrentFilePath != "")
+            {
+                joinString = " - ";
+                fileString = Path.GetFileNameWithoutExtension(FileManager.CurrentFilePath);
+            }
+            this.Text = "QuickTabs" + joinString + fileString + endChar;
         }
 
         private void TabEditor_SizeChanged(object? sender, EventArgs e)
@@ -84,7 +104,7 @@ namespace QuickTabs
                 tabEditorPanel.Height = tabEditor.Height;
             }
             updateTabEditorWidth();
-            toolMenu.Location = new Point(0, this.Height - 320);
+            toolMenu.Location = new Point(0, this.Height - 350);
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
             fretboard.Size = toolMenu.Size;
@@ -109,9 +129,22 @@ namespace QuickTabs
             debugOutput.Show();*/
             ShortcutManager.ProcessShortcut(e.Modifiers, e.KeyCode);
         }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            if (!FileManager.IsSaved)
+            {
+                using (UnsavedChanges message = new UnsavedChanges())
+                {
+                    message.Verb = "exit QuickTabs";
+                    message.ShowDialog();
+                    e.Cancel = !message.Continue;
+                }
+            }
+        }
         private void updateTabPanelHeight()
         {
-            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - 160 - 320);
+            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - 160 - 350);
             updateTabEditorWidth();
         }
         private void updateTabEditorWidth()

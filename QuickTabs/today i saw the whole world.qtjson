@@ -1,17 +1,17 @@
 {
-  "name": "Untitled tab",
+  "name": "Today I saw the whole world",
   "tempo": 120,
   "ts": [
     4,
     4
   ],
   "tuning": [
-    "E",
-    "A",
-    "D",
-    "G",
-    "B",
-    "E"
+    "E2",
+    "A2",
+    "D3",
+    "G3",
+    "B3",
+    "E4"
   ],
   "steps": [
     {

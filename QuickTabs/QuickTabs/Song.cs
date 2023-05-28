@@ -27,7 +27,7 @@ namespace QuickTabs
             JArray tuningJson = new JArray();
             for (int i = Tab.Tuning.Count - 1; i >= 0; i--)
             {
-                tuningJson.Add(Tab.Tuning[i]);
+                tuningJson.Add(Tab.Tuning.GetMusicalNote(i).ToString());
             }
             songJson.Add("tuning", tuningJson);
             JArray stepsJson = new JArray();

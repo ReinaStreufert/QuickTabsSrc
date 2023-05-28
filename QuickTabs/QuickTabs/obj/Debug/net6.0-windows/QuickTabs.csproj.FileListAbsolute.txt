@@ -19,3 +19,14 @@ C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-w
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\Newtonsoft.Json.dll
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.csproj.CopyComplete
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.DebugOutputForm.resources
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.DocumentProperties.resources
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.UnsavedChanges.resources
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.Splash.resources
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Properties.Resources.resources
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.Asio.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.Core.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.Midi.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.Wasapi.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.WinForms.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\bin\Debug\net6.0-windows\NAudio.WinMM.dll

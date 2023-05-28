@@ -30,20 +30,22 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox = new System.Windows.Forms.TextBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.nameInput = new System.Windows.Forms.TextBox();
+            this.tempoInput = new System.Windows.Forms.NumericUpDown();
+            this.ts1Input = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.ts2Input = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.tuningSelectorPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
             this.saveButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            this.tuningPickerContainer = new System.Windows.Forms.Panel();
+            this.ts1DisabledLabel = new System.Windows.Forms.Label();
+            this.ts2DisabledLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.tempoInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ts1Input)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ts2Input)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -68,71 +70,72 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "Song name";
             // 
-            // textBox
+            // nameInput
             // 
-            this.textBox.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.textBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox.Font = new System.Drawing.Font("Montserrat Light", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.textBox.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.textBox.Location = new System.Drawing.Point(28, 118);
-            this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(605, 37);
-            this.textBox.TabIndex = 2;
+            this.nameInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.nameInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.nameInput.Font = new System.Drawing.Font("Montserrat Light", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.nameInput.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.nameInput.Location = new System.Drawing.Point(28, 118);
+            this.nameInput.Name = "nameInput";
+            this.nameInput.Size = new System.Drawing.Size(605, 37);
+            this.nameInput.TabIndex = 2;
             // 
-            // numericUpDown1
+            // tempoInput
             // 
-            this.numericUpDown1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.numericUpDown1.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numericUpDown1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.numericUpDown1.Increment = new decimal(new int[] {
+            this.tempoInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.tempoInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tempoInput.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.tempoInput.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.numericUpDown1.Location = new System.Drawing.Point(639, 118);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.tempoInput.Location = new System.Drawing.Point(639, 118);
+            this.tempoInput.Maximum = new decimal(new int[] {
             300,
             0,
             0,
             0});
-            this.numericUpDown1.Minimum = new decimal(new int[] {
+            this.tempoInput.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(103, 37);
-            this.numericUpDown1.TabIndex = 3;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.tempoInput.Name = "tempoInput";
+            this.tempoInput.Size = new System.Drawing.Size(103, 37);
+            this.tempoInput.TabIndex = 3;
+            this.tempoInput.Value = new decimal(new int[] {
             120,
             0,
             0,
             0});
             // 
-            // numericUpDown2
+            // ts1Input
             // 
-            this.numericUpDown2.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.numericUpDown2.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numericUpDown2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.numericUpDown2.Location = new System.Drawing.Point(748, 118);
-            this.numericUpDown2.Maximum = new decimal(new int[] {
+            this.ts1Input.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.ts1Input.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.ts1Input.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.ts1Input.Location = new System.Drawing.Point(748, 118);
+            this.ts1Input.Maximum = new decimal(new int[] {
             16,
             0,
             0,
             0});
-            this.numericUpDown2.Minimum = new decimal(new int[] {
+            this.ts1Input.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(91, 37);
-            this.numericUpDown2.TabIndex = 4;
-            this.numericUpDown2.Value = new decimal(new int[] {
+            this.ts1Input.Name = "ts1Input";
+            this.ts1Input.Size = new System.Drawing.Size(91, 37);
+            this.ts1Input.TabIndex = 4;
+            this.ts1Input.Value = new decimal(new int[] {
             4,
             0,
             0,
             0});
+            this.ts1Input.ValueChanged += new System.EventHandler(this.ts1Input_ValueChanged);
             // 
             // label3
             // 
@@ -145,30 +148,31 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "/";
             // 
-            // numericUpDown3
+            // ts2Input
             // 
-            this.numericUpDown3.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.numericUpDown3.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numericUpDown3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.numericUpDown3.Location = new System.Drawing.Point(869, 117);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
+            this.ts2Input.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.ts2Input.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.ts2Input.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.ts2Input.Location = new System.Drawing.Point(869, 117);
+            this.ts2Input.Maximum = new decimal(new int[] {
             16,
             0,
             0,
             0});
-            this.numericUpDown3.Minimum = new decimal(new int[] {
+            this.ts2Input.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(91, 37);
-            this.numericUpDown3.TabIndex = 6;
-            this.numericUpDown3.Value = new decimal(new int[] {
+            this.ts2Input.Name = "ts2Input";
+            this.ts2Input.Size = new System.Drawing.Size(91, 37);
+            this.ts2Input.TabIndex = 6;
+            this.ts2Input.Value = new decimal(new int[] {
             4,
             0,
             0,
             0});
+            this.ts2Input.ValueChanged += new System.EventHandler(this.ts2Input_ValueChanged);
             // 
             // label4
             // 
@@ -191,13 +195,6 @@
             this.label5.Size = new System.Drawing.Size(204, 33);
             this.label5.TabIndex = 8;
             this.label5.Text = "Time signature";
-            // 
-            // tuningSelectorPanel
-            // 
-            this.tuningSelectorPanel.Location = new System.Drawing.Point(24, 200);
-            this.tuningSelectorPanel.Name = "tuningSelectorPanel";
-            this.tuningSelectorPanel.Size = new System.Drawing.Size(936, 109);
-            this.tuningSelectorPanel.TabIndex = 9;
             // 
             // label6
             // 
@@ -222,6 +219,7 @@
             this.saveButton.TabIndex = 11;
             this.saveButton.Text = "Save All";
             this.saveButton.UseVisualStyleBackColor = false;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // cancelButton
             // 
@@ -235,6 +233,36 @@
             this.cancelButton.TabIndex = 12;
             this.cancelButton.Text = "Discard Changes";
             this.cancelButton.UseVisualStyleBackColor = false;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
+            // tuningPickerContainer
+            // 
+            this.tuningPickerContainer.Location = new System.Drawing.Point(28, 200);
+            this.tuningPickerContainer.Name = "tuningPickerContainer";
+            this.tuningPickerContainer.Size = new System.Drawing.Size(932, 109);
+            this.tuningPickerContainer.TabIndex = 13;
+            // 
+            // ts1DisabledLabel
+            // 
+            this.ts1DisabledLabel.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.ts1DisabledLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.ts1DisabledLabel.Location = new System.Drawing.Point(748, 117);
+            this.ts1DisabledLabel.Name = "ts1DisabledLabel";
+            this.ts1DisabledLabel.Size = new System.Drawing.Size(91, 38);
+            this.ts1DisabledLabel.TabIndex = 14;
+            this.ts1DisabledLabel.Text = "4";
+            this.ts1DisabledLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ts2DisabledLabel
+            // 
+            this.ts2DisabledLabel.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.ts2DisabledLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.ts2DisabledLabel.Location = new System.Drawing.Point(869, 117);
+            this.ts2DisabledLabel.Name = "ts2DisabledLabel";
+            this.ts2DisabledLabel.Size = new System.Drawing.Size(91, 38);
+            this.ts2DisabledLabel.TabIndex = 15;
+            this.ts2DisabledLabel.Text = "4";
+            this.ts2DisabledLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // DocumentProperties
             // 
@@ -242,27 +270,31 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(985, 398);
+            this.Controls.Add(this.ts2DisabledLabel);
+            this.Controls.Add(this.ts1DisabledLabel);
+            this.Controls.Add(this.tuningPickerContainer);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.tuningSelectorPanel);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.numericUpDown3);
+            this.Controls.Add(this.ts2Input);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.numericUpDown2);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.textBox);
+            this.Controls.Add(this.ts1Input);
+            this.Controls.Add(this.tempoInput);
+            this.Controls.Add(this.nameInput);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "DocumentProperties";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Document Properties";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tempoInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ts1Input)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ts2Input)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -272,16 +304,18 @@
 
         private Label label1;
         private Label label2;
-        private TextBox textBox;
-        private NumericUpDown numericUpDown1;
-        private NumericUpDown numericUpDown2;
+        private TextBox nameInput;
+        private NumericUpDown tempoInput;
+        private NumericUpDown ts1Input;
         private Label label3;
-        private NumericUpDown numericUpDown3;
+        private NumericUpDown ts2Input;
         private Label label4;
         private Label label5;
-        private Panel tuningSelectorPanel;
         private Label label6;
         private Button saveButton;
         private Button cancelButton;
+        private Panel tuningPickerContainer;
+        private Label ts1DisabledLabel;
+        private Label ts2DisabledLabel;
     }
 }

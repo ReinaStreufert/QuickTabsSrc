@@ -17,20 +17,21 @@ namespace QuickTabs
             sourceTab = source;
             splitSections();
         }
-        public string WriteTab()
+        public string WriteTab(TimeSignature timeSignature)
         {
             StringBuilder result = new StringBuilder();
             foreach (Section section in sections)
             {
                 result.AppendLine(section.Name);
                 result.AppendLine();
-                result.Append(writeStaff(section.Beats));
+                result.Append(writeStaff(section.Beats, timeSignature));
                 result.AppendLine();
             }
             return result.ToString();
         }
-        private string writeStaff(List<Beat> beats)
+        private string writeStaff(List<Beat> beats, TimeSignature timeSignature)
         {
+            int beatsPerMeasure = timeSignature.EighthNotesPerMeasure;
             List<StringBuilder> strings = new List<StringBuilder>();
             for (int i = 0; i < sourceTab.Tuning.Count; i++)
             {
@@ -94,7 +95,7 @@ namespace QuickTabs
                     }
                 }
                 beatCount++;
-                if (beatCount > 7)
+                if (beatCount >= beatsPerMeasure)
                 {
                     beatCount = 0;
                     foreach (StringBuilder stringBuilder in strings)

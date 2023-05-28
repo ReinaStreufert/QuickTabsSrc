@@ -11,13 +11,59 @@ namespace QuickTabs
 {
     internal static class FileManager
     {
-        public static string CurrentFilePath { get; private set; } = "";
+        private static bool isSaved = true;
+        public static bool IsSaved
+        {
+            get
+            {
+                return isSaved;
+            }
+            private set
+            {
+                bool oldValue = isSaved;
+                isSaved = value;
+                if (oldValue != value)
+                {
+                    FileStateChange?.Invoke();
+                }
+            }
+        }
+        private static string currentFilePath = "";
+        public static string CurrentFilePath
+        {
+            get
+            {
+                return currentFilePath;
+            }
+            private set
+            {
+                string oldValue = currentFilePath;
+                currentFilePath = value;
+                if (oldValue != value)
+                {
+                    FileStateChange?.Invoke();
+                }
+            }
+        }
+        public static event Action FileStateChange;
+
+        public static void Initialize()
+        {
+            History.SubstantialChange += History_SubstantialChange;
+        }
+
+        private static void History_SubstantialChange()
+        {
+            IsSaved = false;
+        }
+
         public static void Save(Song song)
         {
             if (CurrentFilePath == "")
             {
                 SaveAs(song); return;
             }
+            IsSaved = true;
             if (File.Exists(CurrentFilePath))
             {
                 File.Delete(CurrentFilePath);
@@ -27,6 +73,7 @@ namespace QuickTabs
         public static void New()
         {
             CurrentFilePath = "";
+            IsSaved = true;
         }
         public static void SaveAs(Song song)
         {
@@ -44,6 +91,7 @@ namespace QuickTabs
         }
         public static Song Open()
         {
+            string newFilePath;
             using (OpenFileDialog openDialog = new OpenFileDialog())
             {
                 openDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
@@ -52,9 +100,9 @@ namespace QuickTabs
                 {
                     return null;
                 }
-                CurrentFilePath = openDialog.FileName;
+                newFilePath = openDialog.FileName;
             }
-            string fileText = File.ReadAllText(CurrentFilePath);
+            string fileText = File.ReadAllText(newFilePath);
             JObject songJson;
             try
             {
@@ -96,14 +144,14 @@ namespace QuickTabs
             }
             if (songJson.ContainsKey("tuning") && songJson["tuning"].Type == JTokenType.Array)
             {
-                List<char> tuning = new List<char>();
+                List<string> tuning = new List<string>();
                 foreach (JToken token in songJson["tuning"])
                 {
                     if (token.Type != JTokenType.String)
                     {
                         return null;
                     }
-                    tuning.Add(token.ToString()[0]);
+                    tuning.Add(token.ToString());
                 }
                 tuning.Reverse();
                 song.Tab.Tuning = new Tuning(tuning.ToArray());
@@ -180,6 +228,8 @@ namespace QuickTabs
                     stepIndex++;
                 }
             }
+            CurrentFilePath = newFilePath;
+            IsSaved = true;
             return song;
         }
     }

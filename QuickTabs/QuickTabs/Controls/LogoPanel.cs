@@ -28,6 +28,12 @@ namespace QuickTabs.Controls
             }
         }
         private Bitmap logoPattern;
+        
+        public LogoPanel()
+        {
+            this.DoubleBuffered = true;
+        }
+
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             if (SuspendPaint)
@@ -70,6 +76,11 @@ namespace QuickTabs.Controls
                     }
                 }
             }
+        }
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            this.Focus();
         }
     }
 }
