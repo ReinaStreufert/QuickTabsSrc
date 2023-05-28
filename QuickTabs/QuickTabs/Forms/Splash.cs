@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace QuickTabs.Forms
 {
     public partial class Splash : Form
     {
-        private const int logoWidth = 480;
+        private int logoWidth = 480;
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn
@@ -110,6 +111,8 @@ namespace QuickTabs.Forms
         public Splash(Task iconLoader)
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            logoWidth = (int)(logoWidth * (this.DeviceDpi / 192.0F));
             failedLabel.Visible = false;
             startAnyway.Visible = false;
             exit.Visible = false;

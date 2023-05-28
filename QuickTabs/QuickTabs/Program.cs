@@ -1,5 +1,6 @@
 using QuickTabs.Controls;
 using QuickTabs.Synthesization;
+using System.Windows;
 
 namespace QuickTabs
 {
@@ -14,6 +15,7 @@ namespace QuickTabs
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Task iconLoader = new Task(DrawingIcons.LoadAll);
             iconLoader.Start();
             Application.Run(new Forms.Splash(iconLoader));

@@ -15,10 +15,15 @@ namespace QuickTabs
         internal Song song = new Song();
         private bool ignoreSizeEvent = false;
         private FormWindowState lastWindowState = FormWindowState.Normal;
+        private float scale;
         public Editor()
         {
             InitializeComponent();
             //DrawingIcons.LoadAll();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            scale = this.DeviceDpi / 192.0F; // scale from 192 not 96 because i designed quicktabs on a 200% scale laptop.
+            DrawingConstants.Scale(scale);
+
             FileManager.Initialize();
             contextMenu = new QuickTabsContextMenu();
             tabEditor = new TabEditor();
@@ -34,8 +39,8 @@ namespace QuickTabs
             Controls.Add(fretboard);
             Controls.Add(tabEditorPanel);
             Controls.Add(toolMenu);
-            this.Width = 1800;
-            this.Height = 1200;
+            this.Width = (int)(1800 * scale);
+            this.Height = (int)(1200 * scale);
             updateTabPanelHeight();
             song.Tab.SetLength(17);
             song.TimeSignature = new TimeSignature(4, 4);
@@ -55,7 +60,6 @@ namespace QuickTabs
             FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
         }
-
         private void FileManager_FileStateChange()
         {
             string endChar = "";
@@ -92,8 +96,8 @@ namespace QuickTabs
                 return;
             }
             contextMenu.Location = new Point(0, 0);
-            contextMenu.Size = new Size(this.ClientSize.Width, 160);
-            tabEditorPanel.Location = new Point(0, 160);
+            contextMenu.Size = new Size(this.ClientSize.Width, (int)(160 * scale));
+            tabEditorPanel.Location = new Point(0, (int)(160 * scale));
             tabEditorPanel.Width = this.ClientSize.Width;
             if (this.WindowState != lastWindowState)
             {
@@ -104,7 +108,7 @@ namespace QuickTabs
                 tabEditorPanel.Height = tabEditor.Height;
             }
             updateTabEditorWidth();
-            toolMenu.Location = new Point(0, this.Height - 350);
+            toolMenu.Location = new Point(0, this.Height - (int)(350 * scale));
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
             fretboard.Size = toolMenu.Size;
@@ -144,7 +148,7 @@ namespace QuickTabs
         }
         private void updateTabPanelHeight()
         {
-            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - 160 - 350);
+            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(160*scale) - (int)(350*scale));
             updateTabEditorWidth();
         }
         private void updateTabEditorWidth()

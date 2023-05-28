@@ -66,7 +66,7 @@ namespace QuickTabs.Controls.Tools
                 strings.Add(new String() { Index = i });
             }
             fretAreaWidth = this.Width - DrawingConstants.ButtonAreaWidth;
-            viewportLength = (int)Math.Round(fretAreaWidth / 125F);
+            viewportLength = (int)Math.Round(fretAreaWidth / DrawingConstants.TargetFretWidth);
 
             buttons = new List<Button>();
 
