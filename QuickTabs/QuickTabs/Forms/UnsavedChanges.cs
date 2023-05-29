@@ -17,6 +17,7 @@ namespace QuickTabs.Forms
         public UnsavedChanges()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         private void closeButton_Click(object sender, EventArgs e)

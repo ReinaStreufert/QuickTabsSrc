@@ -243,7 +243,7 @@
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.saveButton.Location = new System.Drawing.Point(19, 506);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(306, 46);
+            this.saveButton.Size = new System.Drawing.Size(306, 56);
             this.saveButton.TabIndex = 16;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = false;

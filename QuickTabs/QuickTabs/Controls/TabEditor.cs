@@ -357,6 +357,10 @@ namespace QuickTabs.Controls
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
             Color selectionColor = DrawingConstants.EditModeSelectionColor;
             if (PlayMode)
             {

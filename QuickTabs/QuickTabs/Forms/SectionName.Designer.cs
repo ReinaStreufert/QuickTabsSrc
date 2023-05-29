@@ -64,7 +64,7 @@
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.saveButton.Location = new System.Drawing.Point(475, 88);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(150, 46);
+            this.saveButton.Size = new System.Drawing.Size(150, 56);
             this.saveButton.TabIndex = 2;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = false;
@@ -78,7 +78,7 @@
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.cancelButton.Location = new System.Drawing.Point(319, 88);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(150, 46);
+            this.cancelButton.Size = new System.Drawing.Size(150, 56);
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = false;

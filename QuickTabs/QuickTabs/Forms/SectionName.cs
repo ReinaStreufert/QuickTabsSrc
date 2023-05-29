@@ -17,6 +17,7 @@ namespace QuickTabs.Forms
         public SectionName()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         protected override void OnShown(EventArgs e)

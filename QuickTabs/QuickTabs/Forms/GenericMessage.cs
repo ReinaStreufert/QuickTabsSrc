@@ -16,6 +16,7 @@ namespace QuickTabs.Forms
         public GenericMessage()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         protected override void OnShown(EventArgs e)

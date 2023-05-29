@@ -51,7 +51,7 @@
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.saveButton.Location = new System.Drawing.Point(650, 63);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(138, 46);
+            this.saveButton.Size = new System.Drawing.Size(138, 56);
             this.saveButton.TabIndex = 17;
             this.saveButton.Text = "OK";
             this.saveButton.UseVisualStyleBackColor = false;
@@ -62,7 +62,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(800, 123);
+            this.ClientSize = new System.Drawing.Size(800, 134);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.messageLabel);
             this.ForeColor = System.Drawing.SystemColors.ControlText;

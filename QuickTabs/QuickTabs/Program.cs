@@ -16,6 +16,7 @@ namespace QuickTabs
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetCompatibleTextRenderingDefault(false);
             Task iconLoader = new Task(DrawingIcons.LoadAll);
             iconLoader.Start();
             Application.Run(new Forms.Splash(iconLoader));

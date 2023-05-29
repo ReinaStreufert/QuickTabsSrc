@@ -42,6 +42,10 @@ namespace QuickTabs.Controls
             }
             base.OnPaintBackground(e);
             Graphics g = e.Graphics;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
             g.DrawImage(logoPattern, 0, 0);
             g.ResetTransform();
         }

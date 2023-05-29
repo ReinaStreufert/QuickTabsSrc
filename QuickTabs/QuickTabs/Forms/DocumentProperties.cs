@@ -24,6 +24,8 @@ namespace QuickTabs.Forms
         public DocumentProperties()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+
             tuningPicker = new TuningPicker();
             tuningPicker.Tuning = Songwriting.Tuning.StandardGuitar;
             tuningPicker.Location = new Point(0, 0);

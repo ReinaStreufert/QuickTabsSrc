@@ -20,6 +20,8 @@ namespace QuickTabs.Forms
         public ExportPlainText()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+
             previewBox.ReadOnly = true;
             previewBox.ScrollBars = ScrollBars.Both;
             staffStyle.SelectedIndex = 0;

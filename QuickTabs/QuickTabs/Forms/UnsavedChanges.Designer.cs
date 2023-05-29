@@ -52,7 +52,7 @@
             this.closeButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.closeButton.Location = new System.Drawing.Point(467, 89);
             this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(349, 46);
+            this.closeButton.Size = new System.Drawing.Size(349, 56);
             this.closeButton.TabIndex = 3;
             this.closeButton.Text = "Continue without saving";
             this.closeButton.UseVisualStyleBackColor = false;
@@ -66,13 +66,13 @@
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.cancelButton.Location = new System.Drawing.Point(311, 89);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(150, 46);
+            this.cancelButton.Size = new System.Drawing.Size(150, 56);
             this.cancelButton.TabIndex = 4;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = false;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // CloseWithoutSaving
+            // UnsavedChanges
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -84,7 +84,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "CloseWithoutSaving";
+            this.Name = "UnsavedChanges";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Unsaved Changes";

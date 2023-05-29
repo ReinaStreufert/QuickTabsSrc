@@ -311,6 +311,10 @@ namespace QuickTabs.Controls
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
             using (SolidBrush highlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
             using (SolidBrush textBrush = new SolidBrush(Color.White))
             using (Font font = new Font("Montserrat", DrawingConstants.MediumTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))

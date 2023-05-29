@@ -16,6 +16,7 @@ namespace QuickTabs.Forms
         public DebugOutputForm()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
         public void DebugOutputForm_OnShown(object Sender, EventArgs e)
         {
