@@ -17,10 +17,10 @@ namespace QuickTabs.Controls
         public static int PenWidth { get; private set; } = 4;
         public static int BoldPenWidth { get; private set; } = 6;
         public static float SmallTextSizePx { get; private set; } = RowHeight * 0.8F;
-        public static float TwoDigitTextSizePx { get; private set; } = RowHeight * 0.5F;
+        public static float TwoDigitTextSizePx { get; private set; } = RowHeight * 0.65F;
         public static float MediumTextSizePx { get; private set; } = RowHeight * 1.3F;
         public static int SmallTextYOffset { get; private set; } = 14;
-        public static int TwoDigitTextYOffset { get; private set; } = 10;
+        public static float FretTextXOffset { get; private set; } = -4;
         //public const int SmallTextXOffset = 14;
         public static int StringOffsetForLetters { get; private set; } = 30;
         public static int FretNotationXOffset { get; private set; } = 11;
@@ -65,7 +65,7 @@ namespace QuickTabs.Controls
                 if (field.IsLiteral) continue;
                 if (field.FieldType == typeof(int))
                 {
-                    field.SetValue(null, (int)Math.Ceiling(((int)field.GetValue(null)) * scale));
+                    field.SetValue(null, (int)Math.Ceiling(((int)field.GetValue(null)) * scale)); // using ceiling because tiny sizes should rounded UP a pixel. for bigger sizes and positions, it doesnt matter.
                 } else if (field.FieldType == typeof(float))
                 {
                     field.SetValue(null, ((float)field.GetValue(null)) * scale);

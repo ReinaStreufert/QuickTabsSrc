@@ -443,20 +443,23 @@ namespace QuickTabs.Controls
                                 foreach (Fret heldFret in beat)
                                 {
                                     int y = startY + (heldFret.String * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
-                                    g.FillRectangle(backBrush, x - DrawingConstants.StepWidth / 2, y - DrawingConstants.RowHeight / 2, DrawingConstants.StepWidth, DrawingConstants.RowHeight);
+                                    g.FillRectangle(backBrush, x - DrawingConstants.StepWidth / 2F, y - DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth, DrawingConstants.RowHeight);
                                     Font usedFont = boldFont;
-                                    //int yOffset;
                                     if (heldFret.Space > 9)
                                     {
                                         usedFont = twoDigitFont;
-                                        //yOffset = DrawingConstants.TwoDigitTextYOffset;
                                     } else
                                     {
                                         usedFont = boldFont;
-                                        //yOffset = DrawingConstants.SmallTextYOffset;
                                     }
-                                    SizeF textSize = g.MeasureString(heldFret.Space.ToString(), usedFont);
-                                    g.DrawString(heldFret.Space.ToString(), usedFont, textBrush, x - textSize.Width / 2, y - textSize.Height / 2);
+                                    string text = heldFret.Space.ToString();
+                                    // MeasureString is not accurate enough for centering on the staff. It returns slightly off values for different DPI settings while MeasureCharacterRanges seems to be off by the same *consistent* amount which is better here
+                                    StringFormat stringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
+                                    stringFormat.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, text.Length) });
+                                    Region[] charRanges = g.MeasureCharacterRanges(heldFret.Space.ToString(), usedFont, new RectangleF(0, 0, 100F, 100F), stringFormat);
+                                    RectangleF lastCharBounds = charRanges.Last().GetBounds(g);
+                                    SizeF textSize = new SizeF(lastCharBounds.Right, lastCharBounds.Bottom);
+                                    g.DrawString(text, usedFont, textBrush, x - textSize.Width / 2 + DrawingConstants.FretTextXOffset, y - textSize.Height / 2);
                                 }
                                 break;
                             case UIStepType.Comment:
@@ -467,11 +470,11 @@ namespace QuickTabs.Controls
                         }
                         if (uiStep.Highlighted)
                         {
-                            g.FillRectangle(higlightBrush, x - DrawingConstants.StepWidth / 2, startY + DrawingConstants.RowHeight / 2, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
+                            g.FillRectangle(higlightBrush, x - DrawingConstants.StepWidth / 2F - 1, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
                         }
                         if (uiStep.Selected)
                         {
-                            g.FillRectangle(selectionBrush, x - DrawingConstants.StepWidth / 2, startY + DrawingConstants.RowHeight / 2, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
+                            g.FillRectangle(selectionBrush, x - DrawingConstants.StepWidth / 2F - 1, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
                         }
                     }
                     // spaces
