@@ -9,6 +9,8 @@ namespace QuickTabs.Controls
     internal partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection viewSection;
+        private bool compactContext = false;
+        private bool largeFretboard = false;
 
         private void setupViewSection()
         {
@@ -23,6 +25,14 @@ namespace QuickTabs.Controls
             dots.Selected = true;
             dots.Click += viewDotsClick;
             viewSection.AddItem(dots);
+            ContextItem compactContextMenu = new ContextItem(DrawingIcons.CompactContextMenu, "Compact context menu");
+            compactContextMenu.Selected = false;
+            compactContextMenu.Click += compactContextClick;
+            viewSection.AddItem(compactContextMenu);
+            ContextItem largeFretboard = new ContextItem(DrawingIcons.LargeFretboard, "Large fretboard");
+            largeFretboard.Selected = false;
+            largeFretboard.Click += largeFretboardClick;
+            viewSection.AddItem(largeFretboard);
             Sections.Add(viewSection);
         }
         private void viewDotsClick()
@@ -34,6 +44,38 @@ namespace QuickTabs.Controls
         {
             Fretboard.ViewFretCounter = !Fretboard.ViewFretCounter;
             Fretboard.Refresh();
+        }
+        private void compactContextClick()
+        {
+            if (compactContext)
+            {
+                compactContext = false;
+                this.Logo = DrawingIcons.QuickTabsLogo;
+                this.Style = Enums.ContextMenuStyle.Responsive;
+                MainForm.ContextMenuHeight = 160;
+                MainForm.RefreshLayout();
+            } else
+            {
+                compactContext = true;
+                this.Logo = null;
+                this.Style = Enums.ContextMenuStyle.Collapsed;
+                MainForm.ContextMenuHeight = 80;
+                MainForm.RefreshLayout();
+            }
+        }
+        private void largeFretboardClick()
+        {
+            if (largeFretboard)
+            {
+                largeFretboard = false;
+                MainForm.FretboardHeight = 350;
+                MainForm.RefreshLayout();
+            } else
+            {
+                largeFretboard = true;
+                MainForm.FretboardHeight = 440;
+                MainForm.RefreshLayout();
+            }
         }
     }
 }

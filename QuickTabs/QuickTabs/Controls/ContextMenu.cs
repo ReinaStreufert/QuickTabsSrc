@@ -54,24 +54,38 @@ namespace QuickTabs.Controls
                         toolTip.Hide(this);
                     }
                 }
+            } else
+            {
+                absoluteStyle = Style;
             }
             int startY = DrawingConstants.LargeMargin;
             int x = DrawingConstants.MediumMargin;
             int usableHeight = this.Height - DrawingConstants.LargeMargin * 2;
-            Image image = new Image();
-            image.Bitmap = Logo;
-            int imageWidth = (int)(Logo.Size.Width * (usableHeight / (float)Logo.Size.Height));
-            image.Location = new Rectangle(x, startY, imageWidth, usableHeight);
-            x += imageWidth;
-            ui.Add(image);
+            if (Logo != null)
+            {
+                Image image = new Image();
+                image.Bitmap = Logo;
+                int imageWidth = (int)(Logo.Size.Width * (usableHeight / (float)Logo.Size.Height));
+                image.Location = new Rectangle(x, startY, imageWidth, usableHeight);
+                x += imageWidth;
+                ui.Add(image);
+            }
             if (absoluteStyle == ContextMenuStyle.ShowAllItems)
             {
+                bool first = true;
                 foreach (ContextSection section in Sections)
                 {
-                    Seperator seperator = new Seperator();
-                    seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
-                    ui.Add(seperator);
-                    x += DrawingConstants.SectionSpacing;
+                    if (!first || Logo != null)
+                    {
+                        Seperator seperator = new Seperator();
+                        seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
+                        ui.Add(seperator);
+                        x += DrawingConstants.SectionSpacing;
+                    }
+                    if (first)
+                    {
+                        first = false;
+                    }
                     Label label = new Label();
                     label.Text = section.SectionName;
                     label.Location = new Rectangle(x, startY, 0, 0);
@@ -94,10 +108,13 @@ namespace QuickTabs.Controls
                 }
             } else if (absoluteStyle == ContextMenuStyle.Collapsed)
             {
-                Seperator seperator = new Seperator();
-                seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
-                ui.Add(seperator);
-                x += DrawingConstants.SectionSpacing;
+                if (Logo != null)
+                {
+                    Seperator seperator = new Seperator();
+                    seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
+                    ui.Add(seperator);
+                    x += DrawingConstants.SectionSpacing;
+                }
                 int centerY = startY + usableHeight / 2;
                 foreach (ContextSection section in Sections)
                 {
@@ -131,7 +148,11 @@ namespace QuickTabs.Controls
         {
             int fullWidth = DrawingConstants.MediumMargin;
             int usableHeight = this.Height - DrawingConstants.LargeMargin * 2;
-            int imageWidth = (int)(Logo.Size.Width * (usableHeight / (float)Logo.Size.Height));
+            int imageWidth = 0; 
+            if (Logo != null)
+            {
+                imageWidth = (int)(Logo.Size.Width * (usableHeight / (float)Logo.Size.Height));
+            }
             int buttonSize = (int)(usableHeight - DrawingConstants.SmallTextSizePx);
 
             fullWidth += imageWidth;
@@ -139,6 +160,10 @@ namespace QuickTabs.Controls
             {
                 fullWidth += DrawingConstants.SectionSpacing;
                 fullWidth += section.Count() * buttonSize;
+            }
+            if (Logo == null)
+            {
+                fullWidth -= DrawingConstants.SectionSpacing;
             }
             return fullWidth;
         }

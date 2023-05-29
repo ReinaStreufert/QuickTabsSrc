@@ -6,6 +6,9 @@ namespace QuickTabs
 {
     public partial class Editor : Form
     {
+        public int ContextMenuHeight { get; set; } = 160;
+        public int FretboardHeight { get; set; } = 350;
+
         private QuickTabsContextMenu contextMenu;
         private LogoPanel tabEditorPanel;
         private Controls.TabEditor tabEditor;
@@ -21,7 +24,7 @@ namespace QuickTabs
             InitializeComponent();
             //DrawingIcons.LoadAll();
             this.AutoScaleMode = AutoScaleMode.Dpi;
-            scale = this.DeviceDpi / 192.0F; // scale from 192 not 96 because i designed quicktabs on a 200% scale laptop.
+            scale = this.DeviceDpi / 192.0F; // scale from 192 not 96 because i designed quicktabs on a 200% scale laptop like some kind of idiot.
             DrawingConstants.Scale(scale);
 
             FileManager.Initialize();
@@ -60,6 +63,11 @@ namespace QuickTabs
             FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
         }
+        public void RefreshLayout()
+        {
+            OnSizeChanged(null);
+            updateTabPanelHeight();
+        }
         private void FileManager_FileStateChange()
         {
             string endChar = "";
@@ -96,8 +104,8 @@ namespace QuickTabs
                 return;
             }
             contextMenu.Location = new Point(0, 0);
-            contextMenu.Size = new Size(this.ClientSize.Width, (int)(160 * scale));
-            tabEditorPanel.Location = new Point(0, (int)(160 * scale));
+            contextMenu.Size = new Size(this.ClientSize.Width, (int)(ContextMenuHeight * scale));
+            tabEditorPanel.Location = new Point(0, (int)(ContextMenuHeight * scale));
             tabEditorPanel.Width = this.ClientSize.Width;
             if (this.WindowState != lastWindowState)
             {
@@ -108,7 +116,7 @@ namespace QuickTabs
                 tabEditorPanel.Height = tabEditor.Height;
             }
             updateTabEditorWidth();
-            toolMenu.Location = new Point(0, this.Height - (int)(350 * scale));
+            toolMenu.Location = new Point(0, this.Height - (int)(FretboardHeight * scale));
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
             fretboard.Size = toolMenu.Size;
@@ -148,7 +156,7 @@ namespace QuickTabs
         }
         private void updateTabPanelHeight()
         {
-            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(160*scale) - (int)(350*scale));
+            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(ContextMenuHeight*scale) - (int)(FretboardHeight*scale));
             updateTabEditorWidth();
         }
         private void updateTabEditorWidth()

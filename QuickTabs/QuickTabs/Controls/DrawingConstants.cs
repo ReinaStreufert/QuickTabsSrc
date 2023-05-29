@@ -54,7 +54,7 @@ namespace QuickTabs.Controls
         public static int LogoPatternSpacingLarge { get; private set; } = 500;
         public static Size LogoPatternSize { get; private set; } = new Size(500, 110);
         public const float LogoPatternRotation = 20;
-        public static int DropdownWidth { get; private set; } = 400;
+        public static int DropdownWidth { get; private set; } = 450;
         public static int DropdownRowHeight { get; private set; } = 60;
         public static int DropdownIconArea { get; private set; } = 70;
         public static void Scale(float scale)

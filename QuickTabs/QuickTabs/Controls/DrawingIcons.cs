@@ -39,6 +39,8 @@ namespace QuickTabs.Controls
 
         public static MultiColorBitmap Dots { get; private set; } = null;
         public static MultiColorBitmap Counter { get; private set; } = null;
+        public static MultiColorBitmap CompactContextMenu { get; private set; } = null;
+        public static MultiColorBitmap LargeFretboard { get; private set; } = null;
 
         public static MultiColorBitmap AddMeasure { get; private set; } = null;
         public static MultiColorBitmap RemoveMeasure { get; private set; } = null;
@@ -95,6 +97,8 @@ namespace QuickTabs.Controls
 
             Dots = loadIcon("circle-small", Color.White, DrawingConstants.FadedGray);
             Counter = loadIcon("numeric", Color.White, DrawingConstants.FadedGray);
+            CompactContextMenu = loadIcon("arrow-expand-up", Color.White, DrawingConstants.FadedGray);
+            LargeFretboard = loadIcon("arrow-expand-vertical", Color.White, DrawingConstants.FadedGray);
 
             AddMeasure = loadIcon("plus-box-outline", Color.White);
             RemoveMeasure = loadIcon("minus-box-outline", Color.White, DrawingConstants.FadedGray);
