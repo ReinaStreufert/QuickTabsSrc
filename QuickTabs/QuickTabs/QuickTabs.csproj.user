@@ -10,6 +10,24 @@
     <Compile Update="Controls\LogoPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Controls\QTContextMenuSections\FileSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\QTContextMenuSections\HistorySection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\QTContextMenuSections\MeasureSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\QTContextMenuSections\PlaybackSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\QTContextMenuSections\SelectionSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\QTContextMenuSections\ViewSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Controls\QuickTabsContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>

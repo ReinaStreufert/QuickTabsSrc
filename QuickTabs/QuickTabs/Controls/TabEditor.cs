@@ -22,7 +22,23 @@ namespace QuickTabs.Controls
             }
             set
             {
+                if (PlayMode)
+                {
+                    return;
+                }
                 selection = value;
+                SelectionChanged?.Invoke();
+            }
+        }
+        public int PlayCursor
+        {
+            get
+            {
+                return selection.SelectionStart;
+            }
+            set
+            {
+                selection = new Selection(value, 1);
                 SelectionChanged?.Invoke();
             }
         }
@@ -44,6 +60,10 @@ namespace QuickTabs.Controls
             this.DoubleBuffered = true;
             this.BackColor = Color.FromArgb(0x22, 0x22, 0x22);
             this.ForeColor = Color.FromArgb(0x60, 0x60, 0x60);
+            ShortcutManager.AddShortcut(Keys.None, Keys.A, () => { setRelativeSelection(-1); });
+            ShortcutManager.AddShortcut(Keys.None, Keys.D, () => { setRelativeSelection(1); });
+            ShortcutManager.AddShortcut(Keys.Shift, Keys.A, () => { lengthenSelection(-1); });
+            ShortcutManager.AddShortcut(Keys.Shift, Keys.D, () => { lengthenSelection(1); });
         }
 
         private void updateUI()
@@ -182,6 +202,103 @@ namespace QuickTabs.Controls
                 }
             }
             throw new IndexOutOfRangeException();
+        }
+        private void setRelativeSelection(int direction)
+        {
+            if (PlayMode)
+            {
+                return;
+            }
+            if (selection != null)
+            {
+                int newStart;
+                if (direction < 0)
+                {
+                    newStart = selection.SelectionStart - 1;
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart--;
+                        if (newStart < 0)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else if (direction > 0)
+                {
+                    newStart = selection.SelectionStart + selection.SelectionLength;
+                    if (newStart >= Song.Tab.Count)
+                    {
+                        return;
+                    }
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart++;
+                        if (newStart >= Song.Tab.Count)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                Selection = new Selection(newStart, 1);
+                updateUI();
+                this.Invalidate();
+                History.PushState(Song, selection, false);
+            }
+        }
+        private void lengthenSelection(int direction)
+        {
+            if (PlayMode)
+            {
+                return;
+            }
+            if (selection != null)
+            {
+                int newStart;
+                int newLength = selection.SelectionLength + 1;
+                if (direction < 0)
+                {
+                    newStart = selection.SelectionStart - 1;
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart--;
+                        if (newStart < 0)
+                        {
+                            return;
+                        }
+                    }
+                    newLength = (selection.SelectionStart + selection.SelectionLength - 1) - newStart + 1;
+                }
+                else if (direction > 0)
+                {
+                    newStart = selection.SelectionStart;
+                    newLength = selection.SelectionLength + 1;
+                    if (newStart + newLength - 1 >= Song.Tab.Count)
+                    {
+                        return;
+                    }
+                    while (Song.Tab[newStart + newLength - 1].Type != Enums.StepType.Beat)
+                    {
+                        newLength++;
+                        if (newStart + newLength - 1 >= Song.Tab.Count)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                Selection = new Selection(newStart, newLength);
+                updateUI();
+                this.Invalidate();
+                History.PushState(Song, Selection, false);
+            }
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
