@@ -420,7 +420,7 @@ namespace QuickTabs.Controls
                                         foreach (int heldString in hold.Key)
                                         {
                                             int y = startY + (heldString * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
-                                            g.DrawLine(forePen, x - DrawingConstants.StepWidth / 2, y, x + DrawingConstants.StepWidth / 2, y);
+                                            g.DrawLine(forePen, x - DrawingConstants.StepWidth / 2F, y, x + DrawingConstants.StepWidth / 2F, y);
                                         }
                                         currentlyHeldStrings[hold.Key]--;
                                         if (currentlyHeldStrings[hold.Key] <= 0)

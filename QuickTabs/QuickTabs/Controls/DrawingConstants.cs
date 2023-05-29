@@ -65,7 +65,7 @@ namespace QuickTabs.Controls
                 if (field.IsLiteral) continue;
                 if (field.FieldType == typeof(int))
                 {
-                    field.SetValue(null, (int)(((int)field.GetValue(null)) * scale));
+                    field.SetValue(null, (int)Math.Ceiling(((int)field.GetValue(null)) * scale));
                 } else if (field.FieldType == typeof(float))
                 {
                     field.SetValue(null, ((float)field.GetValue(null)) * scale);
