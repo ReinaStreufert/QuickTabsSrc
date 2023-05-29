@@ -9,6 +9,7 @@ namespace QuickTabs.Synthesization
 {
     internal static class AudioEngine
     {
+        public static bool Enabled { get; set; } = false;
         public static event Action Tick;
 
         private static AsioOut asioOut;
@@ -17,31 +18,71 @@ namespace QuickTabs.Synthesization
 
         public static void Initialize()
         {
-            asioOut = new AsioOut();
-            oscillator = new SquareOscillator();
-            asioOut.Init(oscillator);
-            oscillator.InitializeBuffer(asioOut.FramesPerBuffer);
-            oscillator.BeforeBufferFill += Oscillator_BeforeBufferFill;
-            asioOut.Play();
+            if (AsioOut.isSupported())
+            {
+                asioOut = new AsioOut();
+                oscillator = new SquareOscillator();
+                asioOut.Init(oscillator);
+                oscillator.InitializeBuffer(asioOut.FramesPerBuffer);
+                oscillator.BeforeBufferFill += Oscillator_BeforeBufferFill;
+                asioOut.Play();
+                Enabled = true;
+            }
         }
 
         public static void Stop()
         {
+            if (!Enabled)
+            {
+                return;
+            }
             asioOut.Stop();
             asioOut.Dispose();
         }
 
-        public static void PlayNote(Songwriting.Note note, int duration, float volume)
+        public static void PlayNote(Songwriting.Note note, int duration, float volume, bool simulatePluck = true)
         {
+            if (!Enabled)
+            {
+                return;
+            }
             PlayingNote playingNote = new PlayingNote();
             playingNote.DurationMs = duration;
             playingNote.StartTime = DateTime.Now;
-            playingNote.Frequency = oscillator.AddFrequency(NoteUtils.GetMidiNoteFrequency(note.MidiNumber), volume);
+            if (simulatePluck)
+            {
+                float startFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber + 4);
+                float endFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber);
+                playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, volume, volume / 4F, duration);
+            } else
+            {
+                playingNote.Frequency = oscillator.AddFrequency(NoteUtils.GetMidiNoteFrequency(note.MidiNumber), volume);
+            }
+            
+            playingNotes.Add(playingNote);
+        }
+
+        public static void PlayKick(Songwriting.Note note, int duration, float volume)
+        {
+            if (!Enabled)
+            {
+                return;
+            }
+            PlayingNote playingNote = new PlayingNote();
+            playingNote.DurationMs = duration;
+            playingNote.StartTime = DateTime.Now;
+            float startFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber + 12);
+            float endFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber);
+            playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, volume, 0F, 50F);
             playingNotes.Add(playingNote);
         }
 
         public static void SilenceAll()
         {
+            if (!Enabled)
+            {
+                return;
+            }
             playingNotes.Clear();
             oscillator.ClearAllFrequencies();
         }

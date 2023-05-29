@@ -89,7 +89,7 @@ namespace QuickTabs
                 }
             }
         }
-        public static Song Open()
+        public static Song Open(out bool failed)
         {
             string newFilePath;
             using (OpenFileDialog openDialog = new OpenFileDialog())
@@ -98,6 +98,7 @@ namespace QuickTabs
                 DialogResult openResult = openDialog.ShowDialog();
                 if (openResult != DialogResult.OK)
                 {
+                    failed = false;
                     return null;
                 }
                 newFilePath = openDialog.FileName;
@@ -109,6 +110,7 @@ namespace QuickTabs
                 songJson = JObject.Parse(fileText);
             } catch
             {
+                failed = true;
                 return null;
             }
             Song song = new Song();
@@ -117,6 +119,7 @@ namespace QuickTabs
                 song.Name = songJson["name"].ToString();
             } else
             {
+                failed = true;
                 return null;
             }
             if (songJson.ContainsKey("tempo") && songJson["tempo"].Type == JTokenType.Integer)
@@ -125,6 +128,7 @@ namespace QuickTabs
             }
             else
             {
+                failed = true;
                 return null;
             }
             if (songJson.ContainsKey("ts") && songJson["ts"].Type == JTokenType.Array)
@@ -135,11 +139,13 @@ namespace QuickTabs
                     song.TimeSignature = new Songwriting.TimeSignature((int)tsJson[0], (int)tsJson[1]);
                 } else
                 {
+                    failed = true;
                     return null;
                 }
             }
             else
             {
+                failed = true;
                 return null;
             }
             if (songJson.ContainsKey("tuning") && songJson["tuning"].Type == JTokenType.Array)
@@ -149,6 +155,7 @@ namespace QuickTabs
                 {
                     if (token.Type != JTokenType.String)
                     {
+                        failed = true;
                         return null;
                     }
                     tuning.Add(token.ToString());
@@ -157,6 +164,7 @@ namespace QuickTabs
                 song.Tab.Tuning = new Tuning(tuning.ToArray());
             } else
             {
+                failed = true;
                 return null;
             }
             if (songJson.ContainsKey("steps") && songJson["steps"].Type == JTokenType.Array)
@@ -167,6 +175,7 @@ namespace QuickTabs
                 {
                     if (token.Type != JTokenType.Object)
                     {
+                        failed = true;
                         return null;
                     }
                     JObject stepJson = (JObject)token;
@@ -182,6 +191,7 @@ namespace QuickTabs
                                     sectionHead.Name = stepJson["name"].ToString();
                                 } else
                                 {
+                                    failed = true;
                                     return null;
                                 }
                                 song.Tab[stepIndex] = sectionHead;
@@ -194,6 +204,7 @@ namespace QuickTabs
                                 }
                                 else
                                 {
+                                    failed = true;
                                     return null;
                                 }
                                 if (stepJson.ContainsKey("states") && stepJson["states"].Type == JTokenType.Array)
@@ -201,6 +212,7 @@ namespace QuickTabs
                                     JArray statesJson = (JArray)stepJson["states"];
                                     if (statesJson.Count != song.Tab.Tuning.Count)
                                     {
+                                        failed = true;
                                         return null;
                                     }
                                     for (int stringIndex = 0; stringIndex < statesJson.Count; stringIndex++)
@@ -214,15 +226,18 @@ namespace QuickTabs
                                 }
                                 else
                                 {
+                                    failed = true;
                                     return null;
                                 }
                                 song.Tab[stepIndex] = beat;
                                 break;
                             default:
+                                failed = true;
                                 return null;
                         }
                     } else
                     {
+                        failed = true;
                         return null;
                     }
                     stepIndex++;
@@ -230,6 +245,7 @@ namespace QuickTabs
             }
             CurrentFilePath = newFilePath;
             IsSaved = true;
+            failed = false;
             return song;
         }
     }

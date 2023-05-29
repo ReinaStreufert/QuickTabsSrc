@@ -23,6 +23,19 @@ namespace QuickTabs.Synthesization
             frequencies.Add(frequencyTracker);
             return frequencyTracker;
         }
+        public PlayingFrequency AddFrequency(float startFrequency, float endFrequency, float pitchEnvelopeDuration, float startVolume, float endVolume, float volumeEnvelopeDuration)
+        {
+            FrequencyTracker frequencyTracker = new FrequencyTracker();
+            frequencyTracker.Enveloped = true;
+            frequencyTracker.Frequency = startFrequency;
+            frequencyTracker.FrequencyEnd = endFrequency;
+            frequencyTracker.Volume = startVolume;
+            frequencyTracker.VolumeEnd = endVolume;
+            frequencyTracker.FrequencyEnvelopeSampleDuration = (int)(WaveFormat.SampleRate * (pitchEnvelopeDuration / 1000F));
+            frequencyTracker.VolumeEnvelopeSampleDuration = (int)(WaveFormat.SampleRate * (volumeEnvelopeDuration / 1000F));
+            frequencies.Add(frequencyTracker);
+            return frequencyTracker;
+        }
         public void ClearFrequency(PlayingFrequency frequency)
         {
             frequencies.Remove((FrequencyTracker)frequency);
@@ -60,22 +73,57 @@ namespace QuickTabs.Synthesization
             float sample = 0F;
             foreach (FrequencyTracker frequencyTracker in frequencies)
             {
-                if (frequencyTracker == null) // one time it crashed with a null reference exception on the next if statement and i was never able to reproduce it. i think its a threading thing :/ for now im just putting this here (until it inevitably happens again somewhere else and i find the root problem)
+                if (frequencyTracker.Enveloped)
                 {
-                    continue;
-                }
-                if (frequencyTracker.CurrentlyOutputting)
+                    float volume;
+                    if (frequencyTracker.EnvelopeSamplesWritten >= frequencyTracker.VolumeEnvelopeSampleDuration)
+                    {
+                        volume = frequencyTracker.VolumeEnd;
+                    } else
+                    {
+                        volume = interpolate(frequencyTracker.Volume, frequencyTracker.VolumeEnd, (float)frequencyTracker.EnvelopeSamplesWritten / frequencyTracker.VolumeEnvelopeSampleDuration);
+                    }
+                    float pitch;
+                    if (frequencyTracker.EnvelopeSamplesWritten >= frequencyTracker.FrequencyEnvelopeSampleDuration)
+                    {
+                        pitch = frequencyTracker.FrequencyEnd;
+                    }
+                    else
+                    {
+                        pitch = interpolate(frequencyTracker.Frequency, frequencyTracker.FrequencyEnd, (float)frequencyTracker.EnvelopeSamplesWritten / frequencyTracker.FrequencyEnvelopeSampleDuration);
+                    }
+                    int samplesPerOscillation = (int)Math.Round(WaveFormat.SampleRate / pitch / 2);
+                    frequencyTracker.EnvelopeSamplesWritten++;
+                    if (frequencyTracker.CurrentlyOutputting)
+                    {
+                        sample += volume;
+                    }
+                    frequencyTracker.OutputtedSinceLastSwitch++;
+                    if (frequencyTracker.OutputtedSinceLastSwitch >= samplesPerOscillation)
+                    {
+                        frequencyTracker.OutputtedSinceLastSwitch = 0;
+                        frequencyTracker.CurrentlyOutputting = !frequencyTracker.CurrentlyOutputting;
+                    }
+                } else
                 {
-                    sample += frequencyTracker.Volume;
-                }
-                frequencyTracker.OutputtedSinceLastSwitch++;
-                if (frequencyTracker.OutputtedSinceLastSwitch >= frequencyTracker.SamplesPerOscillation)
-                {
-                    frequencyTracker.OutputtedSinceLastSwitch = 0;
-                    frequencyTracker.CurrentlyOutputting = !frequencyTracker.CurrentlyOutputting;
+                    if (frequencyTracker.CurrentlyOutputting)
+                    {
+                        sample += frequencyTracker.Volume;
+                    }
+                    frequencyTracker.OutputtedSinceLastSwitch++;
+                    if (frequencyTracker.OutputtedSinceLastSwitch >= frequencyTracker.SamplesPerOscillation)
+                    {
+                        frequencyTracker.OutputtedSinceLastSwitch = 0;
+                        frequencyTracker.CurrentlyOutputting = !frequencyTracker.CurrentlyOutputting;
+                    }
                 }
             }
             return sample;
+        }
+
+        private float interpolate(float start, float end, float x)
+        {
+            return start + (end - start) * x;
         }
 
         public abstract class PlayingFrequency { }
@@ -83,10 +131,16 @@ namespace QuickTabs.Synthesization
         private class FrequencyTracker : PlayingFrequency
         {
             public float Frequency = 0;
+            public float Volume = 0F;
+            public bool Enveloped = false;
+            public float FrequencyEnd;
+            public float VolumeEnd;
+            public int FrequencyEnvelopeSampleDuration;
+            public int VolumeEnvelopeSampleDuration;
+            public int EnvelopeSamplesWritten = 0;
             public int SamplesPerOscillation = 0;
             public int OutputtedSinceLastSwitch = 0;
             public bool CurrentlyOutputting = true;
-            public float Volume = 0F;
         }
     }
 }

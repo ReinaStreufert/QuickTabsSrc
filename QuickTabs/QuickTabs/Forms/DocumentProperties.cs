@@ -40,10 +40,10 @@ namespace QuickTabs.Forms
             {
                 ts1DisabledLabel.Visible = false;
                 ts2DisabledLabel.Visible = false;
+                oldts2Value = Song.TimeSignature.T2;
                 ts1Input.Value = Song.TimeSignature.T1;
                 ts2Input.Value = Song.TimeSignature.T2;
                 tsChanged = false;
-                oldts2Value = Song.TimeSignature.T2;
             } else
             {
                 ts1Input.Visible = false;

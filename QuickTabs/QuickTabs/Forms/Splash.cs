@@ -17,7 +17,7 @@ namespace QuickTabs.Forms
 {
     public partial class Splash : Form
     {
-        private int logoWidth = 480;
+        private int logoWidth = 550;
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn

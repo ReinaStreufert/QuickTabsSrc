@@ -1,4 +1,4 @@
 NEXT IMPLEMENTATION LIST
 ----
+Asio not installed handling*
 Preferences
-Advanced export plain text + fix tuning character length misalignment bug

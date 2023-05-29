@@ -25,6 +25,12 @@
     <Compile Update="Controls\TuningPicker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Forms\ExportPlainText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\GenericMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\Splash.cs">
       <SubType>Form</SubType>
     </Compile>

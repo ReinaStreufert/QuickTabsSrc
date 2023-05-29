@@ -84,6 +84,11 @@ namespace QuickTabs.Controls
                         int buttonSize = (int)(usableHeight - DrawingConstants.SmallTextSizePx);
                         button.Location = new Rectangle(x, startY + (int)DrawingConstants.SmallTextSizePx, buttonSize, buttonSize);
                         x += buttonSize;
+                        if (hoveredButton != null && item == hoveredButton.ContextItem)
+                        {
+                            button.Hovered = true;
+                            hoveredButton = button;
+                        }
                         ui.Add(button);
                     }
                 }
@@ -103,6 +108,11 @@ namespace QuickTabs.Controls
                         textSize = TextRenderer.MeasureText(section.SectionName, font);
                     Size collapsedSectionSize = new Size(textSize.Width + DrawingConstants.MediumMargin, this.Height);
                     collapsedSection.Location = new Rectangle(x, centerY - collapsedSectionSize.Height / 2, collapsedSectionSize.Width, collapsedSectionSize.Height);
+                    if (hoveredSection != null && section == hoveredSection.Section)
+                    {
+                        collapsedSection.Hovered = true;
+                        hoveredSection = collapsedSection;
+                    }
                     x += collapsedSectionSize.Width;
                     ui.Add(collapsedSection);
                     if (selectedSection != null && selectedSection.Section == section)
@@ -145,6 +155,7 @@ namespace QuickTabs.Controls
             base.OnMouseMove(e);
             if (absoluteStyle == ContextMenuStyle.ShowAllItems)
             {
+                Button oldHoveredButton = hoveredButton;
                 if (hoveredButton != null)
                 {
                     hoveredButton.Hovered = false;
@@ -169,8 +180,13 @@ namespace QuickTabs.Controls
                     toolTipLocation = null;
                     toolTip.Hide(this);
                 }
+                if (oldHoveredButton != hoveredButton)
+                {
+                    this.Invalidate();
+                }
             } else if (absoluteStyle == ContextMenuStyle.Collapsed)
             {
+                CollapsedSection oldHoveredSection = hoveredSection;
                 if (hoveredSection != null)
                 {
                     hoveredSection.Hovered = false;
@@ -190,8 +206,11 @@ namespace QuickTabs.Controls
                         break;
                     }
                 }
+                if (oldHoveredSection != hoveredSection)
+                {
+                    this.Invalidate();
+                }
             }
-            this.Invalidate();
         }
 
         protected override void OnMouseLeave(EventArgs e)

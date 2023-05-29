@@ -31,19 +31,7 @@ namespace QuickTabs.Controls
             selection = newSelection;
         }
         public event Action SelectionChanged;
-        private Color selectionColor = Color.FromArgb(0x77, 0xFF, 0xFF, 0xFF);
-        public Color SelectionColor
-        {
-            get
-            {
-                return selectionColor;
-            }
-            set
-            {
-                selectionColor = value;
-                this.Invalidate();
-            }
-        }
+        public bool PlayMode { get; set; } = false;
 
         private List<UIRow> tabUI = new List<UIRow>();
         private UIStep currentlyHighlighted = null;
@@ -198,6 +186,10 @@ namespace QuickTabs.Controls
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+            if (PlayMode)
+            {
+                return;
+            }
 
             UIStep uiStep;
             if (e.X < 0 || e.Y < 0)
@@ -250,6 +242,10 @@ namespace QuickTabs.Controls
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+            if (PlayMode)
+            {
+                return;
+            }
             selectionStartPoint = e.Location;
             oldSelection = selection;
             mouseDown = true;
@@ -259,6 +255,10 @@ namespace QuickTabs.Controls
         {
             base.OnMouseUp(e);
             mouseDown = false;
+            if (PlayMode)
+            {
+                return;
+            }
             if (updateSelectionFromPoints(selectionStartPoint, e.Location))
             {
                 this.Invalidate();
@@ -357,9 +357,14 @@ namespace QuickTabs.Controls
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            Color selectionColor = DrawingConstants.EditModeSelectionColor;
+            if (PlayMode)
+            {
+                selectionColor = DrawingConstants.PlayModeSelectionColor;
+            }
             using (SolidBrush backBrush = new SolidBrush(BackColor))
             using (SolidBrush higlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
-            using (SolidBrush selectionBrush = new SolidBrush(SelectionColor))
+            using (SolidBrush selectionBrush = new SolidBrush(selectionColor))
             using (SolidBrush textBrush = new SolidBrush(Color.White))
             using (Pen backPen = new Pen(Color.White, DrawingConstants.PenWidth))
             using (Pen forePen = new Pen(DrawingConstants.HighlightBlue, DrawingConstants.BoldPenWidth))

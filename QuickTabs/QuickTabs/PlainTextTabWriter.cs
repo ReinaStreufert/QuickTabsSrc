@@ -1,4 +1,5 @@
-﻿using QuickTabs.Songwriting;
+﻿using QuickTabs.Enums;
+using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,34 +10,140 @@ namespace QuickTabs
 {
     internal class PlainTextTabWriter
     {
-        private Tab sourceTab;
+        public StaffWriter StaffWriter { get; set; } = new QuickTabsStyleStaffWriter();
+        public TabMetadataComponents IncludedMetadata { get; set; } = TabMetadataComponents.None;
+        public int MeasureWrap { get; set; } = 0; // 0 = dont wrap, otherwise value is max measures per line
+
+        private Song source;
         private List<Section> sections = new List<Section>();
 
-        public PlainTextTabWriter(Tab source)
+        public PlainTextTabWriter(Song source)
         {
-            sourceTab = source;
-            splitSections();
+            this.source = source;
         }
-        public string WriteTab(TimeSignature timeSignature)
+        public string WriteTab()
         {
+            splitSections();
             StringBuilder result = new StringBuilder();
+            if (IncludedMetadata != TabMetadataComponents.None)
+            {
+                if (IncludedMetadata.HasFlag(TabMetadataComponents.Name))
+                {
+                    result.AppendLine(source.Name);
+                }
+                if (IncludedMetadata.HasFlag(TabMetadataComponents.Tempo))
+                {
+                    result.Append("Tempo: ");
+                    result.Append(source.Tempo.ToString());
+                    result.AppendLine(" BPM");
+                }
+                if (IncludedMetadata.HasFlag(TabMetadataComponents.TimeSignature))
+                {
+                    result.Append("Time signature: ");
+                    result.Append(source.TimeSignature.T1.ToString());
+                    result.Append(" / ");
+                    result.AppendLine(source.TimeSignature.T2.ToString());
+                }
+                if (IncludedMetadata.HasFlag(TabMetadataComponents.ExactTuning))
+                {
+                    result.Append("Tuning:");
+                    for (int i = source.Tab.Tuning.Count - 1; i >= 0; i--)
+                    {
+                        result.Append(" ");
+                        result.Append(source.Tab.Tuning.GetMusicalNote(i).ToString());
+                    }
+                    result.AppendLine();
+                }
+                result.AppendLine();
+            }
             foreach (Section section in sections)
             {
-                result.AppendLine(section.Name);
-                result.AppendLine();
-                result.Append(writeStaff(section.Beats, timeSignature));
+                if (section.Name != "")
+                {
+                    result.Append("Section: ");
+                    result.AppendLine(section.Name);
+                }
+                result.Append(StaffWriter.WriteStaff(section.Beats, source.TimeSignature, source.Tab.Tuning));
                 result.AppendLine();
             }
             return result.ToString();
         }
-        private string writeStaff(List<Beat> beats, TimeSignature timeSignature)
+        private void splitSections()
+        {
+            sections.Clear();
+
+            int beatsPerMeasure = source.TimeSignature.EighthNotesPerMeasure;
+            int beatCount = 0;
+            int measureCount = 0;
+
+            Section currentSection = new Section();
+            Tab sourceTab = source.Tab;
+            for (int i = 0; i < sourceTab.Count; i++)
+            {
+                if (sourceTab[i].Type == Enums.StepType.SectionHead)
+                {
+                    SectionHead sectionHead = (SectionHead)sourceTab[i];
+                    if (currentSection.Beats.Count == 0)
+                    {
+                        currentSection.Name = sectionHead.Name;
+                    } else
+                    {
+                        sections.Add(currentSection);
+                        currentSection = new Section();
+                        currentSection.Name = sectionHead.Name;
+                        beatCount = 0;
+                        measureCount = 0;
+                    }
+                } else if (sourceTab[i].Type == Enums.StepType.Beat)
+                {
+                    currentSection.Beats.Add((Beat)sourceTab[i]);
+                    if (MeasureWrap > 0)
+                    {
+                        beatCount++;
+                        if (beatCount >= beatsPerMeasure)
+                        {
+                            beatCount = 0;
+                            measureCount++;
+                            if (measureCount >= MeasureWrap)
+                            {
+                                measureCount = 0;
+                                sections.Add(currentSection);
+                                currentSection = new Section();
+                                currentSection.Name = "";
+                            }
+                        }
+                    }
+                }
+            }
+            if (currentSection.Beats.Count > 0)
+            {
+                sections.Add(currentSection);
+            }
+        }
+        private class Section
+        {
+            public string Name { get; set; }
+            public List<Beat> Beats { get; set; } = new List<Beat>();
+        }
+    }
+    internal abstract class StaffWriter
+    {
+        public abstract string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning);
+    }
+    internal class QuickTabsStyleStaffWriter : StaffWriter
+    {
+        public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
             int beatsPerMeasure = timeSignature.EighthNotesPerMeasure;
             List<StringBuilder> strings = new List<StringBuilder>();
-            for (int i = 0; i < sourceTab.Tuning.Count; i++)
+            for (int i = 0; i < tuning.Count; i++)
             {
                 strings.Add(new StringBuilder());
-                strings[i].Append(sourceTab.Tuning[i]);
+                if (tuning[i].Length == 1)
+                {
+                    strings[i].Append(' ');
+                }
+                strings[i].Append(tuning[i]);
                 strings[i].Append('|');
             }
             int beatCount = 0;
@@ -74,7 +181,8 @@ namespace QuickTabs
                         if (holds[i] > 0)
                         {
                             strings[i].Append('>');
-                        } else
+                        }
+                        else
                         {
                             strings[i].Append('-');
                         }
@@ -111,34 +219,59 @@ namespace QuickTabs
             }
             return result.ToString();
         }
-        private void splitSections()
+    }
+    internal class StandardStyleStaffWriter : StaffWriter
+    {
+        public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
-            Section currentSection = new Section();
-            for (int i = 0; i < sourceTab.Count; i++)
+            int beatsPerMeasure = timeSignature.EighthNotesPerMeasure;
+            List<StringBuilder> strings = new List<StringBuilder>();
+            for (int i = 0; i < tuning.Count; i++)
             {
-                if (sourceTab[i].Type == Enums.StepType.SectionHead)
+                strings.Add(new StringBuilder());
+                if (tuning[i].Length == 1)
                 {
-                    SectionHead sectionHead = (SectionHead)sourceTab[i];
-                    if (currentSection.Beats.Count == 0)
+                    strings[i].Append(' ');
+                }
+                strings[i].Append(tuning[i]);
+                strings[i].Append('|');
+            }
+            int beatCount = 0;
+            foreach (Beat beat in beats)
+            {
+                bool[] stringsSet = new bool[strings.Count];
+                foreach (Fret fret in beat)
+                {
+                    stringsSet[fret.String] = true;
+                    strings[fret.String].Append(fret.Space.ToString());
+                    if (fret.Space < 10)
                     {
-                        currentSection.Name = sectionHead.Name;
-                    } else
-                    {
-                        sections.Add(currentSection);
-                        currentSection = new Section();
-                        currentSection.Name = sectionHead.Name;
+                        strings[fret.String].Append("-");
                     }
-                } else if (sourceTab[i].Type == Enums.StepType.Beat)
+                }
+                for (int i = 0; i < stringsSet.Length; i++)
                 {
-                    currentSection.Beats.Add((Beat)sourceTab[i]);
+                    if (!stringsSet[i])
+                    {
+                        strings[i].Append("--");
+                    }
+                }
+                beatCount++;
+                if (beatCount >= beatsPerMeasure)
+                {
+                    beatCount = 0;
+                    foreach (StringBuilder stringBuilder in strings)
+                    {
+                        stringBuilder.Append('|');
+                    }
                 }
             }
-            sections.Add(currentSection);
-        }
-        private class Section
-        {
-            public string Name { get; set; }
-            public List<Beat> Beats { get; set; } = new List<Beat>();
+            StringBuilder result = new StringBuilder();
+            foreach (StringBuilder stringBuilder in strings)
+            {
+                result.AppendLine(stringBuilder.ToString());
+            }
+            return result.ToString();
         }
     }
 }

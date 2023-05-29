@@ -76,7 +76,8 @@ namespace QuickTabs.Songwriting
             }
             if (steps.Count > length)
             {
-                steps.RemoveRange(length - 1, steps.Count - length);
+                int remove = steps.Count - length;
+                steps.RemoveRange(steps.Count - remove, remove);
             }
         }
 

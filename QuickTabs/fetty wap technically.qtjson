@@ -1,5 +1,5 @@
 {
-  "name": "Untitled tab",
+  "name": "Fetty wap!!!",
   "tempo": 120,
   "ts": [
     4,
@@ -20,11 +20,11 @@
     },
     {
       "type": "b",
-      "length": 3,
+      "length": 2,
       "states": [
-        null,
-        null,
-        null,
+        3,
+        5,
+        5,
         null,
         3,
         null
@@ -32,7 +32,7 @@
     },
     {
       "type": "b",
-      "length": 6,
+      "length": 2,
       "states": [
         null,
         null,
@@ -44,7 +44,7 @@
     },
     {
       "type": "b",
-      "length": 4,
+      "length": 1,
       "states": [
         null,
         null,
@@ -56,47 +56,35 @@
     },
     {
       "type": "b",
-      "length": 4,
+      "length": 2,
       "states": [
-        null,
-        5,
-        null,
-        null,
+        2,
         3,
+        4,
+        null,
+        2,
         null
       ]
     },
     {
       "type": "b",
-      "length": 1,
+      "length": 2,
       "states": [
         null,
         null,
         null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
+        4,
         null,
         null
       ]
     },
     {
       "type": "b",
-      "length": 1,
+      "length": 2,
       "states": [
         null,
         null,
-        null,
+        4,
         null,
         null,
         null
@@ -108,7 +96,19 @@
       "states": [
         null,
         null,
-        5,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        4,
         null,
         null,
         null
@@ -116,47 +116,11 @@
     },
     {
       "type": "b",
-      "length": 3,
+      "length": 2,
       "states": [
-        null,
-        null,
-        null,
-        null,
         7,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 6,
-      "states": [
-        null,
-        null,
-        null,
-        9,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 4,
-      "states": [
-        null,
-        null,
-        9,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 4,
-      "states": [
-        null,
         8,
-        null,
+        9,
         null,
         7,
         null
@@ -164,43 +128,19 @@
     },
     {
       "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
       "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        9,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
       "states": [
         null,
         null,
@@ -212,83 +152,35 @@
     },
     {
       "type": "b",
-      "length": 3,
+      "length": 2,
       "states": [
+        10,
+        12,
+        12,
         null,
-        null,
-        null,
-        null,
-        5,
+        10,
         null
       ]
     },
     {
       "type": "b",
-      "length": 6,
+      "length": 2,
       "states": [
         null,
         null,
         null,
-        7,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 4,
-      "states": [
-        null,
-        null,
-        7,
-        null,
+        12,
         null,
         null
       ]
     },
     {
       "type": "b",
-      "length": 4,
-      "states": [
-        null,
-        7,
-        null,
-        null,
-        5,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
+      "length": 2,
       "states": [
         null,
         null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
+        12,
         null,
         null,
         null
@@ -300,7 +192,19 @@
       "states": [
         null,
         null,
-        7,
+        null,
+        12,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        12,
         null,
         null,
         null
@@ -308,83 +212,71 @@
     },
     {
       "type": "b",
-      "length": 3,
+      "length": 2,
       "states": [
+        3,
+        5,
+        5,
         null,
-        null,
-        null,
-        null,
-        0,
+        3,
         null
       ]
     },
     {
       "type": "b",
-      "length": 6,
+      "length": 2,
       "states": [
         null,
         null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        5,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        2,
+        3,
+        4,
         null,
         2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
         null,
         null
       ]
     },
     {
       "type": "b",
-      "length": 4,
+      "length": 2,
       "states": [
         null,
         null,
-        2,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 4,
-      "states": [
-        null,
-        1,
-        null,
-        null,
-        0,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "type": "b",
-      "length": 1,
-      "states": [
-        null,
-        null,
-        null,
+        4,
         null,
         null,
         null
@@ -396,7 +288,115 @@
       "states": [
         null,
         null,
-        2,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        4,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        7,
+        8,
+        9,
+        null,
+        7,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        9,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        9,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        10,
+        12,
+        12,
+        null,
+        10,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        12,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        12,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        12,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        12,
         null,
         null,
         null

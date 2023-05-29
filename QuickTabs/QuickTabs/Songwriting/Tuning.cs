@@ -8,7 +8,7 @@ namespace QuickTabs.Songwriting
 {
     internal struct Tuning
     {
-        public static readonly Tuning StandardGuitar = new Tuning(new Note(NoteValue.E, NoteType.Natural, 4), new Note(NoteValue.B, NoteType.Natural, 3), new Note(NoteValue.G, NoteType.Natural, 3), new Note(NoteValue.D, NoteType.Natural, 3), new Note(NoteValue.A, NoteType.Natural, 2), new Note(NoteValue.E, NoteType.Natural, 2));
+        public static readonly Tuning StandardGuitar = new Tuning("E4", "B3", "G3", "D3", "A2", "E2");
         public static readonly Tuning StandardUke = new Tuning("A4", "E4", "C4", "G4");
         public static readonly Tuning StandardBass = new Tuning("G2", "D2", "A1", "E1");
 

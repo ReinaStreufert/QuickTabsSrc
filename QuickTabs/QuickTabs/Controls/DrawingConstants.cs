@@ -33,6 +33,8 @@ namespace QuickTabs.Controls
         public static readonly Color ButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
         public static readonly Color StarColor = Color.FromArgb(0xe7, 0x70, 0x00);
         public static readonly Color LogoPatternColor = Color.FromArgb(0x30, 0x30, 0x30);
+        public static readonly Color EditModeSelectionColor = Color.FromArgb(0x77, 0xFF, 0xFF, 0xFF);
+        public static readonly Color PlayModeSelectionColor = Color.FromArgb(0x77, 0xD8, 0xFF, 0x29);
         public static int ButtonOutlineWidth { get; private set; } = 3;
         public static int ButtonAreaWidth { get; private set; } = 150;
         public static float TargetFretWidth { get; private set; } = 125F;

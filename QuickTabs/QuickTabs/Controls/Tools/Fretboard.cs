@@ -124,6 +124,13 @@ namespace QuickTabs.Controls.Tools
                     noteLength = buttonPrototype.Value;
                     updateSelectedBeat();
                     updateNoteLengthButtons();
+                    if (editor.Selection.SelectionLength == 1)
+                    {
+                        BeatPlayer beatPlayer = new BeatPlayer((Beat)(Song.Tab[editor.Selection.SelectionStart]));
+                        beatPlayer.BPM = Song.Tempo;
+                        beatPlayer.Tuning = Song.Tab.Tuning;
+                        beatPlayer.Start();
+                    }
                     this.Invalidate();
                 };
                 noteLengthButtons[buttonPrototype.Value] = button;
@@ -148,10 +155,12 @@ namespace QuickTabs.Controls.Tools
 
         private void updateSelectedBeat()
         {
+            bool updateMade = false;
+            // update first beat in selection with current fret inputs
             if (Song.Tab[Editor.Selection.SelectionStart].Type == Enums.StepType.Beat)
             {
                 Beat beat = (Beat)Song.Tab[Editor.Selection.SelectionStart];
-                beat.NoteLength = noteLength;
+                //beat.NoteLength = noteLength;
                 Fret[] selectedFrets = beat.ToArray();
                 foreach (Fret fret in selectedFrets)
                 {
@@ -164,6 +173,20 @@ namespace QuickTabs.Controls.Tools
                         beat[new Fret(s.Index, s.SelectedFret)] = true;
                     }
                 }
+                updateMade = true;
+            }
+            // update entire selection with correct note length values
+            for (int i = Editor.Selection.SelectionStart; i < Editor.Selection.SelectionStart + Editor.Selection.SelectionLength; i++)
+            {
+                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                {
+                    Beat beat = (Beat)Song.Tab[i];
+                    beat.NoteLength = noteLength;
+                    updateMade = true;
+                }
+            }
+            if (updateMade)
+            {
                 Editor.Invalidate();
                 History.PushState(Song, editor.Selection);
             }
@@ -186,11 +209,16 @@ namespace QuickTabs.Controls.Tools
                 {
                     s.SelectedFret = -1;
                 }
+                bool beatEmpty = true;
                 foreach (Fret fret in beat)
                 {
+                    beatEmpty = false;
                     strings[fret.String].SelectedFret = fret.Space;
                 }
-                noteLength = beat.NoteLength;
+                if (!beatEmpty)
+                {
+                    noteLength = beat.NoteLength;
+                }
                 updateNoteLengthButtons();
                 this.Invalidate();
             }
@@ -306,7 +334,18 @@ namespace QuickTabs.Controls.Tools
                     else
                     {
                         strings[stringIndex].SelectedFret = fretIndex;
-                        AudioEngine.PlayNote(Note.FromSemitones(Song.Tab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, 0.25F);
+                        if (AudioEngine.Enabled)
+                        {
+                            Action action = null;
+                            action = () =>
+                            {
+                                //AudioEngine.PlayKick(new Note("C4"), 100, 0.25F);
+                                AudioEngine.PlayNote(Note.FromSemitones(Song.Tab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, 0.25F);
+                                AudioEngine.Tick -= action;
+                            };
+                            // why not just call playnote directly? threading errors!!! thats why.
+                            AudioEngine.Tick += action;
+                        }
                     }
                     updateSelectedBeat();
                 } else if (e.Button == MouseButtons.Right)

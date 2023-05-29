@@ -32,9 +32,10 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap OpenFile { get; private set; } = null;
         public static MultiColorBitmap SaveFile { get; private set; } = null;
         public static MultiColorBitmap SaveFileAs { get; private set; } = null;
-        public static MultiColorBitmap NewFile { get; private set; } = null;
+        public static MultiColorBitmap Reload { get; private set; } = null;
         public static MultiColorBitmap EditDocumentProperties { get; private set; } = null;
         public static MultiColorBitmap Export { get; private set; } = null;
+        public static MultiColorBitmap Settings { get; private set; } = null;
 
         public static MultiColorBitmap Dots { get; private set; } = null;
         public static MultiColorBitmap Counter { get; private set; } = null;
@@ -60,7 +61,9 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap RedoAlternate { get; private set; } = null;
 
         public static MultiColorBitmap PlayPause { get; private set; } = null;
-        public static MultiColorBitmap Settings { get; private set; } = null;
+        public static MultiColorBitmap Repeat { get; private set; } = null;
+        public static MultiColorBitmap Metronome { get; private set; } = null;
+        public static MultiColorBitmap Download { get; private set; } = null;
 
         public static MultiColorBitmap Check { get; private set; } = null;
 
@@ -85,9 +88,10 @@ namespace QuickTabs.Controls
             OpenFile = loadIcon("folder-open-outline", Color.White);
             SaveFile = loadIcon("content-save-all-outline", Color.White);
             SaveFileAs = loadIcon("content-save-plus-outline", Color.White);
-            NewFile = loadIcon("reload", Color.White);
+            Reload = loadIcon("reload", Color.White);
             EditDocumentProperties = loadIcon("pencil-outline", Color.White);
             Export = loadIcon("export", Color.White);
+            Settings = loadIcon("cog", Color.White);
 
             Dots = loadIcon("circle-small", Color.White, DrawingConstants.FadedGray);
             Counter = loadIcon("numeric", Color.White, DrawingConstants.FadedGray);
@@ -113,7 +117,9 @@ namespace QuickTabs.Controls
             RedoAlternate = loadIcon("redo-variant", Color.White, DrawingConstants.FadedGray);
 
             PlayPause = loadIcon("play-pause", Color.White, DrawingConstants.FadedGray);
-            Settings = loadIcon("cog", Color.White);
+            Repeat = loadIcon("repeat", Color.White, DrawingConstants.FadedGray);
+            Metronome = loadIcon("metronome", Color.White, DrawingConstants.FadedGray);
+            Download = loadIcon("download-box", Color.White);
 
             Check = loadIcon("check", Color.White);
 

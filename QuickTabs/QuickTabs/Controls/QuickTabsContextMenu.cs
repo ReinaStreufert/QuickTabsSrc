@@ -44,6 +44,9 @@ namespace QuickTabs.Controls
         private ContextItem undo;
         private ContextItem redo;
         private ContextItem redoAlternate;
+        private ContextItem playPause;
+        private ContextItem repeat;
+        private ContextItem metronome;
 
         private List<ShortcutManager.ShortcutController> measureShortcuts = new List<ShortcutManager.ShortcutController>();
         private List<ShortcutManager.ShortcutController> selectionShortcuts = new List<ShortcutManager.ShortcutController>();
@@ -59,7 +62,7 @@ namespace QuickTabs.Controls
             fileSection = new ContextSection();
             fileSection.SectionName = "File";
             fileSection.ToggleType = ToggleType.NotTogglable;
-            ContextItem newFile = new ContextItem(DrawingIcons.NewFile, "New");
+            ContextItem newFile = new ContextItem(DrawingIcons.Reload, "New");
             newFile.Selected = true;
             newFile.Click += newClick;
             ShortcutManager.AddShortcut(Keys.Control, Keys.N, newClick);
@@ -79,7 +82,7 @@ namespace QuickTabs.Controls
             saveAs.Click += saveAsClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
             fileSection.AddItem(saveAs);
-            ContextItem export = new ContextItem(DrawingIcons.Export, "Export plain text");
+            ContextItem export = new ContextItem(DrawingIcons.Export, "Export plain text...");
             export.Selected = true;
             export.Click += exportClick;
             ShortcutManager.AddShortcut(Keys.Control, Keys.E, exportClick);
@@ -126,17 +129,32 @@ namespace QuickTabs.Controls
 
             playbackSection = new ContextSection();
             playbackSection.SectionName = "Player";
-            playbackSection.ToggleType = ToggleType.NotTogglable;
-            ContextItem playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
-            playPause.Selected = true;
-            playPause.Click += playPauseClick;
-            ShortcutManager.AddShortcut(Keys.None, Keys.Space, playPauseClick);
-            playbackSection.AddItem(playPause);
-            ContextItem playbackSettings = new ContextItem(DrawingIcons.Settings, "Playback settings");
-            playbackSettings.Selected = true;
-            playbackSettings.Click += playbackSettingsClick;
-            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.P, playbackSettingsClick);
-            playbackSection.AddItem(playbackSettings);
+            if (AudioEngine.Enabled)
+            {
+                playbackSection.ToggleType = ToggleType.Togglable;
+                playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
+                playPause.Selected = false;
+                playPause.Click += () => { playPauseClick(false); };
+                ShortcutManager.AddShortcut(Keys.None, Keys.Space, () => { playPauseClick(true); });
+                playbackSection.AddItem(playPause);
+                repeat = new ContextItem(DrawingIcons.Repeat, "Repeat");
+                repeat.Selected = false;
+                repeat.Click += repeatClick;
+                playbackSection.AddItem(repeat);
+                metronome = new ContextItem(DrawingIcons.Metronome, "Metronome");
+                metronome.Selected = false;
+                metronome.Click += metronomeClick;
+                playbackSection.AddItem(metronome);
+            } else
+            {
+                playbackSection.ToggleType = ToggleType.NotTogglable;
+                ContextItem downloadAsio = new ContextItem(DrawingIcons.Download, "Install ASIO driver...");
+                downloadAsio.Selected = true;
+                playbackSection.AddItem(downloadAsio);
+                ContextItem recheckAsio = new ContextItem(DrawingIcons.Reload, "Check for driver again...");
+                recheckAsio.Selected = true;
+                playbackSection.AddItem(recheckAsio);
+            }
             Sections.Add(playbackSection);
 
             measureSection = new ContextSection();
@@ -180,46 +198,50 @@ namespace QuickTabs.Controls
             shiftLeft.Selected = true;
             shiftLeft.DontCloseDropdown = true;
             shiftLeft.Click += shiftLeftClick;
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.A, shiftLeftClick));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, Keys.A, shiftLeftClick));
             selectionSection.AddItem(shiftLeft);
             ContextItem shiftRight = new ContextItem(DrawingIcons.ShiftRight, "Shift beats right");
             shiftRight.Selected = true;
             shiftRight.DontCloseDropdown = true;
             shiftRight.Click += shiftRightClick;
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.D, shiftRightClick));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, Keys.D, shiftRightClick));
             selectionSection.AddItem(shiftRight);
             ContextItem shiftUp = new ContextItem(DrawingIcons.ShiftUp, "Shift strings up");
             shiftUp.Selected = true;
             shiftUp.DontCloseDropdown = true;
             shiftUp.Click += () => { shiftStrings(-1); };
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.W, () => { shiftStrings(-1); }));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, Keys.W, () => { shiftStrings(-1); }));
             selectionSection.AddItem(shiftUp);
             ContextItem shiftDown = new ContextItem(DrawingIcons.ShiftDown, "Shift strings down");
             shiftDown.Selected = true;
             shiftDown.DontCloseDropdown = true;
             shiftDown.Click += () => { shiftStrings(1); };
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.S, () => { shiftStrings(1); }));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, Keys.S, () => { shiftStrings(1); }));
             selectionSection.AddItem(shiftDown);
             ContextItem fretUp = new ContextItem(DrawingIcons.Plus, "Shift frets up");
             fretUp.Selected = true;
             fretUp.DontCloseDropdown = true;
             fretUp.Click += () => { shiftFrets(1); };
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.Oemplus, () => { shiftFrets(1); }));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, Keys.Oemplus, () => { shiftFrets(1); }));
             selectionSection.AddItem(fretUp);
             ContextItem fretDown = new ContextItem(DrawingIcons.Minus, "Shift frets down");
             fretDown.Selected = true;
             fretDown.DontCloseDropdown = true;
             fretDown.Click += () => { shiftFrets(-1); };
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, (Keys)189, () => { shiftFrets(-1); }));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Alt, (Keys)189, () => { shiftFrets(-1); }));
             selectionSection.AddItem(fretDown);
             ContextItem clear = new ContextItem(DrawingIcons.Clear, "Clear beats");
             clear.Selected = true;
             clear.Click += clearClick;
-            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.Space, clearClick));
+            selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.None, Keys.Delete, clearClick));
             selectionShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.X, () => { copyClick(); clearClick(); }));
             selectionSection.AddItem(clear);
 
-            ShortcutManager.AddShortcut(Keys.None, Keys.X, () => { if (tabPlayer == null || !tabPlayer.IsPlaying) { AudioEngine.SilenceAll(); } });
+            ShortcutManager.AddShortcut(Keys.None, Keys.X, silencePressed);
+            ShortcutManager.AddShortcut(Keys.None, Keys.A, () => { setRelativeSelection(-1); });
+            ShortcutManager.AddShortcut(Keys.None, Keys.D, () => { setRelativeSelection(1); });
+            ShortcutManager.AddShortcut(Keys.Shift, Keys.A, () => { lengthenSelection(-1); });
+            ShortcutManager.AddShortcut(Keys.Shift, Keys.D, () => { lengthenSelection(1); });
 
             updateUI();
         }
@@ -345,12 +367,26 @@ namespace QuickTabs.Controls
                     }
                 }
             }
-            Song openedSong = FileManager.Open();
+            bool failed;
+            Song openedSong = FileManager.Open(out failed);
             if (openedSong == null)
             {
+                if (failed)
+                {
+                    using (GenericMessage errMessage = new GenericMessage())
+                    {
+                        errMessage.Text = "Could not open file";
+                        errMessage.Message = "File format was not valid qtjson";
+                        errMessage.ShowDialog(MainForm);
+                    }
+                }
                 return;
             }
             History.ClearHistory();
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                tabPlayer.Stop();
+            }
             Song = openedSong;
             editor.QuietlySelect(new Selection(1, 1));
             MainForm.song = Song;
@@ -377,6 +413,10 @@ namespace QuickTabs.Controls
             }
             FileManager.New();
             History.ClearHistory();
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                tabPlayer.Stop();
+            }
             Song.Name = "Untitled tab";
             Song.Tempo = 120;
             Song.TimeSignature = new TimeSignature(4, 4);
@@ -394,7 +434,7 @@ namespace QuickTabs.Controls
         }
         private void exportClick()
         {
-            PlainTextTabWriter exporter = new PlainTextTabWriter(Song.Tab);
+            /*PlainTextTabWriter exporter = new PlainTextTabWriter(Song.Tab);
             string exportText = exporter.WriteTab(Song.TimeSignature);
             using (SaveFileDialog saveDialog = new SaveFileDialog())
             {
@@ -405,6 +445,11 @@ namespace QuickTabs.Controls
                 {
                     File.WriteAllText(saveDialog.FileName, exportText);
                 }
+            }*/
+            using (ExportPlainText exportPlainText = new ExportPlainText())
+            {
+                exportPlainText.Song = Song;
+                exportPlainText.ShowDialog();
             }
         }
         private void documentPropertiesClick()
@@ -466,12 +511,15 @@ namespace QuickTabs.Controls
             editor.Refresh();
             editor.Selection = newSelection;
         }
-        private void playPauseClick()
+        private void playPauseClick(bool fromShortcut) // this whole fromShortcut bullshit is because if you click the button directly, ContextMenu will already toggle it after this gets called. but if this is called from the shortcut, it will not.
         {
             if (tabPlayer == null || !tabPlayer.IsPlaying)
             {
                 tabPlayer = new Synthesization.TabPlayer(Song.Tab);
                 tabPlayer.BPM = Song.Tempo;
+                tabPlayer.Loop = repeat.Selected;
+                tabPlayer.MetronomeTimeSignature = Song.TimeSignature;
+                tabPlayer.Metronome = metronome.Selected;
                 if (editor.Selection == null)
                 {
                     tabPlayer.Position = 1;
@@ -479,6 +527,7 @@ namespace QuickTabs.Controls
                 {
                     tabPlayer.Position = editor.Selection.SelectionStart;
                 }
+                editor.PlayMode = true;
                 tabPlayer.Start();
                 Timer t = new Timer();
                 t.Interval = 50;
@@ -495,20 +544,49 @@ namespace QuickTabs.Controls
                     }
                     else
                     {
+                        if (playPause.Selected)
+                        {
+                            playPause.Selected = false;
+                            this.Invalidate();
+                        }
+                        if (editor.PlayMode)
+                        {
+                            editor.PlayMode = false;
+                            editor.Invalidate();
+                        }
                         t.Stop();
                         t.Dispose();
                     }
                 };
                 t.Start();
+                if (fromShortcut && !playPause.Selected)
+                {
+                    playPause.Selected = true;
+                    this.Invalidate();
+                }
             } else
             {
                 tabPlayer.Stop();
+                if (fromShortcut && playPause.Selected)
+                {
+                    playPause.Selected = false;
+                    this.Invalidate();
+                }
             }
-            
         }
-        private void playbackSettingsClick()
+        private void repeatClick()
         {
-
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                tabPlayer.Loop = !tabPlayer.Loop;
+            }
+        }
+        private void metronomeClick()
+        {
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                tabPlayer.Metronome = !tabPlayer.Metronome;
+            }
         }
         private int findSectionHead(int stepIndex)
         {
@@ -897,6 +975,105 @@ namespace QuickTabs.Controls
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection);
+        }
+        private void silencePressed()
+        {
+            if (tabPlayer == null || !tabPlayer.IsPlaying)
+            {
+                Action eventHandler = null;
+                eventHandler = () =>
+                {
+                    AudioEngine.SilenceAll();
+                    AudioEngine.Tick -= eventHandler;
+                };
+                AudioEngine.Tick += eventHandler;
+                // because threads
+            }
+        }
+        private void setRelativeSelection(int direction)
+        {
+            if (editor.Selection != null)
+            {
+                Selection selection = editor.Selection;
+                int newStart;
+                if (direction < 0)
+                {
+                    newStart = selection.SelectionStart - 1;
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart--;
+                        if (newStart < 0)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else if (direction > 0)
+                {
+                    newStart = selection.SelectionStart + selection.SelectionLength;
+                    if (newStart >= Song.Tab.Count)
+                    {
+                        return;
+                    }
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart++;
+                        if (newStart >= Song.Tab.Count)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                editor.Selection = new Selection(newStart, 1);
+                editor.Refresh();
+            }
+        }
+        private void lengthenSelection(int direction)
+        {
+            if (editor.Selection != null)
+            {
+                Selection selection = editor.Selection;
+                int newStart;
+                int newLength = selection.SelectionLength + 1;
+                if (direction < 0)
+                {
+                    newStart = selection.SelectionStart - 1;
+                    while (Song.Tab[newStart].Type != Enums.StepType.Beat)
+                    {
+                        newStart--;
+                        if (newStart < 0)
+                        {
+                            return;
+                        }
+                    }
+                    newLength = (selection.SelectionStart + selection.SelectionLength - 1) - newStart + 1;
+                } else if (direction > 0)
+                {
+                    newStart = selection.SelectionStart;
+                    newLength = selection.SelectionLength + 1;
+                    if (newStart + newLength - 1 >= Song.Tab.Count)
+                    {
+                        return;
+                    }
+                    while (Song.Tab[newStart + newLength - 1].Type != Enums.StepType.Beat)
+                    {
+                        newLength++;
+                        if (newStart + newLength - 1 >= Song.Tab.Count)
+                        {
+                            return;
+                        }
+                    }
+                } else
+                {
+                    return;
+                }
+                editor.Selection = new Selection(newStart, newLength);
+                editor.Refresh();
+            }
         }
     }
 }
