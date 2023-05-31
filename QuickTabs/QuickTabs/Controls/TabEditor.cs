@@ -3,6 +3,7 @@ using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace QuickTabs.Controls
     {
         public override Color BackColor { get => DrawingConstants.TabEditorBackColor; set => base.BackColor = value; }
 
+        public int MaxHeight { get; set; }
         public Song Song { get; set; }
         private Selection selection;
         public Selection Selection
@@ -56,10 +58,13 @@ namespace QuickTabs.Controls
         private Point selectionStartPoint;
         private Selection oldSelection;
         private bool mouseDown = false;
+        private VScrollBar scrollBar = new VScrollBar();
+        private bool scrollbarShown = false;
 
         public TabEditor()
         {
             this.DoubleBuffered = true;
+            scrollBar.Scroll += scrollBar_Scroll;
             ShortcutManager.AddShortcut(Keys.None, Keys.A, () => { setRelativeSelection(-1); });
             ShortcutManager.AddShortcut(Keys.None, Keys.D, () => { setRelativeSelection(1); });
             ShortcutManager.AddShortcut(Keys.Shift, Keys.A, () => { lengthenSelection(-1); });
@@ -76,7 +81,10 @@ namespace QuickTabs.Controls
             tabUI.Clear();
 
             int usableWidth = this.Width - DrawingConstants.MediumMargin * 2 - DrawingConstants.LeftMargin;
-            int usableHeight = this.Height - DrawingConstants.MediumMargin * 2;
+            if (scrollbarShown)
+            {
+                usableWidth -= SystemInformation.VerticalScrollBarWidth;
+            }
             int rowsPerStaff = tab.Tuning.Count;
             int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
 
@@ -161,10 +169,73 @@ namespace QuickTabs.Controls
             }
             tabUI.Add(currentRow);
             int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2); // +2 is for heading + spacing line
-            this.Height = (tallRowHeight * tabUI.Count) + DrawingConstants.MediumMargin;
+            int contentHeight = (tallRowHeight * tabUI.Count) + DrawingConstants.MediumMargin;
+            if (contentHeight < MaxHeight)
+            {
+                this.Height = contentHeight;
+                if (scrollbarShown)
+                {
+                    hideScrollbar();
+                }
+            } else
+            {
+                this.Height = MaxHeight;
+                if (!scrollbarShown)
+                {
+                    showScrollbar(contentHeight);
+                } else if (scrollBar.Maximum != contentHeight - this.Height)
+                {
+                    scrollBar.Maximum = (contentHeight - this.Height) + DrawingConstants.ScrollbarLargeChange;
+                }
+            }
+        }
+        private void showScrollbar(int contentHeight)
+        {
+            scrollBar.Location = new Point(this.Width - SystemInformation.VerticalScrollBarWidth, 0);
+            scrollBar.Size = new Size(SystemInformation.VerticalScrollBarWidth, this.Height);
+            scrollBar.Value = 0;
+            scrollBar.Minimum = 0;
+            scrollBar.Maximum = (contentHeight - this.Height) + DrawingConstants.ScrollbarLargeChange;
+            scrollBar.SmallChange = DrawingConstants.ScrollbarSmallChange;
+            scrollBar.LargeChange = DrawingConstants.ScrollbarLargeChange;
+            this.Controls.Add(scrollBar);
+            scrollbarShown = true;
+            updateUI();
+        }
+        private void hideScrollbar()
+        {
+            this.Controls.Remove(scrollBar);
+            scrollbarShown = false;
+            updateUI();
+        }
+        private void scrollBar_Scroll(object? sender, ScrollEventArgs e)
+        {
+            this.Invalidate();
+        }
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            if (scrollbarShown)
+            {
+                int newValue = scrollBar.Value - e.Delta;
+                if (newValue < scrollBar.Minimum)
+                {
+                    newValue = scrollBar.Minimum;
+                }
+                if (newValue > scrollBar.Maximum - scrollBar.LargeChange)
+                {
+                    newValue = scrollBar.Maximum - scrollBar.LargeChange;
+                }
+                scrollBar.Value = newValue;
+                this.Invalidate();
+            }
         }
         private bool tryGetStepFromPoint(Point point, out UIStep step)
         {
+            if (scrollbarShown)
+            {
+                point.Y += scrollBar.Value;
+            }
             if (point.X < DrawingConstants.MediumMargin + DrawingConstants.LeftMargin)
             {
                 step = null;
@@ -353,6 +424,11 @@ namespace QuickTabs.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
+            if (scrollbarShown)
+            {
+                scrollBar.Location = new Point(this.Width - SystemInformation.VerticalScrollBarWidth, 0);
+                scrollBar.Height = this.Height;
+            }
             updateUI();
             this.Invalidate();
         }
@@ -477,6 +553,10 @@ namespace QuickTabs.Controls
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            if (scrollbarShown)
+            {
+                g.TranslateTransform(0, -scrollBar.Value);
+            }
 
             Color selectionColor = DrawingConstants.EditModeSelectionColor;
             if (PlayMode)

@@ -13,16 +13,16 @@ namespace QuickTabs.Controls
     {
         public override Color BackColor { get => DrawingConstants.EmptySpaceBackColor; set => base.BackColor = value; }
 
-        private bool suspendPaint = false;
-        public bool SuspendPaint
+        private bool suspendLogoDraw = false;
+        public bool SuspendLogoDraw
         {
             get
             {
-                return suspendPaint;
+                return suspendLogoDraw;
             }
             set
             {
-                suspendPaint = value;
+                suspendLogoDraw = value;
                 if (!value)
                 {
                     this.Invalidate();
@@ -39,11 +39,11 @@ namespace QuickTabs.Controls
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            if (SuspendPaint)
+            base.OnPaintBackground(e);
+            if (SuspendLogoDraw)
             {
                 return;
             }
-            base.OnPaintBackground(e);
             Graphics g = e.Graphics;
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -61,10 +61,6 @@ namespace QuickTabs.Controls
         }
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (SuspendPaint)
-            {
-                return;
-            }
             base.OnPaint(e);
         }
         protected override void OnSizeChanged(EventArgs e)

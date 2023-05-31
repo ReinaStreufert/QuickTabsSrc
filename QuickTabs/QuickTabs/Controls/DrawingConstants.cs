@@ -88,6 +88,8 @@ namespace QuickTabs.Controls
         public static int DropdownWidth { get; private set; } = 450;
         public static int DropdownRowHeight { get; private set; } = 60;
         public static int DropdownIconArea { get; private set; } = 70;
+        public static int ScrollbarLargeChange { get; private set; } = 100;
+        public static int ScrollbarSmallChange { get; private set; } = 20;
         public static void Scale(float scale)
         {
             FieldInfo[] allFields = typeof(DrawingConstants).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance);

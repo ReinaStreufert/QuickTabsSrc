@@ -21,6 +21,7 @@ namespace QuickTabs
         private bool ignoreSizeEvent = false;
         private FormWindowState lastWindowState = FormWindowState.Normal;
         private float scale;
+
         public Editor()
         {
             InitializeComponent();
@@ -37,14 +38,12 @@ namespace QuickTabs
             contextMenu = new QuickTabsContextMenu(this, tabEditor, fretboard);
             Controls.Add(contextMenu);
             tabEditorPanel.Controls.Add(tabEditor);
-            tabEditorPanel.AutoScroll = true;
             tabEditor.Location = new Point(0, 0);
             Controls.Add(fretboard);
             Controls.Add(tabEditorPanel);
             Controls.Add(toolMenu);
             this.Width = (int)(1800 * scale);
             this.Height = (int)(1200 * scale);
-            updateTabPanelHeight();
             song.Tab.SetLength(17);
             song.TimeSignature = new TimeSignature(4, 4);
             ((SectionHead)song.Tab[0]).Name = "Untitled Section";
@@ -59,14 +58,13 @@ namespace QuickTabs
             tabEditor.Selection = new Selection(1, 1);
             History.PushState(song, tabEditor.Selection, false);
             tabEditor.Refresh();
-            tabEditor.SizeChanged += TabEditor_SizeChanged;
             FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
         }
         public void RefreshLayout()
         {
             OnSizeChanged(null);
-            updateTabPanelHeight();
+            tabEditor.Refresh();
         }
         private void FileManager_FileStateChange()
         {
@@ -85,17 +83,6 @@ namespace QuickTabs
             this.Text = "QuickTabs" + joinString + fileString + endChar;
         }
 
-        private void TabEditor_SizeChanged(object? sender, EventArgs e)
-        {
-            if (ignoreSizeEvent)
-            {
-                return;
-            }
-            ignoreSizeEvent = true;
-            updateTabPanelHeight();
-            ignoreSizeEvent = false;
-        }
-
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
@@ -106,16 +93,9 @@ namespace QuickTabs
             contextMenu.Location = new Point(0, 0);
             contextMenu.Size = new Size(this.ClientSize.Width, (int)(ContextMenuHeight * scale));
             tabEditorPanel.Location = new Point(0, (int)(ContextMenuHeight * scale));
-            tabEditorPanel.Width = this.ClientSize.Width;
-            if (this.WindowState != lastWindowState)
-            {
-                updateTabPanelHeight();
-                lastWindowState = this.WindowState;
-            } else
-            {
-                tabEditorPanel.Height = tabEditor.Height;
-            }
-            updateTabEditorWidth();
+            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(ContextMenuHeight * scale) - (int)(FretboardHeight * scale));
+            tabEditor.MaxHeight = tabEditorPanel.Height;
+            tabEditor.Size = new Size(this.ClientSize.Width, tabEditor.Height);
             toolMenu.Location = new Point(0, this.Height - (int)(FretboardHeight * scale));
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
@@ -124,14 +104,12 @@ namespace QuickTabs
         protected override void OnResizeBegin(EventArgs e)
         {
             base.OnResizeBegin(e);
-            tabEditorPanel.Height = tabEditor.Height;
-            tabEditorPanel.SuspendPaint = true;
+            tabEditorPanel.SuspendLogoDraw = true;
         }
         protected override void OnResizeEnd(EventArgs e)
         {
             base.OnResizeEnd(e);
-            updateTabPanelHeight();
-            tabEditorPanel.SuspendPaint = false;
+            tabEditorPanel.SuspendLogoDraw = false;
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -153,24 +131,6 @@ namespace QuickTabs
                     e.Cancel = !message.Continue;
                 }
             }
-        }
-        private void updateTabPanelHeight()
-        {
-            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(ContextMenuHeight*scale) - (int)(FretboardHeight*scale));
-            updateTabEditorWidth();
-        }
-        private void updateTabEditorWidth()
-        {
-            ignoreSizeEvent = true;
-            if (tabEditor.Height > tabEditorPanel.Height)
-            {
-                tabEditor.Size = new Size(this.ClientSize.Width - SystemInformation.VerticalScrollBarWidth, tabEditor.Height);
-            }
-            else
-            {
-                tabEditor.Size = new Size(this.ClientSize.Width, tabEditor.Height);
-            }
-            ignoreSizeEvent = false;
         }
     }
 }
