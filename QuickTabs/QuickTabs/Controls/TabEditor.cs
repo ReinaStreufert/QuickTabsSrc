@@ -186,6 +186,10 @@ namespace QuickTabs.Controls
                 } else if (scrollBar.Maximum != contentHeight - this.Height)
                 {
                     scrollBar.Maximum = (contentHeight - this.Height) + DrawingConstants.ScrollbarLargeChange;
+                    if (scrollBar.Value >= (contentHeight - this.Height))
+                    {
+                        scrollBar.Value = (contentHeight - this.Height);
+                    }
                 }
             }
         }
