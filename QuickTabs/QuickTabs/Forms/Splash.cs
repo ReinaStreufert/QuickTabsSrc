@@ -53,6 +53,23 @@ namespace QuickTabs.Forms
             public int bottomHeight;
         }
 
+        private readonly Color darkGray = Color.FromArgb(0x1E, 0x1E, 0x1E);
+
+        public override Color BackColor 
+        {
+            get 
+            { 
+                if (Properties.QuickTabs.Default.ViewDarkMode)
+                {
+                    return darkGray;
+                } else
+                {
+                    return Color.White;
+                }
+            }
+            set => base.BackColor = value; 
+        }
+
         protected override CreateParams CreateParams
         {
             get
@@ -106,11 +123,15 @@ namespace QuickTabs.Forms
 
         private Task iconLoader;
         private Timer checkCompleteTimer = new Timer();
+        private MultiColorBitmap logoSource;
         private bool firstTick = true;
 
         public Splash(Task iconLoader)
         {
             InitializeComponent();
+            logoSource = new MultiColorBitmap(Resources.logo);
+            logoSource.AddColor(Color.White);
+            logoSource.AddColor(darkGray);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             logoWidth = (int)(logoWidth * (this.DeviceDpi / 192.0F));
             failedLabel.Visible = false;
@@ -154,7 +175,14 @@ namespace QuickTabs.Forms
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
-            Bitmap logo = Resources.logo;
+            Bitmap logo;
+            if (Properties.QuickTabs.Default.ViewDarkMode)
+            {
+                logo = logoSource[Color.White];
+            } else
+            {
+                logo = logoSource[darkGray];
+            }
             int width = this.ClientSize.Width;
             int height = this.ClientSize.Height;
             float logoScale = logo.Height / (float)logo.Width;

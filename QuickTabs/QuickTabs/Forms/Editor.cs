@@ -6,6 +6,8 @@ namespace QuickTabs
 {
     public partial class Editor : Form
     {
+        public override Color BackColor { get => DrawingConstants.EmptySpaceBackColor; set => base.BackColor = value; }
+
         public int ContextMenuHeight { get; set; } = 160;
         public int FretboardHeight { get; set; } = 350;
 
@@ -28,16 +30,14 @@ namespace QuickTabs
             DrawingConstants.Scale(scale);
 
             FileManager.Initialize();
-            contextMenu = new QuickTabsContextMenu();
             tabEditor = new TabEditor();
             toolMenu = new ToolMenu();
             fretboard = new Controls.Tools.Fretboard();
             tabEditorPanel = new LogoPanel();
+            contextMenu = new QuickTabsContextMenu(this, tabEditor, fretboard);
             Controls.Add(contextMenu);
             tabEditorPanel.Controls.Add(tabEditor);
             tabEditorPanel.AutoScroll = true;
-            tabEditorPanel.BackColor = Color.FromArgb(0x33, 0x33, 0x33);
-            this.BackColor = Color.FromArgb(0x33, 0x33, 0x33);
             tabEditor.Location = new Point(0, 0);
             Controls.Add(fretboard);
             Controls.Add(tabEditorPanel);

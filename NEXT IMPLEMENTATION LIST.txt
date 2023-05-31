@@ -1,4 +1,6 @@
 NEXT IMPLEMENTATION LIST
 ----
+make view settings save
+fix light mode fret hover
 Asio not installed handling*
 Preferences

@@ -1,4 +1,5 @@
-﻿using QuickTabs.Enums;
+﻿using QuickTabs.Controls;
+using QuickTabs.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace QuickTabs.Forms
         {
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            DrawingConstants.ApplyThemeToUIForm(this);
 
             previewBox.ReadOnly = true;
             previewBox.ScrollBars = ScrollBars.Both;

@@ -10,6 +10,8 @@ namespace QuickTabs.Controls
 {
     internal class TuningPicker : Control
     {
+        public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
+
         public Tuning Tuning { get; set; }
         public int StringShift { get; set; } = 0;
 
@@ -316,7 +318,7 @@ namespace QuickTabs.Controls
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
             using (SolidBrush highlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
-            using (SolidBrush textBrush = new SolidBrush(Color.White))
+            using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
             using (Font font = new Font("Montserrat", DrawingConstants.MediumTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
             {
                 foreach (Button button in buttons)
@@ -348,7 +350,7 @@ namespace QuickTabs.Controls
                         }
                     } else
                     {
-                        g.DrawImage(button.Icon[Color.White], centerX - DrawingConstants.LargeIconSize / 2, centerY - DrawingConstants.LargeIconSize / 2, DrawingConstants.LargeIconSize, DrawingConstants.LargeIconSize);
+                        g.DrawImage(button.Icon[DrawingConstants.ContrastColor], centerX - DrawingConstants.LargeIconSize / 2, centerY - DrawingConstants.LargeIconSize / 2, DrawingConstants.LargeIconSize, DrawingConstants.LargeIconSize);
                     }
                 }
             }

@@ -20,18 +20,22 @@ namespace QuickTabs.Controls
             ContextItem addMeasure = new ContextItem(DrawingIcons.AddMeasure, "Add measure");
             addMeasure.Selected = true;
             addMeasure.Click += addMeasureClick;
+            selectionDependentShortcuts.Add(ShortcutManager.AddShortcut(Keys.None, Keys.Oemplus, addMeasureClick));
             measureSection.AddItem(addMeasure);
             removeMeasure = new ContextItem(DrawingIcons.RemoveMeasure, "Remove measure");
             removeMeasure.Selected = true;
             removeMeasure.Click += removeMeasureClick;
+            selectionDependentShortcuts.Add(ShortcutManager.AddShortcut(Keys.None, (Keys)189, removeMeasureClick));
             measureSection.AddItem(removeMeasure);
             addSection = new ContextItem(DrawingIcons.AddSection, "Add or split section");
             addSection.Selected = true;
             addSection.Click += addSectionClick;
+            selectionDependentShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, Keys.Oemplus, addSectionClick));
             measureSection.AddItem(addSection);
             removeSection = new ContextItem(DrawingIcons.RemoveSection, "Collate section");
             removeSection.Selected = false;
             removeSection.Click += removeSectionClick;
+            selectionDependentShortcuts.Add(ShortcutManager.AddShortcut(Keys.Shift, (Keys)189, removeSectionClick));
             measureSection.AddItem(removeSection);
             ContextItem renameSection = new ContextItem(DrawingIcons.Rename, "Rename section...");
             renameSection.Selected = true;
@@ -200,10 +204,13 @@ namespace QuickTabs.Controls
                 SectionHead head = (SectionHead)Song.Tab[findSectionHead(editor.Selection.SelectionStart)];
                 sectionNameForm.Name = head.Name;
                 sectionNameForm.ShowDialog();
-                head.Name = sectionNameForm.Name;
-                editor.Refresh();
+                if (head.Name != sectionNameForm.Name)
+                {
+                    head.Name = sectionNameForm.Name;
+                    editor.Refresh();
+                    History.PushState(Song, editor.Selection);
+                }
             }
-            History.PushState(Song, editor.Selection);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace QuickTabs.Controls.Tools
 {
     internal class Fretboard : Control
     {
+        public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
+
         public Song Song { get; set; } = null;
         public bool ViewFretCounter { get; set; } = true;
         public bool ViewDots { get; set; } = true;
@@ -39,7 +41,6 @@ namespace QuickTabs.Controls.Tools
 
         public Fretboard()
         {
-            this.BackColor = Color.Black;
             this.DoubleBuffered = true;
             noteLengthButtonsPrototype[DrawingIcons.EighthNote] = 1;
             noteLengthButtonsPrototype[DrawingIcons.QuarterNote] = 2;
@@ -52,6 +53,7 @@ namespace QuickTabs.Controls.Tools
 
         private void loadStrings()
         {
+            if (Song == null) { return; }
             if (strings.Count != Song.Tab.Tuning.Count)
             {
                 starredFrets.Clear();
@@ -65,14 +67,14 @@ namespace QuickTabs.Controls.Tools
             {
                 strings.Add(new String() { Index = i });
             }
-            fretAreaWidth = this.Width - DrawingConstants.ButtonAreaWidth;
+            fretAreaWidth = this.Width - DrawingConstants.FretboardButtonAreaWidth;
             viewportLength = (int)Math.Round(fretAreaWidth / DrawingConstants.TargetFretWidth);
 
             buttons = new List<Button>();
 
             Button leftButton = new Button();
             leftButton.Icon = DrawingIcons.LeftArrow;
-            leftButton.Location = new Rectangle(fretAreaWidth, 0, DrawingConstants.ButtonAreaWidth / 2, this.Height / 2);
+            leftButton.Location = new Rectangle(fretAreaWidth, 0, DrawingConstants.FretboardButtonAreaWidth / 2, this.Height / 2);
             leftButton.Highlighted = (viewportStart != 1);
             leftButton.Large = true;
             leftButton.OnClick += () =>
@@ -93,7 +95,7 @@ namespace QuickTabs.Controls.Tools
             buttons.Add(leftButton);
             Button rightButton = new Button();
             rightButton.Icon = DrawingIcons.RightArrow;
-            rightButton.Location = new Rectangle(fretAreaWidth, this.Height / 2, DrawingConstants.ButtonAreaWidth / 2, this.Height / 2);
+            rightButton.Location = new Rectangle(fretAreaWidth, this.Height / 2, DrawingConstants.FretboardButtonAreaWidth / 2, this.Height / 2);
             rightButton.Highlighted = true;
             rightButton.Large = true;
             rightButton.OnClick += () =>
@@ -118,7 +120,7 @@ namespace QuickTabs.Controls.Tools
                 button.Icon = buttonPrototype.Key;
                 button.Highlighted = false;
                 button.Large = false;
-                button.Location = new Rectangle(fretAreaWidth + DrawingConstants.ButtonAreaWidth / 2, (int)(currentNoteLengthButton * noteLengthButtonHeight), DrawingConstants.ButtonAreaWidth / 2, (int)noteLengthButtonHeight);
+                button.Location = new Rectangle(fretAreaWidth + DrawingConstants.FretboardButtonAreaWidth / 2, (int)(currentNoteLengthButton * noteLengthButtonHeight), DrawingConstants.FretboardButtonAreaWidth / 2, (int)noteLengthButtonHeight);
                 button.OnClick += () =>
                 {
                     noteLength = buttonPrototype.Value;
@@ -193,6 +195,7 @@ namespace QuickTabs.Controls.Tools
         }
         private void updateFromSelectedBeat()
         {
+            if (Editor == null) { return; }
             if (Editor.Selection == null)
             {
                 foreach (String s in strings)
@@ -407,6 +410,7 @@ namespace QuickTabs.Controls.Tools
 
             using (SolidBrush fretAreaBrush = new SolidBrush(DrawingConstants.FretAreaColor))
             using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
+            using (SolidBrush fretAreaHoverBrush = new SolidBrush(DrawingConstants.FretAreaHighlightColor))
             {
                 // draw fret area
                 g.FillRectangle(fretAreaBrush, 0, 0, fretAreaWidth, fretAreaHeight);
@@ -424,7 +428,7 @@ namespace QuickTabs.Controls.Tools
                 // draw fret numbers
                 if (ViewFretCounter)
                 {
-                    using (SolidBrush textBrush = new SolidBrush(Color.White))
+                    using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
                     using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
                     {
                         for (int i = viewportStart; i < viewportStart + viewportLength; i++)
@@ -521,12 +525,12 @@ namespace QuickTabs.Controls.Tools
                         float x = getFretX(s.HoveredFret);
                         if (x >= 0 && x < fretAreaWidth)
                         {
-                            g.FillRectangle(hoverBrush, x - fretWidth / 2, y - stringHeight / 2, fretWidth, stringHeight);
+                            g.FillRectangle(fretAreaHoverBrush, x - fretWidth / 2, y - stringHeight / 2, fretWidth, stringHeight);
                         }
                     }
                 }
                 // draw buttons
-                using (Pen buttonPen = new Pen(DrawingConstants.ButtonOutlineColor, DrawingConstants.ButtonOutlineWidth))
+                using (Pen buttonPen = new Pen(DrawingConstants.ButtonOutlineColor, DrawingConstants.FretboardButtonOutlineWidth))
                 {
                     foreach (Button button in buttons)
                     {
@@ -545,7 +549,7 @@ namespace QuickTabs.Controls.Tools
                         }
                         if (button.Highlighted)
                         {
-                            g.DrawImage(button.Icon[Color.White], iconRect);
+                            g.DrawImage(button.Icon[DrawingConstants.ContrastColor], iconRect);
                         }
                         else
                         {

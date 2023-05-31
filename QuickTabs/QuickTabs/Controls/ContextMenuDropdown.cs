@@ -10,6 +10,8 @@ namespace QuickTabs.Controls
     {
         private class ContextMenuDropdown : Control
         {
+            public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
+
             public ContextSection Section { get; set; }
 
             private int hoveredItem = -1;
@@ -17,7 +19,6 @@ namespace QuickTabs.Controls
 
             public ContextMenuDropdown(Action closeDropdown)
             {
-                this.BackColor = Color.Black;
                 //this.Size = new Size(100, 400);
                 this.DoubleBuffered = true;
                 this.closeDropdown = closeDropdown;
@@ -80,7 +81,7 @@ namespace QuickTabs.Controls
 
                 using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
                 using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
-                using (SolidBrush white = new SolidBrush(Color.White))
+                using (SolidBrush contrast = new SolidBrush(DrawingConstants.ContrastColor))
                 using (SolidBrush fadedGray = new SolidBrush(DrawingConstants.FadedGray))
                 {
                     int i = 0;
@@ -98,7 +99,7 @@ namespace QuickTabs.Controls
                         Bitmap usedIcon;
                         if (item.Selected)
                         {
-                            usedIcon = item.Icon[Color.White];
+                            usedIcon = item.Icon[DrawingConstants.ContrastColor];
                         } else
                         {
                             usedIcon = item.Icon[DrawingConstants.FadedGray];
@@ -108,7 +109,7 @@ namespace QuickTabs.Controls
                         SolidBrush usedBrush;
                         if (item.Selected)
                         {
-                            usedBrush = white;
+                            usedBrush = contrast;
                         } else
                         {
                             if (Section.ToggleType == ToggleType.NotTogglable)
@@ -116,13 +117,13 @@ namespace QuickTabs.Controls
                                 usedBrush = fadedGray;
                             } else
                             {
-                                usedBrush = white;
+                                usedBrush = contrast;
                             }
                         }
                         g.DrawString(item.CollapsedText, boldFont, usedBrush, textStartX, centerY - textSize.Height / 2);
                         if (item.Selected && Section.ToggleType != ToggleType.NotTogglable)
                         {
-                            g.DrawImage(DrawingIcons.Check[Color.White], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                            g.DrawImage(DrawingIcons.Check[DrawingConstants.ContrastColor], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
                         }
                         i++;
                     }

@@ -23,9 +23,10 @@ namespace QuickTabs.Controls
         private Button toolTipLocation = null;
         private ContextMenuDropdown dropdownControl;
 
+        public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
+
         public ContextMenu()
         {
-            this.BackColor = Color.FromArgb(0x0, 0x0, 0x0);
             this.DoubleBuffered = true;
             dropdownControl = new ContextMenuDropdown(() => { dropdownControlLostFocus(null, null); });
             toolTip = new ToolTip();
@@ -333,9 +334,9 @@ namespace QuickTabs.Controls
             using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             //using (Font largeFont = new Font("Montserrat", DrawingConstants.MediumTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (SolidBrush gray = new SolidBrush(DrawingConstants.FadedGray))
-            using (Pen seperatorPen = new Pen(Color.White, DrawingConstants.SeperatorLineWidth))
+            using (Pen seperatorPen = new Pen(DrawingConstants.ContrastColor, DrawingConstants.SeperatorLineWidth))
             using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
-            using (SolidBrush white = new SolidBrush(Color.White))
+            using (SolidBrush contrast = new SolidBrush(DrawingConstants.ContrastColor))
             using (SolidBrush fadedGray = new SolidBrush(DrawingConstants.FadedGray))
             {
                 foreach (UIElement uiElement in ui)
@@ -344,12 +345,12 @@ namespace QuickTabs.Controls
                     if (type == typeof(Image))
                     {
                         Image image = (Image)uiElement;
-                        g.DrawImage(image.Bitmap[Color.White], image.Location);
+                        g.DrawImage(image.Bitmap[DrawingConstants.ContrastColor], image.Location);
                     }
                     else if (type == typeof(Label))
                     {
                         Label label = (Label)uiElement;
-                        g.DrawString(label.Text, boldFont, white, label.Location.X, label.Location.Y);
+                        g.DrawString(label.Text, boldFont, contrast, label.Location.X, label.Location.Y);
                     } else if (type == typeof(Seperator))
                     {
                         g.DrawLine(seperatorPen, uiElement.Location.X + (uiElement.Location.Width / 2), uiElement.Location.Y, uiElement.Location.X + (uiElement.Location.Width / 2), uiElement.Location.Y + uiElement.Location.Height);
@@ -364,7 +365,7 @@ namespace QuickTabs.Controls
                         int centerY = button.Location.Y + (button.Location.Height / 2);
                         if (button.ContextItem.Selected)
                         {
-                            g.DrawImage(button.Icon[Color.White], centerX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                            g.DrawImage(button.Icon[DrawingConstants.ContrastColor], centerX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
                         } else
                         {
                             g.DrawImage(button.Icon[DrawingConstants.FadedGray], centerX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
@@ -381,7 +382,7 @@ namespace QuickTabs.Controls
                         SizeF textSize = g.MeasureString(collapsedSection.Section.SectionName, boldFont);
                         if (selectedSection == null || selectedSection == collapsedSection)
                         {
-                            g.DrawString(collapsedSection.Section.SectionName, boldFont, white, centerX - textSize.Width / 2, centerY - textSize.Height / 2);
+                            g.DrawString(collapsedSection.Section.SectionName, boldFont, contrast, centerX - textSize.Width / 2, centerY - textSize.Height / 2);
                         } else
                         {
                             g.DrawString(collapsedSection.Section.SectionName, boldFont, fadedGray, centerX - textSize.Width / 2, centerY - textSize.Height / 2);

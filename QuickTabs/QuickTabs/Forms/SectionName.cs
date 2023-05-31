@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickTabs.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +19,7 @@ namespace QuickTabs.Forms
         {
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            DrawingConstants.ApplyThemeToUIForm(this);
         }
 
         protected override void OnShown(EventArgs e)

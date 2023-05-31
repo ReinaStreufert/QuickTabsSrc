@@ -1,5 +1,7 @@
-﻿using System;
+﻿using QuickTabs.Enums;
+using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal static class DrawingConstants
+    internal static class DrawingConstants // yeah this name makes no sense now that theres literally only a single constant in this class lolz
     {
+        public static Theme CurrentTheme { get; private set; } = Theme.DarkMode;
+
         public static int LargeMargin { get; private set; } = 40;
         public static int MediumMargin { get; private set; } = 30;
         public static int StepWidth { get; private set; } = 26;
@@ -25,18 +29,45 @@ namespace QuickTabs.Controls
         public static int StringOffsetForLetters { get; private set; } = 30;
         public static int FretNotationXOffset { get; private set; } = 11;
         public static int ToolSelectorWidth { get; private set; } = 90;
-        public static readonly Color FadedGray = Color.FromArgb(0x3D, 0x3D, 0x3D);
-        public static readonly Color FretAreaColor = Color.FromArgb(0x1A, 0x1A, 0x1A);
-        public static readonly Color HighlightBlue = Color.FromArgb(0x00, 0x9A, 0xE7);
-        public static readonly Color StringColor = Color.FromArgb(0x25, 0x25, 0x25);
-        public static readonly Color HighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
-        public static readonly Color ButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
-        public static readonly Color StarColor = Color.FromArgb(0xe7, 0x70, 0x00);
-        public static readonly Color LogoPatternColor = Color.FromArgb(0x30, 0x30, 0x30);
-        public static readonly Color EditModeSelectionColor = Color.FromArgb(0x77, 0xFF, 0xFF, 0xFF);
-        public static readonly Color PlayModeSelectionColor = Color.FromArgb(0x77, 0xD8, 0xFF, 0x29);
-        public static int ButtonOutlineWidth { get; private set; } = 3;
-        public static int ButtonAreaWidth { get; private set; } = 150;
+        private static readonly Color lightModeFadedGray = Color.FromArgb(0xAA, 0xAA, 0xAA);
+        private static readonly Color darkModeFadedGray = Color.FromArgb(0x3D, 0x3D, 0x3D);
+        public static Color FadedGray { get; private set; } = darkModeFadedGray;
+        public static readonly Color FretAreaColor = Color.FromArgb(0x1A, 0x1A, 0x1A); // same in light mode
+        public static readonly Color HighlightBlue = Color.FromArgb(0x00, 0x9A, 0xE7); // same in light mode
+        public static readonly Color StringColor = Color.FromArgb(0x25, 0x25, 0x25); // same in light mode
+        public static readonly Color FretAreaHighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF); // same in light mode
+        private static readonly Color lightModeHighlightColor = Color.FromArgb(0x55, 0x00, 0x00, 0x00);
+        private static readonly Color darkModeHighlightColor = Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF);
+        public static Color HighlightColor { get; private set; } = darkModeHighlightColor;
+        private static readonly Color lightModebuttonOutlineColor = Color.FromArgb(0xBF, 0xBF, 0xBF);
+        private static readonly Color darkModeButtonOutlineColor = Color.FromArgb(0x11, 0x11, 0x11);
+        public static Color ButtonOutlineColor { get; private set; } = darkModeButtonOutlineColor;
+        public static readonly Color StarColor = Color.FromArgb(0xe7, 0x70, 0x00); // same in light mode
+        public static readonly Color LightModeLogoPatternColor = Color.FromArgb(0xE8, 0xE8, 0xE8);
+        public static readonly Color DarkModeLogoPatternColor = Color.FromArgb(0x30, 0x30, 0x30);
+        private static readonly Color lightModeEditModeSelectionColor = Color.FromArgb(0x77, 0x00, 0x00, 0x00);
+        private static readonly Color darkModeEditModeSelectionColor = Color.FromArgb(0x77, 0xFF, 0xFF, 0xFF);
+        public static Color EditModeSelectionColor { get; private set; } = darkModeEditModeSelectionColor;
+        private static readonly Color lightModePlayModeSelectionColor = Color.FromArgb(0x77, 0x9C, 0xBE, 0x00);
+        private static readonly Color darkModePlayModeSelectionColor = Color.FromArgb(0x77, 0xD8, 0xFF, 0x29);
+        public static Color PlayModeSelectionColor { get; private set; } = darkModePlayModeSelectionColor;
+        private static readonly Color lightModeTabEditorBackColor = Color.FromArgb(0xFF, 0xFF, 0xFF);
+        private static readonly Color darkModeTabEditorBackColor = Color.FromArgb(0x22, 0x22, 0x22);
+        public static Color TabEditorBackColor { get; private set; } = darkModeTabEditorBackColor;
+        private static readonly Color lightModeEmptySpaceBackColor = Color.FromArgb(0xEE, 0xEE, 0xEE);
+        private static readonly Color darkModeEmptySpaceBackColor = Color.FromArgb(0x33, 0x33, 0x33);
+        public static Color EmptySpaceBackColor { get; private set; } = darkModeEmptySpaceBackColor;
+        private static readonly Color lightModeUIAreaBackColor = Color.FromArgb(0xCC, 0xCC, 0xCC);
+        private static readonly Color darkModeUIAreaBackColor = Color.FromArgb(0x00, 0x00, 0x00);
+        public static Color UIAreaBackColor { get; private set; } = darkModeUIAreaBackColor; // this goes to the context menu back color and the back color of the freatboard button area
+        private static readonly Color lightModeUIControlBackColor = Color.White;
+        private static readonly Color darkModeUIControlBackColor = SystemColors.ControlDarkDark;
+        public static Color UIControlBackColor { get; private set; } = darkModeUIControlBackColor;
+        private static readonly Color lightModeContrastColor = Color.Black;
+        private static readonly Color darkModeContrastColor = Color.White;
+        public static Color ContrastColor { get; private set; } = darkModeContrastColor;
+        public static int FretboardButtonOutlineWidth { get; private set; } = 3;
+        public static int FretboardButtonAreaWidth { get; private set; } = 150;
         public static float TargetFretWidth { get; private set; } = 125F;
         public static int FretCountAreaHeight { get; private set; } = 50;
         public static int FretZeroAreaWidth { get; private set; } = 25;
@@ -73,6 +104,57 @@ namespace QuickTabs.Controls
                 {
                     Size size = (Size)field.GetValue(null);
                     field.SetValue(null, new Size((int)(size.Width * scale), (int)(size.Height * scale)));
+                }
+            }
+        }
+        public static void SetTheme(Theme theme)
+        {
+            if (theme == CurrentTheme)
+            {
+                return;
+            }
+            if (theme == Theme.LightMode)
+            {
+                FadedGray = lightModeFadedGray;
+                HighlightColor = lightModeHighlightColor;
+                ButtonOutlineColor = lightModebuttonOutlineColor;
+                EditModeSelectionColor = lightModeEditModeSelectionColor;
+                PlayModeSelectionColor = lightModePlayModeSelectionColor;
+                TabEditorBackColor = lightModeTabEditorBackColor;
+                EmptySpaceBackColor = lightModeEmptySpaceBackColor;
+                UIAreaBackColor = lightModeUIAreaBackColor;
+                UIControlBackColor = lightModeUIControlBackColor;
+                ContrastColor = lightModeContrastColor;
+            } else if (theme == Theme.DarkMode)
+            {
+                FadedGray = darkModeFadedGray;
+                HighlightColor = darkModeHighlightColor;
+                ButtonOutlineColor = darkModeButtonOutlineColor;
+                EditModeSelectionColor = darkModeEditModeSelectionColor;
+                PlayModeSelectionColor = darkModePlayModeSelectionColor;
+                TabEditorBackColor = darkModeTabEditorBackColor;
+                EmptySpaceBackColor = darkModeEmptySpaceBackColor;
+                UIAreaBackColor = darkModeUIAreaBackColor;
+                UIControlBackColor = darkModeUIControlBackColor;
+                ContrastColor = darkModeContrastColor;
+            }
+            CurrentTheme = theme;
+        }
+        public static void ApplyThemeToUIForm(Control form)
+        {
+            form.BackColor = UIAreaBackColor;
+            foreach (Control control in form.Controls)
+            {
+                Type type = control.GetType();
+                if (type == typeof(Label) || type == typeof(CheckBox))
+                {
+                    control.BackColor = UIAreaBackColor;
+                    control.ForeColor = ContrastColor;
+                }
+                if (type == typeof(TextBox) || type == typeof(NumericUpDown))
+                {
+                    control.BackColor = UIControlBackColor;
+                    control.ForeColor = ContrastColor;
                 }
             }
         }

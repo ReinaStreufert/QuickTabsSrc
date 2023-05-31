@@ -12,6 +12,8 @@ namespace QuickTabs.Controls
 {
     internal class TabEditor : Control
     {
+        public override Color BackColor { get => DrawingConstants.TabEditorBackColor; set => base.BackColor = value; }
+
         public Song Song { get; set; }
         private Selection selection;
         public Selection Selection
@@ -58,8 +60,6 @@ namespace QuickTabs.Controls
         public TabEditor()
         {
             this.DoubleBuffered = true;
-            this.BackColor = Color.FromArgb(0x22, 0x22, 0x22);
-            this.ForeColor = Color.FromArgb(0x60, 0x60, 0x60);
             ShortcutManager.AddShortcut(Keys.None, Keys.A, () => { setRelativeSelection(-1); });
             ShortcutManager.AddShortcut(Keys.None, Keys.D, () => { setRelativeSelection(1); });
             ShortcutManager.AddShortcut(Keys.Shift, Keys.A, () => { lengthenSelection(-1); });
@@ -486,8 +486,8 @@ namespace QuickTabs.Controls
             using (SolidBrush backBrush = new SolidBrush(BackColor))
             using (SolidBrush higlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
             using (SolidBrush selectionBrush = new SolidBrush(selectionColor))
-            using (SolidBrush textBrush = new SolidBrush(Color.White))
-            using (Pen backPen = new Pen(Color.White, DrawingConstants.PenWidth))
+            using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
+            using (Pen backPen = new Pen(DrawingConstants.ContrastColor, DrawingConstants.PenWidth))
             using (Pen forePen = new Pen(DrawingConstants.HighlightBlue, DrawingConstants.BoldPenWidth))
             using (Font font = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))

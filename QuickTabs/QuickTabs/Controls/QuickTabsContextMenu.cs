@@ -44,12 +44,15 @@ namespace QuickTabs.Controls
 
         // these shortcuts get enabled and disabled
         private List<ShortcutManager.ShortcutController> measureShortcuts = new List<ShortcutManager.ShortcutController>();
-        private List<ShortcutManager.ShortcutController> selectionShortcuts = new List<ShortcutManager.ShortcutController>();
+        private List<ShortcutManager.ShortcutController> selectionDependentShortcuts = new List<ShortcutManager.ShortcutController>();
 
         private List<Beat> clipboard = null;
 
-        public QuickTabsContextMenu()
+        public QuickTabsContextMenu(Editor mainForm, TabEditor editor, Fretboard fretboard)
         {
+            MainForm = mainForm;
+            Editor = editor;
+            Fretboard = fretboard;
             Logo = DrawingIcons.QuickTabsLogo;
 
             setupFileSection();
@@ -63,7 +66,7 @@ namespace QuickTabs.Controls
         }
         private void selectionChanged()
         {
-            if (editor.Selection != null)
+            if (editor.Selection != null && (tabPlayer == null || !tabPlayer.IsPlaying))
             {
                 if (!Sections.Contains(measureSection))
                 {
@@ -73,7 +76,7 @@ namespace QuickTabs.Controls
                 {
                     Sections.Add(selectionSection);
                 }
-                foreach (ShortcutManager.ShortcutController shortcut in selectionShortcuts)
+                foreach (ShortcutManager.ShortcutController shortcut in selectionDependentShortcuts)
                 {
                     shortcut.Enabled = true;
                 }
@@ -120,7 +123,7 @@ namespace QuickTabs.Controls
                 {
                     Sections.Remove(selectionSection);
                 }
-                foreach (ShortcutManager.ShortcutController shortcut in selectionShortcuts)
+                foreach (ShortcutManager.ShortcutController shortcut in selectionDependentShortcuts)
                 {
                     shortcut.Enabled = false;
                 }

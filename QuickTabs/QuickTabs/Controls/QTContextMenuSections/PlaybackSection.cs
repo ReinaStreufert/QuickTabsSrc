@@ -66,6 +66,7 @@ namespace QuickTabs.Controls
                 }
                 editor.PlayMode = true;
                 tabPlayer.Start();
+                selectionChanged(); // update measure and selection section availability
                 Timer t = new Timer();
                 t.Interval = 50;
                 t.Tick += (object sender, EventArgs e) =>
@@ -84,8 +85,8 @@ namespace QuickTabs.Controls
                         if (playPause.Selected)
                         {
                             playPause.Selected = false;
-                            this.Invalidate();
                         }
+                        selectionChanged(); // update measure and selection section availability
                         if (editor.PlayMode)
                         {
                             editor.PlayMode = false;

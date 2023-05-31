@@ -25,6 +25,7 @@ namespace QuickTabs.Forms
         {
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Dpi;
+            DrawingConstants.ApplyThemeToUIForm(this);
 
             tuningPicker = new TuningPicker();
             tuningPicker.Tuning = Songwriting.Tuning.StandardGuitar;
