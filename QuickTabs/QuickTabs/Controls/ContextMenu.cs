@@ -141,7 +141,14 @@ namespace QuickTabs.Controls
             }
             if (selectedSection != null)
             {
-                dropdownControl.Refresh();
+                if (Sections.Contains(selectedSection.Section))
+                {
+                    dropdownControl.Refresh();
+                } else
+                {
+                    selectedSection = null;
+                    closeDropdown();
+                }
             }
         }
 

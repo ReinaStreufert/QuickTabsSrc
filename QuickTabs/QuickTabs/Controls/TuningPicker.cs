@@ -343,7 +343,7 @@ namespace QuickTabs.Controls
                         g.DrawString(text, font, textBrush, textX, textY);
                         if (button.Editing && cursorShowing)
                         {
-                            using (Pen pen = new Pen(Color.White, 1.0F))
+                            using (Pen pen = new Pen(DrawingConstants.ContrastColor, 1.0F))
                             {
                                 g.DrawLine(pen, textX + textSize.Width, textY, textX + textSize.Width, textY + textSize.Height);
                             }

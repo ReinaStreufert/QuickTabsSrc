@@ -94,6 +94,7 @@ namespace QuickTabs.Controls
                         }
                         t.Stop();
                         t.Dispose();
+                        History.PushState(Song, editor.Selection, false); // pushing an insignificant event because selection will be different once playing stops
                     }
                 };
                 t.Start();
