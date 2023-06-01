@@ -95,7 +95,13 @@ namespace QuickTabs
             tabEditorPanel.Location = new Point(0, (int)(ContextMenuHeight * scale));
             tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(ContextMenuHeight * scale) - (int)(FretboardHeight * scale));
             tabEditor.MaxHeight = tabEditorPanel.Height;
-            tabEditor.Size = new Size(this.ClientSize.Width, tabEditor.Height);
+            if (tabEditor.Width == this.ClientSize.Width)
+            {
+                tabEditor.Refresh();
+            } else
+            {
+                tabEditor.Size = new Size(this.ClientSize.Width, tabEditor.Height);
+            }
             toolMenu.Location = new Point(0, this.Height - (int)(FretboardHeight * scale));
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;

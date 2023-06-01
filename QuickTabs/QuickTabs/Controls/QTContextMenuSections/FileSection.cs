@@ -102,6 +102,7 @@ namespace QuickTabs.Controls
             if (tabPlayer != null && tabPlayer.IsPlaying)
             {
                 tabPlayer.Stop();
+                editor.PlayMode = false; // this gets done by the play cursor update timer, but theres a delay and we need to set the selection right after this
             }
             Song = openedSong;
             editor.QuietlySelect(new Selection(1, 1));
@@ -132,6 +133,7 @@ namespace QuickTabs.Controls
             if (tabPlayer != null && tabPlayer.IsPlaying)
             {
                 tabPlayer.Stop();
+                editor.PlayMode = false;
             }
             Song.Name = "Untitled tab";
             Song.Tempo = 120;
