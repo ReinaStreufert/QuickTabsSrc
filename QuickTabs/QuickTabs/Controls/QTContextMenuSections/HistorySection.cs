@@ -19,17 +19,17 @@ namespace QuickTabs.Controls
             undo = new ContextItem(DrawingIcons.Undo, "Undo");
             undo.Selected = false;
             undo.Click += undoClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.Z, undoClick);
+            historyShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.Z, undoClick));
             historySection.AddItem(undo);
             redo = new ContextItem(DrawingIcons.Redo, "Redo");
             redo.Selected = false;
             redo.Click += redoClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.Y, redoClick);
+            historyShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control, Keys.Y, redoClick));
             historySection.AddItem(redo);
             redoAlternate = new ContextItem(DrawingIcons.RedoAlternate, "Alternate redo");
             redoAlternate.Selected = false;
             redoAlternate.Click += redoAlternateClick;
-            ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.Y, redoAlternateClick);
+            historyShortcuts.Add(ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.Y, redoAlternateClick));
             historySection.AddItem(redoAlternate);
             Sections.Add(historySection);
         }
@@ -64,10 +64,7 @@ namespace QuickTabs.Controls
             }
             Selection newSelection;
             History.Undo(Song, out newSelection);
-            editor.QuietlySelect(newSelection);
-            Fretboard.Refresh();
-            editor.Refresh();
-            editor.Selection = newSelection;
+            refreshState(newSelection);
         }
         private void redoClick()
         {
@@ -77,10 +74,7 @@ namespace QuickTabs.Controls
             }
             Selection newSelection;
             History.Redo(Song, out newSelection);
-            editor.QuietlySelect(newSelection);
-            Fretboard.Refresh();
-            editor.Refresh();
-            editor.Selection = newSelection;
+            refreshState(newSelection);
         }
         private void redoAlternateClick()
         {
@@ -90,10 +84,19 @@ namespace QuickTabs.Controls
             }
             Selection newSelection;
             History.RedoAlternate(Song, out newSelection);
+            refreshState(newSelection);
+        }
+        private void refreshState(Selection newSelection)
+        {
             editor.QuietlySelect(newSelection);
             Fretboard.Refresh();
             editor.Refresh();
             editor.Selection = newSelection;
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                tabPlayer.BPM = Song.Tempo;
+                //tabPlayer.MetronomeTimeSignature = Song.TimeSignature;
+            }
         }
     }
 }

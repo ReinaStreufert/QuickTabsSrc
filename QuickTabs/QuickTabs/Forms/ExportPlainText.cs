@@ -88,16 +88,16 @@ namespace QuickTabs.Forms
         {
             if (enableWrap.Checked)
             {
-                wrapEveryText.ForeColor = Color.White;
-                measuresText.ForeColor = Color.White;
+                wrapEveryText.ForeColor = DrawingConstants.ContrastColor;
+                measuresText.ForeColor = DrawingConstants.ContrastColor;
                 wrapEvery.Enabled = true;
-                wrapEvery.BackColor = SystemColors.ControlDarkDark;
+                wrapEvery.BackColor = DrawingConstants.UIControlBackColor;
             } else
             {
-                wrapEveryText.ForeColor = SystemColors.ControlDarkDark;
-                measuresText.ForeColor = SystemColors.ControlDarkDark;
+                wrapEveryText.ForeColor = DrawingConstants.FadedGray;
+                measuresText.ForeColor = DrawingConstants.FadedGray;
                 wrapEvery.Enabled = false;
-                wrapEvery.BackColor = Color.Black;
+                wrapEvery.BackColor = DrawingConstants.UIAreaBackColor;
             }
             updatePreview();
         }
@@ -142,9 +142,9 @@ namespace QuickTabs.Forms
                 if (saveResult == DialogResult.OK)
                 {
                     File.WriteAllText(saveDialog.FileName, previewBox.Text);
+                    this.Close();
                 }
             }
-            this.Close();
         }
     }
 }

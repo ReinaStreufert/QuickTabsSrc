@@ -161,6 +161,7 @@ namespace QuickTabs.Controls
         private void documentPropertiesClick()
         {
             bool changed;
+            TimeSignature oldTs = Song.TimeSignature;
             using (DocumentProperties dp = new DocumentProperties())
             {
                 dp.Song = Song;
@@ -169,7 +170,21 @@ namespace QuickTabs.Controls
             }
             if (changed)
             {
-                if (editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.Tab.Count)
+                if (tabPlayer != null && editor.PlayMode)
+                {
+                    if (Song.TimeSignature != oldTs)
+                    {
+                        if (tabPlayer.IsPlaying)
+                        {
+                            tabPlayer.Stop();
+                        }
+                        editor.PlayMode = false;
+                    } else
+                    {
+                        tabPlayer.BPM = Song.Tempo;
+                    }
+                }
+                if (editor.Selection != null && editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.Tab.Count)
                 {
                     editor.Selection = new Selection(1, 1);
                 }

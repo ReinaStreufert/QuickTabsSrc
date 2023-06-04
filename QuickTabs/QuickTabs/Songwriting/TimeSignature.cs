@@ -40,5 +40,13 @@ namespace QuickTabs.Songwriting
                 }
             }
         }
+        public static bool operator ==(TimeSignature left, TimeSignature right)
+        {
+            return (left.T1 == right.T1 && left.T2 == right.T2);
+        }
+        public static bool operator !=(TimeSignature left, TimeSignature right)
+        {
+            return (left.T1 != right.T1 || left.T2 != right.T2);
+        }
     }
 }

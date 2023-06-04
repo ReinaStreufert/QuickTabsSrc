@@ -32,6 +32,10 @@ namespace QuickTabs.Controls
                 }
                 selection = value;
                 SelectionChanged?.Invoke();
+                if (scrollbarShown && value != null)
+                {
+                    scrollSelectionIntoView();
+                }
             }
         }
         public int PlayCursor
@@ -44,10 +48,18 @@ namespace QuickTabs.Controls
             {
                 selection = new Selection(value, 1);
                 SelectionChanged?.Invoke();
+                if (scrollbarShown && value != null)
+                {
+                    scrollSelectionIntoView();
+                }
             }
         }
         public void QuietlySelect(Selection newSelection)
         {
+            if (PlayMode)
+            {
+                return;
+            }
             selection = newSelection;
         }
         public event Action SelectionChanged;
@@ -273,6 +285,48 @@ namespace QuickTabs.Controls
                     if (uiStep.AssociatedStep == step)
                     {
                         return uiStep;
+                    }
+                }
+            }
+            throw new IndexOutOfRangeException();
+        }
+        private void scrollSelectionIntoView()
+        {
+            // detect if any part of the selection is off the screen, if so set scrolling
+            int selectionStartRow = rowIndexFromTabStep(Song.Tab[selection.SelectionStart]);
+            int selectionEndRow = rowIndexFromTabStep(Song.Tab[selection.SelectionStart + selection.SelectionLength - 1]);
+            int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2);
+            int selectionStartY = selectionStartRow * tallRowHeight - scrollBar.Value;
+            int selectionEndY = (selectionEndRow + 1) * tallRowHeight - scrollBar.Value + DrawingConstants.RowHeight;
+            if (selectionStartY < 0)
+            {
+                scrollBar.Value = scrollBar.Value + selectionStartY;
+                if (mouseDown)
+                {
+                    selectionStartPoint = new Point(selectionStartPoint.X, selectionStartPoint.Y - selectionStartY);
+                }
+                this.Invalidate();
+            }
+            else if (selectionEndY > this.Height)
+            {
+                scrollBar.Value = scrollBar.Value + (selectionEndY - this.Height);
+                if (mouseDown)
+                {
+                    selectionStartPoint = new Point(selectionStartPoint.X, selectionStartPoint.Y - (selectionEndY - this.Height));
+                }
+                this.Invalidate();
+            }
+        }
+        private int rowIndexFromTabStep(Step step)
+        {
+            for (int i = 0; i < tabUI.Count; i++)
+            {
+                UIRow row = tabUI[i];
+                foreach (UIStep uiStep in row.Steps)
+                {
+                    if (uiStep.AssociatedStep == step)
+                    {
+                        return i;
                     }
                 }
             }

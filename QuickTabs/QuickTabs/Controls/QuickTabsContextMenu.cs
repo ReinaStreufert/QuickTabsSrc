@@ -25,7 +25,7 @@ namespace QuickTabs.Controls
             set
             {
                 editor = value;
-                value.SelectionChanged += selectionChanged;
+                value.SelectionChanged += updateSections;
             }
         }
         public Fretboard Fretboard { get; set; }
@@ -43,7 +43,7 @@ namespace QuickTabs.Controls
         private ContextItem metronome;
 
         // these shortcuts get enabled and disabled
-        private List<ShortcutManager.ShortcutController> measureShortcuts = new List<ShortcutManager.ShortcutController>();
+        private List<ShortcutManager.ShortcutController> historyShortcuts = new List<ShortcutManager.ShortcutController>();
         private List<ShortcutManager.ShortcutController> selectionDependentShortcuts = new List<ShortcutManager.ShortcutController>();
 
         private List<Beat> clipboard = null;
@@ -57,15 +57,36 @@ namespace QuickTabs.Controls
 
             setupFileSection();
             setupViewSection();
-            setupHistorySection();
             setupPlaybackSection();
+            setupHistorySection();
             setupMeasureSection();
             setupSelectionSection();
 
             updateUI();
         }
-        private void selectionChanged()
+        private void updateSections()
         {
+            if (tabPlayer != null && tabPlayer.IsPlaying)
+            {
+                if (Sections.Contains(historySection))
+                {
+                    Sections.Remove(historySection);
+                }
+                foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
+                {
+                    shortcut.Enabled = false;
+                }
+            } else
+            {
+                if (!Sections.Contains(historySection))
+                {
+                    Sections.Add(historySection);
+                }
+                foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
+                {
+                    shortcut.Enabled = true;
+                }
+            }
             if (editor.Selection != null && (tabPlayer == null || !tabPlayer.IsPlaying))
             {
                 if (!Sections.Contains(measureSection))

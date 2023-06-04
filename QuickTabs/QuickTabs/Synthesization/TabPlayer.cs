@@ -12,7 +12,26 @@ namespace QuickTabs.Synthesization
     internal class TabPlayer
     {
         public Tab Tab { get; private set; }
-        public int BPM { get; set; }
+        private int bpm;
+        public int BPM 
+        { 
+            get
+            {
+                return bpm;
+            }
+            set
+            {
+                if (bpm != value)
+                {
+                    if (IsPlaying)
+                    {
+                        playStartBeat = this.Position;
+                        playStartTime = DateTime.Now;
+                    }
+                    bpm = value;
+                }
+            }
+        }
         public bool Loop { get; set; } = false;
         private bool metronome = false;
         public bool Metronome
@@ -46,6 +65,7 @@ namespace QuickTabs.Synthesization
                         {
                             beat = 1;
                             playStartBeat = 1;
+                            nonBeats = 0;
                             playStartTime = DateTime.Now;
                         } else
                         {
