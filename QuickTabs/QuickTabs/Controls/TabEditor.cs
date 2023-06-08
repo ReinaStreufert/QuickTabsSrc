@@ -1,4 +1,5 @@
-﻿using QuickTabs.Enums;
+﻿using Newtonsoft.Json.Linq;
+using QuickTabs.Enums;
 using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
 using System;
@@ -30,12 +31,9 @@ namespace QuickTabs.Controls
                 {
                     return;
                 }
+                selectionChanged = true;
                 selection = value;
                 SelectionChanged?.Invoke();
-                if (scrollbarShown && value != null)
-                {
-                    scrollSelectionIntoView();
-                }
             }
         }
         public int PlayCursor
@@ -47,11 +45,8 @@ namespace QuickTabs.Controls
             set
             {
                 selection = new Selection(value, 1);
+                scrollSelectionIntoView();
                 SelectionChanged?.Invoke();
-                if (scrollbarShown && value != null)
-                {
-                    scrollSelectionIntoView();
-                }
             }
         }
         public void QuietlySelect(Selection newSelection)
@@ -65,13 +60,14 @@ namespace QuickTabs.Controls
         public event Action SelectionChanged;
         public bool PlayMode { get; set; } = false;
 
-        private List<UIRow> tabUI = new List<UIRow>();
+        protected List<UIRow> tabUI = new List<UIRow>();
         private UIStep currentlyHighlighted = null;
         private Point selectionStartPoint;
         private Selection oldSelection;
         private bool mouseDown = false;
         private VScrollBar scrollBar = new VScrollBar();
         private bool scrollbarShown = false;
+        private bool selectionChanged = false; // whether the selection has been updated since the last UI update
 
         public TabEditor()
         {
@@ -83,7 +79,7 @@ namespace QuickTabs.Controls
             ShortcutManager.AddShortcut(Keys.Shift, Keys.D, () => { lengthenSelection(1); });
         }
 
-        private void updateUI()
+        protected void updateUI()
         {
             if (Song == null)
             {
@@ -92,7 +88,7 @@ namespace QuickTabs.Controls
             Songwriting.Tab tab = Song.Tab;
             tabUI.Clear();
 
-            int usableWidth = this.Width - DrawingConstants.MediumMargin * 2 - DrawingConstants.LeftMargin;
+            int usableWidth = this.Width - DrawingConstants.MediumMargin - DrawingConstants.LeftMargin;
             if (scrollbarShown)
             {
                 usableWidth -= SystemInformation.VerticalScrollBarWidth;
@@ -204,6 +200,14 @@ namespace QuickTabs.Controls
                     }
                 }
             }
+            if (selectionChanged)
+            {
+                selectionChanged = false;
+                if (scrollbarShown && selection != null)
+                {
+                    scrollSelectionIntoView();
+                }
+            }
         }
         private void showScrollbar(int contentHeight)
         {
@@ -293,11 +297,16 @@ namespace QuickTabs.Controls
         private void scrollSelectionIntoView()
         {
             // detect if any part of the selection is off the screen, if so set scrolling
+            selectionChanged = false;
             int selectionStartRow = rowIndexFromTabStep(Song.Tab[selection.SelectionStart]);
             int selectionEndRow = rowIndexFromTabStep(Song.Tab[selection.SelectionStart + selection.SelectionLength - 1]);
             int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2);
             int selectionStartY = selectionStartRow * tallRowHeight - scrollBar.Value;
             int selectionEndY = (selectionEndRow + 1) * tallRowHeight - scrollBar.Value + DrawingConstants.RowHeight;
+            if (selectionEndY - selectionStartY > this.Height)
+            {
+                return;
+            }
             if (selectionStartY < 0)
             {
                 scrollBar.Value = scrollBar.Value + selectionStartY;
@@ -307,7 +316,7 @@ namespace QuickTabs.Controls
                 }
                 this.Invalidate();
             }
-            else if (selectionEndY > this.Height)
+            if (selectionEndY > this.Height)
             {
                 scrollBar.Value = scrollBar.Value + (selectionEndY - this.Height);
                 if (mouseDown)
@@ -448,6 +457,10 @@ namespace QuickTabs.Controls
                 {
                     if (updateSelectionFromPoints(selectionStartPoint, e.Location))
                     {
+                        if (selection != null)
+                        {
+                            scrollSelectionIntoView();
+                        }
                         this.Invalidate();
                     }
                 }
@@ -512,6 +525,10 @@ namespace QuickTabs.Controls
             }
             if (updateSelectionFromPoints(selectionStartPoint, e.Location))
             {
+                if (selection != null)
+                {
+                    scrollSelectionIntoView();
+                }
                 this.Invalidate();
             }
             if (selection == null || oldSelection == null)
@@ -734,31 +751,33 @@ namespace QuickTabs.Controls
                     }
                     // spaces
                     int spaceY = startY + DrawingConstants.RowHeight * (stringCount + 1);
-                    List<Point> points = new List<Point>();
+                    int leftSpaceX = -1;
+                    int rightSpaceX = -1;
                     for (int i = 0; i < row.Steps.Count; i++)
                     {
+                        int x = DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth);
                         if (row.Steps[i].Type == UIStepType.Beat)
                         {
-                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
-                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY - DrawingConstants.RowHeight / 2));
-                            points.Add(new Point(DrawingConstants.MediumMargin + DrawingConstants.LeftMargin + (i * DrawingConstants.StepWidth), spaceY));
+                            g.DrawLine(forePen, x, spaceY + DrawingConstants.PenWidth / 2F, x, spaceY - DrawingConstants.RowHeight / 2);
+                            if (leftSpaceX == -1)
+                            {
+                                leftSpaceX = x;
+                            }
+                            rightSpaceX = x;
                         }
                     }
-                    if (points.Count > 1)
-                    {
-                        g.DrawLines(forePen, points.ToArray());
-                    }
+                    g.DrawLine(forePen, leftSpaceX - DrawingConstants.PenWidth / 2F, spaceY, rightSpaceX + DrawingConstants.PenWidth / 2F, spaceY);
                     startY += tallRowHeight;
                 }
             }
         }
 
-        private class UIRow
+        protected class UIRow
         {
             public string Head = "";
             public List<UIStep> Steps { get; set; } = new List<UIStep>();
         }
-        private class UIStep
+        protected class UIStep
         {
             public UIStepType Type { get; set; }
             public Step AssociatedStep { get; set; }
@@ -770,7 +789,7 @@ namespace QuickTabs.Controls
                 AssociatedStep = associatedStep;
             }
         }
-        private enum UIStepType
+        protected enum UIStepType
         {
             Beat,
             MeasureBar,

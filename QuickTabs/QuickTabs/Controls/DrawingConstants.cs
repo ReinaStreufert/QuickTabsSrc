@@ -12,6 +12,7 @@ namespace QuickTabs.Controls
     internal static class DrawingConstants // yeah this name makes no sense now that theres literally only a single constant in this class lolz
     {
         public static Theme CurrentTheme { get; private set; } = Theme.DarkMode;
+        public static float CurrentScale { get; private set; } = 1.0F;
 
         public static int LargeMargin { get; private set; } = 40;
         public static int MediumMargin { get; private set; } = 30;
@@ -105,6 +106,7 @@ namespace QuickTabs.Controls
         public static int ScrollbarSmallChange { get; private set; } = 20;
         public static void Scale(float scale)
         {
+            CurrentScale *= scale;
             FieldInfo[] allFields = typeof(DrawingConstants).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             foreach (FieldInfo field in allFields)
             {
@@ -161,15 +163,23 @@ namespace QuickTabs.Controls
             foreach (Control control in form.Controls)
             {
                 Type type = control.GetType();
-                if (type == typeof(Label) || type == typeof(CheckBox))
+                if (type == typeof(Label) || type == typeof(CheckBox) || type == typeof(LinkLabel))
                 {
                     control.BackColor = UIAreaBackColor;
                     control.ForeColor = ContrastColor;
+                    if (type == typeof(LinkLabel))
+                    {
+                        ((LinkLabel)control).LinkColor = ContrastColor;
+                    }
                 }
                 if (type == typeof(TextBox) || type == typeof(NumericUpDown))
                 {
                     control.BackColor = UIControlBackColor;
                     control.ForeColor = ContrastColor;
+                }
+                if (type == typeof(Panel))
+                {
+                    ApplyThemeToUIForm(control);
                 }
             }
         }

@@ -33,3 +33,4 @@ C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-w
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.pdb
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.genruntimeconfig.cache
 C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\ref\QuickTabs.dll
+C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\obj\Debug\net6.0-windows\QuickTabs.Forms.PrintTab.resources

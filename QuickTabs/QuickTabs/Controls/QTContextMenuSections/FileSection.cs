@@ -38,6 +38,11 @@ namespace QuickTabs.Controls
             saveAs.Click += saveAsClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
             fileSection.AddItem(saveAs);
+            ContextItem print = new ContextItem(DrawingIcons.Print, "Print...");
+            print.Selected = true;
+            print.Click += printClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.P, printClick);
+            fileSection.AddItem(print);
             ContextItem export = new ContextItem(DrawingIcons.Export, "Export plain text...");
             export.Selected = true;
             export.Click += exportClick;
@@ -149,6 +154,14 @@ namespace QuickTabs.Controls
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection, false);
+        }
+        private void printClick()
+        {
+            using (PrintTab printTab = new PrintTab())
+            {
+                printTab.Song = Song;
+                printTab.ShowDialog();
+            }
         }
         private void exportClick()
         {

@@ -1,4 +1,6 @@
 NEXT IMPLEMENTATION LIST
 ----
-Debug slow large context menu
+Print heading
+Tap tempo
+Tuning presets
 Asio not installed handling*

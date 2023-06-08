@@ -1,0 +1,1558 @@
+{
+  "name": "Untitled tab",
+  "tempo": 100,
+  "ts": [
+    4,
+    4
+  ],
+  "tuning": [
+    "E2",
+    "A2",
+    "D3",
+    "G3",
+    "B3",
+    "E4"
+  ],
+  "steps": [
+    {
+      "type": "sh",
+      "name": "Untitled Section"
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        2
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        2
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        2
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        2
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        3,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        5,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        3
+      ]
+    },
+    {
+      "type": "b",
+      "length": 1,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        5,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        2,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "length": 2,
+      "states": [
+        null,
+        null,
+        null,
+        4,
+        null,
+        null
+      ]
+    }
+  ]
+}

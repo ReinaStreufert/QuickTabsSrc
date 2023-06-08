@@ -29,6 +29,7 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap OpenFile { get; private set; } = null;
         public static MultiColorBitmap SaveFile { get; private set; } = null;
         public static MultiColorBitmap SaveFileAs { get; private set; } = null;
+        public static MultiColorBitmap Print { get; private set; } = null;
         public static MultiColorBitmap Reload { get; private set; } = null;
         public static MultiColorBitmap EditDocumentProperties { get; private set; } = null;
         public static MultiColorBitmap Export { get; private set; } = null;
@@ -86,6 +87,7 @@ namespace QuickTabs.Controls
             OpenFile = loadIcon("folder-open-outline", Color.White, Color.Black);
             SaveFile = loadIcon("content-save-all-outline", Color.White, Color.Black);
             SaveFileAs = loadIcon("content-save-plus-outline", Color.White, Color.Black);
+            Print = loadIcon("printer-outline", Color.White, Color.Black);
             Reload = loadIcon("reload", Color.White, Color.Black);
             EditDocumentProperties = loadIcon("pencil-outline", Color.White, Color.Black);
             Export = loadIcon("export", Color.White, Color.Black);
