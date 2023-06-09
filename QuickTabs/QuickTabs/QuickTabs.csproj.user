@@ -58,6 +58,9 @@
     <Compile Update="Forms\Splash.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\TuningPresets.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\UnsavedChanges.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -172,7 +172,7 @@ namespace QuickTabs.Controls
                         ((LinkLabel)control).LinkColor = ContrastColor;
                     }
                 }
-                if (type == typeof(TextBox) || type == typeof(NumericUpDown))
+                if (type == typeof(TextBox) || type == typeof(NumericUpDown) || type == typeof(ListBox))
                 {
                     control.BackColor = UIControlBackColor;
                     control.ForeColor = ContrastColor;

@@ -21,6 +21,7 @@ namespace QuickTabs.Forms
         private bool tsChanged = false;
         private int oldts2Value = 4;
         private bool ignoreTs2Changes = false;
+        private TapTempo tapTempo = new TapTempo();
         public DocumentProperties()
         {
             InitializeComponent();
@@ -32,6 +33,8 @@ namespace QuickTabs.Forms
             tuningPicker.Location = new Point(0, 0);
             tuningPicker.Size = tuningPickerContainer.Size;
             tuningPickerContainer.Controls.Add(tuningPicker);
+
+            tapTempo.OnSetTempo += TapTempo_OnSetTempo;
         }
 
         protected override void OnShown(EventArgs e)
@@ -54,6 +57,7 @@ namespace QuickTabs.Forms
                 ts1DisabledLabel.Text = Song.TimeSignature.T1.ToString();
                 ts2DisabledLabel.Text = Song.TimeSignature.T2.ToString();
             }
+            tapTempo.TimeSignature = Song.TimeSignature;
             tuningPicker.Tuning = Song.Tab.Tuning;
             tuningPicker.Refresh();
         }
@@ -128,6 +132,7 @@ namespace QuickTabs.Forms
         private void ts1Input_ValueChanged(object sender, EventArgs e)
         {
             tsChanged = true;
+            tapTempo.TimeSignature = new TimeSignature((int)ts1Input.Value, (int)ts2Input.Value);
         }
 
         private void ts2Input_ValueChanged(object sender, EventArgs e)
@@ -137,6 +142,7 @@ namespace QuickTabs.Forms
                 return;
             }
             tsChanged = true;
+            tapTempo.TimeSignature = new TimeSignature((int)ts1Input.Value, (int)ts2Input.Value);
             if (ts2Input.Value > oldts2Value)
             {
                 ignoreTs2Changes = true;
@@ -155,6 +161,26 @@ namespace QuickTabs.Forms
                 ignoreTs2Changes = false;
             }
             oldts2Value = (int)ts2Input.Value;
+        }
+
+        private void TapTempo_OnSetTempo(int bpm)
+        {
+            tempoInput.Value = bpm;
+        }
+
+        private void tapTempoLink_LinkClicked(object sender, MouseEventArgs e)
+        {
+            tapTempo.Tap();
+        }
+
+        private void tuningPresetLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (TuningPresets tuningPresets = new TuningPresets())
+            {
+                tuningPresets.TuningPicker = tuningPicker;
+                tuningPresets.ShowDialog();
+                tuningPicker.Refresh();
+            }
         }
     }
 }

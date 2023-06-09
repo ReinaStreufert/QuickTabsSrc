@@ -55,6 +55,7 @@
             this.printButton = new System.Windows.Forms.Button();
             this.invalidPreviewPanel = new System.Windows.Forms.Panel();
             this.updatePreviewLink = new System.Windows.Forms.LinkLabel();
+            this.includeCoverCheck = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.scaleInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewZoomInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewPageInput)).BeginInit();
@@ -284,7 +285,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label7.Location = new System.Drawing.Point(12, 327);
+            this.label7.Location = new System.Drawing.Point(12, 370);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(145, 33);
             this.label7.TabIndex = 29;
@@ -297,7 +298,7 @@
             this.paperSizeSelect.DropDownWidth = 500;
             this.paperSizeSelect.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.paperSizeSelect.FormattingEnabled = true;
-            this.paperSizeSelect.Location = new System.Drawing.Point(18, 363);
+            this.paperSizeSelect.Location = new System.Drawing.Point(18, 406);
             this.paperSizeSelect.Name = "paperSizeSelect";
             this.paperSizeSelect.Size = new System.Drawing.Size(306, 41);
             this.paperSizeSelect.TabIndex = 30;
@@ -321,7 +322,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label8.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label8.Location = new System.Drawing.Point(12, 407);
+            this.label8.Location = new System.Drawing.Point(12, 450);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(166, 33);
             this.label8.TabIndex = 32;
@@ -338,7 +339,7 @@
             0,
             0,
             65536});
-            this.topMarginInput.Location = new System.Drawing.Point(126, 449);
+            this.topMarginInput.Location = new System.Drawing.Point(126, 492);
             this.topMarginInput.Maximum = new decimal(new int[] {
             4,
             0,
@@ -365,7 +366,7 @@
             0,
             0,
             65536});
-            this.bottomMarginInput.Location = new System.Drawing.Point(126, 492);
+            this.bottomMarginInput.Location = new System.Drawing.Point(126, 535);
             this.bottomMarginInput.Maximum = new decimal(new int[] {
             4,
             0,
@@ -392,7 +393,7 @@
             0,
             0,
             65536});
-            this.rightMarginInput.Location = new System.Drawing.Point(222, 471);
+            this.rightMarginInput.Location = new System.Drawing.Point(222, 514);
             this.rightMarginInput.Maximum = new decimal(new int[] {
             4,
             0,
@@ -419,7 +420,7 @@
             0,
             0,
             65536});
-            this.leftMarginInput.Location = new System.Drawing.Point(30, 471);
+            this.leftMarginInput.Location = new System.Drawing.Point(30, 514);
             this.leftMarginInput.Maximum = new decimal(new int[] {
             4,
             0,
@@ -440,7 +441,7 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label9.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label9.Location = new System.Drawing.Point(11, 532);
+            this.label9.Location = new System.Drawing.Point(11, 575);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(101, 33);
             this.label9.TabIndex = 37;
@@ -451,7 +452,7 @@
             this.copiesInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.copiesInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.copiesInput.ForeColor = System.Drawing.Color.White;
-            this.copiesInput.Location = new System.Drawing.Point(18, 568);
+            this.copiesInput.Location = new System.Drawing.Point(18, 611);
             this.copiesInput.Maximum = new decimal(new int[] {
             200,
             0,
@@ -478,7 +479,7 @@
             this.printButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.printButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.printButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.printButton.Location = new System.Drawing.Point(18, 611);
+            this.printButton.Location = new System.Drawing.Point(18, 654);
             this.printButton.Name = "printButton";
             this.printButton.Size = new System.Drawing.Size(306, 56);
             this.printButton.TabIndex = 39;
@@ -501,19 +502,33 @@
             this.updatePreviewLink.LinkColor = System.Drawing.Color.White;
             this.updatePreviewLink.Location = new System.Drawing.Point(3, 3);
             this.updatePreviewLink.Name = "updatePreviewLink";
-            this.updatePreviewLink.Size = new System.Drawing.Size(740, 680);
+            this.updatePreviewLink.Size = new System.Drawing.Size(847, 737);
             this.updatePreviewLink.TabIndex = 0;
             this.updatePreviewLink.TabStop = true;
             this.updatePreviewLink.Text = "Update preview";
             this.updatePreviewLink.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.updatePreviewLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.updatePreviewLink_LinkClicked);
             // 
+            // includeCoverCheck
+            // 
+            this.includeCoverCheck.AutoSize = true;
+            this.includeCoverCheck.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.includeCoverCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.includeCoverCheck.Location = new System.Drawing.Point(18, 330);
+            this.includeCoverCheck.Name = "includeCoverCheck";
+            this.includeCoverCheck.Size = new System.Drawing.Size(254, 37);
+            this.includeCoverCheck.TabIndex = 41;
+            this.includeCoverCheck.Text = "Include title page";
+            this.includeCoverCheck.UseVisualStyleBackColor = true;
+            this.includeCoverCheck.CheckedChanged += new System.EventHandler(this.includeCoverCheck_CheckedChanged);
+            // 
             // PrintTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowText;
-            this.ClientSize = new System.Drawing.Size(1095, 738);
+            this.ClientSize = new System.Drawing.Size(1188, 783);
+            this.Controls.Add(this.includeCoverCheck);
             this.Controls.Add(this.invalidPreviewPanel);
             this.Controls.Add(this.printButton);
             this.Controls.Add(this.copiesInput);
@@ -586,5 +601,6 @@
         private Button printButton;
         private Panel invalidPreviewPanel;
         private LinkLabel updatePreviewLink;
+        private CheckBox includeCoverCheck;
     }
 }

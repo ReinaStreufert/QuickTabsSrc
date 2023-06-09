@@ -189,6 +189,12 @@ namespace QuickTabs.Forms
             invalidatePreview();
         }
 
+        private void includeCoverCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            tabPrinter.IncludeCover = includeCoverCheck.Checked;
+            invalidatePreview();
+        }
+
         private void marginInputChanged(object sender, EventArgs e)
         {
             Margins margins = new Margins();

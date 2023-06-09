@@ -43,6 +43,8 @@
             this.tuningPickerContainer = new System.Windows.Forms.Panel();
             this.ts1DisabledLabel = new System.Windows.Forms.Label();
             this.ts2DisabledLabel = new System.Windows.Forms.Label();
+            this.tuningPresetLink = new System.Windows.Forms.LinkLabel();
+            this.tapTempoLink = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.tempoInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ts1Input)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ts2Input)).BeginInit();
@@ -264,12 +266,41 @@
             this.ts2DisabledLabel.Text = "4";
             this.ts2DisabledLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // tuningPresetLink
+            // 
+            this.tuningPresetLink.AutoSize = true;
+            this.tuningPresetLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tuningPresetLink.LinkColor = System.Drawing.Color.White;
+            this.tuningPresetLink.Location = new System.Drawing.Point(137, 164);
+            this.tuningPresetLink.Name = "tuningPresetLink";
+            this.tuningPresetLink.Size = new System.Drawing.Size(103, 33);
+            this.tuningPresetLink.TabIndex = 16;
+            this.tuningPresetLink.TabStop = true;
+            this.tuningPresetLink.Text = "Presets";
+            this.tuningPresetLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.tuningPresetLink_LinkClicked);
+            // 
+            // tapTempoLink
+            // 
+            this.tapTempoLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
+            this.tapTempoLink.AutoSize = true;
+            this.tapTempoLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tapTempoLink.LinkColor = System.Drawing.Color.White;
+            this.tapTempoLink.Location = new System.Drawing.Point(692, 164);
+            this.tapTempoLink.Name = "tapTempoLink";
+            this.tapTempoLink.Size = new System.Drawing.Size(58, 33);
+            this.tapTempoLink.TabIndex = 17;
+            this.tapTempoLink.TabStop = true;
+            this.tapTempoLink.Text = "Tap";
+            this.tapTempoLink.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tapTempoLink_LinkClicked);
+            // 
             // DocumentProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(985, 398);
+            this.Controls.Add(this.tapTempoLink);
+            this.Controls.Add(this.tuningPresetLink);
             this.Controls.Add(this.ts2DisabledLabel);
             this.Controls.Add(this.ts1DisabledLabel);
             this.Controls.Add(this.tuningPickerContainer);
@@ -317,5 +348,7 @@
         private Panel tuningPickerContainer;
         private Label ts1DisabledLabel;
         private Label ts2DisabledLabel;
+        private LinkLabel tuningPresetLink;
+        private LinkLabel tapTempoLink;
     }
 }

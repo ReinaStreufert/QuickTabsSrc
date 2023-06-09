@@ -9,6 +9,7 @@ namespace QuickTabs.Songwriting
     internal struct Tuning
     {
         public static readonly Tuning StandardGuitar = new Tuning("E4", "B3", "G3", "D3", "A2", "E2");
+        public static readonly Tuning DropD = new Tuning("E4", "B3", "G3", "D3", "A2", "D2");
         public static readonly Tuning StandardUke = new Tuning("A4", "E4", "C4", "G4");
         public static readonly Tuning StandardBass = new Tuning("G2", "D2", "A1", "E1");
 
