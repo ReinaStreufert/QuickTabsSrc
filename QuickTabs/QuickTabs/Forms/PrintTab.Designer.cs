@@ -56,6 +56,7 @@
             this.invalidPreviewPanel = new System.Windows.Forms.Panel();
             this.updatePreviewLink = new System.Windows.Forms.LinkLabel();
             this.includeCoverCheck = new System.Windows.Forms.CheckBox();
+            this.systemDialogLink = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.scaleInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewZoomInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewPageInput)).BeginInit();
@@ -522,12 +523,27 @@
             this.includeCoverCheck.UseVisualStyleBackColor = true;
             this.includeCoverCheck.CheckedChanged += new System.EventHandler(this.includeCoverCheck_CheckedChanged);
             // 
+            // systemDialogLink
+            // 
+            this.systemDialogLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
+            this.systemDialogLink.AutoSize = true;
+            this.systemDialogLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.systemDialogLink.LinkColor = System.Drawing.Color.White;
+            this.systemDialogLink.Location = new System.Drawing.Point(13, 713);
+            this.systemDialogLink.Name = "systemDialogLink";
+            this.systemDialogLink.Size = new System.Drawing.Size(264, 33);
+            this.systemDialogLink.TabIndex = 42;
+            this.systemDialogLink.TabStop = true;
+            this.systemDialogLink.Text = "System print options";
+            this.systemDialogLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.systemDialogLink_LinkClicked);
+            // 
             // PrintTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowText;
             this.ClientSize = new System.Drawing.Size(1188, 783);
+            this.Controls.Add(this.systemDialogLink);
             this.Controls.Add(this.includeCoverCheck);
             this.Controls.Add(this.invalidPreviewPanel);
             this.Controls.Add(this.printButton);
@@ -602,5 +618,6 @@
         private Panel invalidPreviewPanel;
         private LinkLabel updatePreviewLink;
         private CheckBox includeCoverCheck;
+        private LinkLabel systemDialogLink;
     }
 }

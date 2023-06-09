@@ -232,5 +232,42 @@ namespace QuickTabs.Forms
             printPreview.InvalidatePreview();
             invalidPreviewPanel.Visible = false;
         }
+
+        private void systemDialogLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (PrintDialog printDialog = new PrintDialog())
+            {
+                printDialog.Document = tabPrinter.Document;
+                printDialog.ShowDialog();
+            }
+            pageSettings = tabPrinter.Document.DefaultPageSettings;
+            printerSettings = tabPrinter.Document.PrinterSettings;
+            preferredDoubleSided = printerSettings.Duplex != Duplex.Simplex;
+            preferredUseColor = pageSettings.Color;
+            landscapeCheck.Checked = pageSettings.Landscape;
+            PrinterSettings.StringCollection installedPrinters = PrinterSettings.InstalledPrinters;
+            for (int i = 0; i < installedPrinters.Count; i++)
+            {
+                string printerName = installedPrinters[i];
+                if (printerSettings.PrinterName == printerName)
+                {
+                    if (printerSelect.SelectedIndex == i)
+                    {
+                        printerSelect_SelectedIndexChanged(null, null);
+                    } else
+                    {
+                        printerSelect.SelectedIndex = i;
+                    }
+                    break;
+                }
+            }
+            Margins margins = pageSettings.Margins;
+            leftMarginInput.Value = margins.Left / (decimal)100;
+            rightMarginInput.Value = margins.Right / (decimal)100;
+            topMarginInput.Value = margins.Top / (decimal)100;
+            bottomMarginInput.Value = margins.Bottom / (decimal)100;
+            copiesInput.Value = printerSettings.Copies;
+            invalidatePreview(); // because who knows what weird thing you changed in the print dialog that this dialog cant detect
+        }
     }
 }
