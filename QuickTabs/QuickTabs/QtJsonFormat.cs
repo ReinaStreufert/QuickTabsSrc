@@ -11,7 +11,7 @@ namespace QuickTabs
     internal class QtJsonFormat : FileFormat
     {
         public override string Extension => ".qtjson";
-        public override string Name => "QuickTabs File (*.qtjson)";
+        public override string Name => "QuickTabs Json File (*.qtjson)";
 
         public override Song Open(string fileName, out bool failed)
         {

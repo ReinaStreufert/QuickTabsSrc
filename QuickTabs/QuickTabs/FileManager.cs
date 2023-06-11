@@ -61,7 +61,7 @@ namespace QuickTabs
 
         private static FileFormat findFormat(string fileName)
         {
-            string fileExt = Path.GetExtension(fileName);
+            string fileExt = Path.GetExtension(fileName).ToLower();
             FileFormat usedFormat = null;
             foreach (FileFormat format in supportedFormats)
             {
@@ -76,17 +76,27 @@ namespace QuickTabs
             }
             return usedFormat;
         }
-        private static string generateFilter()
+        private static string generateFilter(bool save, string extension, out int filterIndex) // note to self: FileDialog filter index is fucking one-based??? who thought that made any sense??? christ
         {
             StringBuilder sb = new StringBuilder();
-            foreach (FileFormat format in supportedFormats)
+            if (!save)
+                sb.Append("QuickTabs Files (*.qtjson, *.qtz)|*.qtjson;*.qtz|");
+            filterIndex = 1;
+            for (int i = 0; i < supportedFormats.Length; i++)
             {
+                FileFormat format = supportedFormats[i];
                 sb.Append(format.Name);
                 sb.Append("|*");
                 sb.Append(format.Extension);
                 sb.Append('|');
+                if (format.Extension == extension)
+                {
+                    filterIndex = i + 1;
+                }
             }
             sb.Append("All Files (*.*)|*.*");
+            if (!save)
+                filterIndex = 1;
             return sb.ToString();
         }
 
@@ -113,8 +123,18 @@ namespace QuickTabs
         {
             using (SaveFileDialog saveDialog = new SaveFileDialog())
             {
-                saveDialog.Filter = generateFilter();
-                saveDialog.DefaultExt = "qtjson";
+                int filterIndex;
+                string fileExt = Path.GetExtension(CurrentFilePath);
+                saveDialog.Filter = generateFilter(true, fileExt, out filterIndex);
+                saveDialog.FileName = Path.GetFileName(CurrentFilePath);
+                saveDialog.FilterIndex = filterIndex;
+                if (CurrentFilePath == "")
+                {
+                    saveDialog.DefaultExt = ".qtjson";
+                } else
+                {
+                    saveDialog.DefaultExt = fileExt;
+                }
                 DialogResult saveResult = saveDialog.ShowDialog();
                 if (saveResult == DialogResult.OK)
                 {
@@ -128,7 +148,9 @@ namespace QuickTabs
             string newFilePath;
             using (OpenFileDialog openDialog = new OpenFileDialog())
             {
-                openDialog.Filter = generateFilter();
+                int filterIndex;
+                openDialog.Filter = generateFilter(false, "", out filterIndex);
+                openDialog.FilterIndex = filterIndex;
                 DialogResult openResult = openDialog.ShowDialog();
                 if (openResult != DialogResult.OK)
                 {

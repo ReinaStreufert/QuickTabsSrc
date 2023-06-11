@@ -1,6 +1,7 @@
 ﻿using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace QuickTabs
             Song song = new Song();
             using (FileStream fs = new FileStream(fileName, FileMode.Open))
             {
-                try
-                {
+                //try
+                //{
                     // meta data
                     int nameLength = fs.ReadByte();
                     byte[] nameBytes = new byte[nameLength];
@@ -62,10 +63,25 @@ namespace QuickTabs
                     }
 
                     // bitmask and tab data
+                    byte[] bitmaskCompressedLengthBytes = new byte[4];
+                    fs.Read(bitmaskCompressedLengthBytes, 0, 4);
+                    int bitmaskCompressedLength = BitConverter.ToInt32(bitmaskCompressedLengthBytes, 0);
+                    long bitmaskStart = fs.Position;
                     Bitmask bitmask = new Bitmask(song.Tab.BeatCount * (tuningCount + 3));
-                    fs.Read(bitmask.ByteArray, 0, bitmask.ByteArray.Length);
-                    byte[] tabData = new byte[fs.Length - fs.Position];
-                    fs.Read(tabData, 0, tabData.Length);
+                    using (ZLibStream bitmaskZLib = new ZLibStream(fs, CompressionMode.Decompress, true))
+                    {
+                        bitmaskZLib.Read(bitmask.ByteArray, 0, bitmask.ByteArray.Length);
+                    }
+                    fs.Seek(bitmaskStart + bitmaskCompressedLength, SeekOrigin.Begin);
+                    byte[] tabDataLengthBytes = new byte[4];
+                    fs.Read(tabDataLengthBytes, 0, 4);
+                    int tabDataLength = BitConverter.ToInt32(tabDataLengthBytes, 0);
+                    byte[] tabData = new byte[tabDataLength];
+                    using (ZLibStream tabDataZLib = new ZLibStream(fs, CompressionMode.Decompress, true))
+                    {
+                        tabDataZLib.Read(tabData, 0, tabData.Length);
+                        tabDataZLib.Flush();
+                    }
                     int bitmaskI = 0;
                     int tabdataI = 0;
                     foreach (Step step in song.Tab)
@@ -87,7 +103,7 @@ namespace QuickTabs
                             }
                         }
                     }
-                } catch (IndexOutOfRangeException ex)
+                /*} catch (IndexOutOfRangeException ex)
                 {
                     failed = true;
                     return null;
@@ -95,7 +111,7 @@ namespace QuickTabs
                 {
                     failed = true;
                     return null;
-                }
+                }*/
             }
             failed = false;
             return song;
@@ -174,8 +190,24 @@ namespace QuickTabs
                 }
                 byte[] bitmaskBytes = bitmask.ByteArray;
                 byte[] tabDataBytes = tabData.ToArray();
-                fs.Write(bitmaskBytes, 0, bitmaskBytes.Length);
-                fs.Write(tabDataBytes, 0, tabDataBytes.Length);
+                fs.Write(new byte[4], 0, 4); // will be bitmask compressed length
+                long bitmaskStart = fs.Position;
+                using (ZLibStream bitmaskZLib = new ZLibStream(fs, CompressionLevel.Optimal, true))
+                {
+                    bitmaskZLib.Write(bitmaskBytes, 0, bitmaskBytes.Length);
+                }
+                long tabDataStart = fs.Position;
+                int bitmaskCompressedLength = (int)(tabDataStart - bitmaskStart);
+                byte[] bitmaskCompressedLengthBytes = BitConverter.GetBytes(bitmaskCompressedLength);
+                fs.Seek(bitmaskStart - 4, SeekOrigin.Begin);
+                fs.Write(bitmaskCompressedLengthBytes, 0, 4);
+                fs.Seek(tabDataStart, SeekOrigin.Begin);
+                byte[] tabDataLengthBytes = BitConverter.GetBytes(tabDataBytes.Length);
+                fs.Write(tabDataLengthBytes, 0, 4);
+                using (ZLibStream tabDataZLib = new ZLibStream(fs, CompressionLevel.Optimal, true))
+                {
+                    tabDataZLib.Write(tabDataBytes, 0, tabDataBytes.Length);
+                }
             }
         }
 
