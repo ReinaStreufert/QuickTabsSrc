@@ -11,6 +11,8 @@ namespace QuickTabs
 {
     internal static class FileManager
     {
+        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat(), new QtzFormat() };
+
         private static bool isSaved = true;
         public static bool IsSaved
         {
@@ -57,6 +59,37 @@ namespace QuickTabs
             IsSaved = false;
         }
 
+        private static FileFormat findFormat(string fileName)
+        {
+            string fileExt = Path.GetExtension(fileName);
+            FileFormat usedFormat = null;
+            foreach (FileFormat format in supportedFormats)
+            {
+                if (format.Extension == fileExt)
+                {
+                    usedFormat = format;
+                }
+            }
+            if (usedFormat == null)
+            {
+                usedFormat = new QtJsonFormat();
+            }
+            return usedFormat;
+        }
+        private static string generateFilter()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (FileFormat format in supportedFormats)
+            {
+                sb.Append(format.Name);
+                sb.Append("|*");
+                sb.Append(format.Extension);
+                sb.Append('|');
+            }
+            sb.Append("All Files (*.*)|*.*");
+            return sb.ToString();
+        }
+
         public static void Save(Song song)
         {
             if (CurrentFilePath == "")
@@ -68,7 +101,8 @@ namespace QuickTabs
             {
                 File.Delete(CurrentFilePath);
             }
-            File.WriteAllText(CurrentFilePath, song.SaveAsJObject(song).ToString());
+            FileFormat usedFormat = findFormat(CurrentFilePath);
+            usedFormat.Save(song, CurrentFilePath);
         }
         public static void New()
         {
@@ -79,7 +113,7 @@ namespace QuickTabs
         {
             using (SaveFileDialog saveDialog = new SaveFileDialog())
             {
-                saveDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
+                saveDialog.Filter = generateFilter();
                 saveDialog.DefaultExt = "qtjson";
                 DialogResult saveResult = saveDialog.ShowDialog();
                 if (saveResult == DialogResult.OK)
@@ -94,7 +128,7 @@ namespace QuickTabs
             string newFilePath;
             using (OpenFileDialog openDialog = new OpenFileDialog())
             {
-                openDialog.Filter = "QuickTabs File (*.qtjson)|*.qtjson|JSON File (*.json)|*.json|All Files (*.*)|*.*";
+                openDialog.Filter = generateFilter();
                 DialogResult openResult = openDialog.ShowDialog();
                 if (openResult != DialogResult.OK)
                 {
@@ -103,150 +137,29 @@ namespace QuickTabs
                 }
                 newFilePath = openDialog.FileName;
             }
-            string fileText = File.ReadAllText(newFilePath);
-            JObject songJson;
-            try
-            {
-                songJson = JObject.Parse(fileText);
-            } catch
+
+            FileFormat usedFormat = findFormat(newFilePath);
+            bool openFailed;
+            Song song = usedFormat.Open(newFilePath, out openFailed);
+
+            if (openFailed)
             {
                 failed = true;
                 return null;
-            }
-            Song song = new Song();
-            if (songJson.ContainsKey("name") && songJson["name"].Type == JTokenType.String)
-            {
-                song.Name = songJson["name"].ToString();
             } else
             {
-                failed = true;
-                return null;
+                CurrentFilePath = newFilePath;
+                IsSaved = true;
+                failed = false;
+                return song;
             }
-            if (songJson.ContainsKey("tempo") && songJson["tempo"].Type == JTokenType.Integer)
-            {
-                song.Tempo = (int)(songJson["tempo"]);
-            }
-            else
-            {
-                failed = true;
-                return null;
-            }
-            if (songJson.ContainsKey("ts") && songJson["ts"].Type == JTokenType.Array)
-            {
-                JArray tsJson = (JArray)(songJson["ts"]);
-                if (tsJson.Count == 2 && tsJson[0].Type == JTokenType.Integer && tsJson[1].Type == JTokenType.Integer)
-                {
-                    song.TimeSignature = new Songwriting.TimeSignature((int)tsJson[0], (int)tsJson[1]);
-                } else
-                {
-                    failed = true;
-                    return null;
-                }
-            }
-            else
-            {
-                failed = true;
-                return null;
-            }
-            if (songJson.ContainsKey("tuning") && songJson["tuning"].Type == JTokenType.Array)
-            {
-                List<string> tuning = new List<string>();
-                foreach (JToken token in songJson["tuning"])
-                {
-                    if (token.Type != JTokenType.String)
-                    {
-                        failed = true;
-                        return null;
-                    }
-                    tuning.Add(token.ToString());
-                }
-                tuning.Reverse();
-                song.Tab.Tuning = new Tuning(tuning.ToArray());
-            } else
-            {
-                failed = true;
-                return null;
-            }
-            if (songJson.ContainsKey("steps") && songJson["steps"].Type == JTokenType.Array)
-            {
-                song.Tab.SetLength(((JArray)songJson["steps"]).Count);
-                int stepIndex = 0;
-                foreach (JToken token in songJson["steps"])
-                {
-                    if (token.Type != JTokenType.Object)
-                    {
-                        failed = true;
-                        return null;
-                    }
-                    JObject stepJson = (JObject)token;
-                    if (stepJson.ContainsKey("type") && stepJson["type"].Type == JTokenType.String)
-                    {
-                        string typeCode = stepJson["type"].ToString();
-                        switch (typeCode)
-                        {
-                            case "sh":
-                                SectionHead sectionHead = new SectionHead();
-                                if (stepJson.ContainsKey("name") && stepJson["name"].Type == JTokenType.String)
-                                {
-                                    sectionHead.Name = stepJson["name"].ToString();
-                                } else
-                                {
-                                    failed = true;
-                                    return null;
-                                }
-                                song.Tab[stepIndex] = sectionHead;
-                                break;
-                            case "b":
-                                Beat beat = new Beat();
-                                if (stepJson.ContainsKey("length") && stepJson["length"].Type == JTokenType.Integer)
-                                {
-                                    beat.NoteLength = (int)stepJson["length"];
-                                }
-                                else
-                                {
-                                    failed = true;
-                                    return null;
-                                }
-                                if (stepJson.ContainsKey("states") && stepJson["states"].Type == JTokenType.Array)
-                                {
-                                    JArray statesJson = (JArray)stepJson["states"];
-                                    if (statesJson.Count != song.Tab.Tuning.Count)
-                                    {
-                                        failed = true;
-                                        return null;
-                                    }
-                                    for (int stringIndex = 0; stringIndex < statesJson.Count; stringIndex++)
-                                    {
-                                        if (statesJson[stringIndex].Type == JTokenType.Integer)
-                                        {
-                                            int space = (int)statesJson[stringIndex];
-                                            beat[new Fret(stringIndex, space)] = true;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    failed = true;
-                                    return null;
-                                }
-                                song.Tab[stepIndex] = beat;
-                                break;
-                            default:
-                                failed = true;
-                                return null;
-                        }
-                    } else
-                    {
-                        failed = true;
-                        return null;
-                    }
-                    stepIndex++;
-                }
-            }
-            CurrentFilePath = newFilePath;
-            IsSaved = true;
-            failed = false;
-            return song;
         }
+    }
+    internal abstract class FileFormat
+    {
+        public abstract string Extension { get; }
+        public abstract string Name { get; }
+        public abstract Song Open(string fileName, out bool failed);
+        public abstract void Save(Song song, string fileName);
     }
 }

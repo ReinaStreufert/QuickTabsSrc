@@ -48,7 +48,7 @@ namespace QuickTabs.Controls.Tools
             noteLengthButtonsPrototype[DrawingIcons.HalfNote] = 4;
             noteLengthButtonsPrototype[DrawingIcons.DottedHalfNote] = 6;
             noteLengthButtonsPrototype[DrawingIcons.WholeNote] = 8;
-            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = noteLengthButtonsPrototype[DrawingIcons.WholeNote] + noteLengthButtonsPrototype[DrawingIcons.WholeNote] / 2;
+            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = 12;
         }
 
         private void loadStrings()

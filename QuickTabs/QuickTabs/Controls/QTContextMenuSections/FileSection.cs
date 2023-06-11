@@ -97,7 +97,7 @@ namespace QuickTabs.Controls
                     using (GenericMessage errMessage = new GenericMessage())
                     {
                         errMessage.Text = "Could not open file";
-                        errMessage.Message = "File format was not valid qtjson";
+                        errMessage.Message = "Format of file is invalid or unknown";
                         errMessage.ShowDialog(MainForm);
                     }
                 }

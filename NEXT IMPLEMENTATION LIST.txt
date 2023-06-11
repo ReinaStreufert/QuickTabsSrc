@@ -1,6 +1,3 @@
 NEXT IMPLEMENTATION LIST
 ----
-Print heading
-Tap tempo
-Tuning presets
 Asio not installed handling*

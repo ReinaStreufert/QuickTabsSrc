@@ -1,6 +1,6 @@
 {
-  "name": "Untitled tab",
-  "tempo": 120,
+  "name": "the best song",
+  "tempo": 110,
   "ts": [
     4,
     4
@@ -288,7 +288,7 @@
     },
     {
       "type": "b",
-      "length": 2,
+      "length": 1,
       "states": [
         null,
         null,
@@ -298,7 +298,7 @@
     },
     {
       "type": "b",
-      "length": 2,
+      "length": 1,
       "states": [
         null,
         null,
@@ -308,7 +308,7 @@
     },
     {
       "type": "b",
-      "length": 2,
+      "length": 1,
       "states": [
         null,
         null,
@@ -318,7 +318,7 @@
     },
     {
       "type": "b",
-      "length": 2,
+      "length": 1,
       "states": [
         null,
         null,
@@ -328,7 +328,7 @@
     },
     {
       "type": "b",
-      "length": 2,
+      "length": 1,
       "states": [
         null,
         null,

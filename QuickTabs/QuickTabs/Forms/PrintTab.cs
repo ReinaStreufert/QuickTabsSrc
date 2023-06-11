@@ -40,6 +40,7 @@ namespace QuickTabs.Forms
             printPreview.Document = tabPrinter.Document;
             pageSettings = tabPrinter.Document.DefaultPageSettings;
             printerSettings = tabPrinter.Document.PrinterSettings;
+            printerSettings.Duplex = Duplex.Simplex;
             previewZoomInput.Value = (int)(printPreview.Zoom * 100);
             foreach (string printerName in PrinterSettings.InstalledPrinters)
             {
@@ -235,39 +236,44 @@ namespace QuickTabs.Forms
 
         private void systemDialogLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            DialogResult dialogResult;
             using (PrintDialog printDialog = new PrintDialog())
             {
                 printDialog.Document = tabPrinter.Document;
-                printDialog.ShowDialog();
+                dialogResult = printDialog.ShowDialog();
             }
-            pageSettings = tabPrinter.Document.DefaultPageSettings;
-            printerSettings = tabPrinter.Document.PrinterSettings;
-            preferredDoubleSided = printerSettings.Duplex != Duplex.Simplex;
-            preferredUseColor = pageSettings.Color;
-            landscapeCheck.Checked = pageSettings.Landscape;
-            PrinterSettings.StringCollection installedPrinters = PrinterSettings.InstalledPrinters;
-            for (int i = 0; i < installedPrinters.Count; i++)
+            if (dialogResult == DialogResult.OK)
             {
-                string printerName = installedPrinters[i];
-                if (printerSettings.PrinterName == printerName)
+                pageSettings = tabPrinter.Document.DefaultPageSettings;
+                printerSettings = tabPrinter.Document.PrinterSettings;
+                preferredDoubleSided = printerSettings.Duplex != Duplex.Simplex;
+                preferredUseColor = pageSettings.Color;
+                landscapeCheck.Checked = pageSettings.Landscape;
+                PrinterSettings.StringCollection installedPrinters = PrinterSettings.InstalledPrinters;
+                for (int i = 0; i < installedPrinters.Count; i++)
                 {
-                    if (printerSelect.SelectedIndex == i)
+                    string printerName = installedPrinters[i];
+                    if (printerSettings.PrinterName == printerName)
                     {
-                        printerSelect_SelectedIndexChanged(null, null);
-                    } else
-                    {
-                        printerSelect.SelectedIndex = i;
+                        if (printerSelect.SelectedIndex == i)
+                        {
+                            printerSelect_SelectedIndexChanged(null, null);
+                        }
+                        else
+                        {
+                            printerSelect.SelectedIndex = i;
+                        }
+                        break;
                     }
-                    break;
                 }
+                Margins margins = pageSettings.Margins;
+                leftMarginInput.Value = margins.Left / (decimal)100;
+                rightMarginInput.Value = margins.Right / (decimal)100;
+                topMarginInput.Value = margins.Top / (decimal)100;
+                bottomMarginInput.Value = margins.Bottom / (decimal)100;
+                copiesInput.Value = printerSettings.Copies;
+                invalidatePreview(); // because who knows what weird thing you changed in the print dialog that this dialog cant detect
             }
-            Margins margins = pageSettings.Margins;
-            leftMarginInput.Value = margins.Left / (decimal)100;
-            rightMarginInput.Value = margins.Right / (decimal)100;
-            topMarginInput.Value = margins.Top / (decimal)100;
-            bottomMarginInput.Value = margins.Bottom / (decimal)100;
-            copiesInput.Value = printerSettings.Copies;
-            invalidatePreview(); // because who knows what weird thing you changed in the print dialog that this dialog cant detect
         }
     }
 }

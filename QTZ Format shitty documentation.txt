@@ -1,0 +1,30 @@
+QTZ Format shitty documentation
+
+# metadata
+BYTE song name length
+UTF8 song name | length = song name length
+SHORT tempo
+BYTE time signature pt 1
+BYTE time signature pt 2
+BYTE string count
+foreach (string) {	# tuning is internally stored top string to bottom string instead of the traditional way. it is also this way when saving as QTZ.
+	BYTE note name length
+	UTF8 note name | length = note name length
+}
+INT step count
+# section heads
+BYTE section head count
+foreach (section head) {
+	INT index
+	BYTE section name length
+	UTF8 section name | length = section name length
+}
+# bitmask and tab data. Length of bitmask in bytes would be ceiling of bitlength / 8
+BITMASK beat info bitmask | bitlength = (step count - section head count) * (string count + 3)
+	foreach (beat step) {
+		3 BITS note length (0=eighth, 1=dot-eighth, 2=quarter, 3=dot-quarter, 4=half, 5=dot-half, 6=whole, 7=dot-whole)
+		foreach (string) {
+			BIT whether this string on this beat is played
+		}
+	}
+BYTE[] list of fret numbers | length = total number of spots (strings on beats) that are played
