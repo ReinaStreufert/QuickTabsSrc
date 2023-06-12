@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs
+namespace QuickTabs.Data
 {
     internal class QtJsonFormat : FileFormat
     {
@@ -38,7 +38,7 @@ namespace QuickTabs
             }
             if (songJson.ContainsKey("tempo") && songJson["tempo"].Type == JTokenType.Integer)
             {
-                song.Tempo = (int)(songJson["tempo"]);
+                song.Tempo = (int)songJson["tempo"];
             }
             else
             {
@@ -47,10 +47,10 @@ namespace QuickTabs
             }
             if (songJson.ContainsKey("ts") && songJson["ts"].Type == JTokenType.Array)
             {
-                JArray tsJson = (JArray)(songJson["ts"]);
+                JArray tsJson = (JArray)songJson["ts"];
                 if (tsJson.Count == 2 && tsJson[0].Type == JTokenType.Integer && tsJson[1].Type == JTokenType.Integer)
                 {
-                    song.TimeSignature = new Songwriting.TimeSignature((int)tsJson[0], (int)tsJson[1]);
+                    song.TimeSignature = new TimeSignature((int)tsJson[0], (int)tsJson[1]);
                 }
                 else
                 {
@@ -79,7 +79,8 @@ namespace QuickTabs
                 try
                 {
                     song.Tab.Tuning = new Tuning(tuning.ToArray());
-                } catch (FormatException)
+                }
+                catch (FormatException)
                 {
                     failed = true;
                     return null;

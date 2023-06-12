@@ -1,0 +1,21 @@
+Midi tab format (developed for QuickTabs) is based on and fully compatible with SMF (Standard midi file/.mid files)
+All midi tab files meet the definition of a valid midi file, but not all midi files are midi tab files. Normal midi files not saved by QuickTabs do not contain enough information to construct a tab from, and often use features that midi tab does not support. Midi tab is more limited in many ways, implementations are only required to support enough standard midi features (along with midi tab specific features) to create a QuickTabs-style tab.
+
+All midi tab files use format type 0 as defined in the SMF specification (meaning single track). Midi tab files must always have a division of 2 (meaning 2 ticks per quarter note resolution consistent with a QuickTabs tab.) The tuning is stored as a Text meta-event at the beginning of the track. The format is "tuning: <note> <note> ..." Ex:
+
+tuning: E2 A2 D3 G3 B3 E4
+
+All other QuickTabs metadata is saved as (and loaded from) metadata events at the beginning of the track. There is already a specific metadata event for every type of metadata a QuickTabs song has besides its tuning outlined in the SMF spec. Midi tab only supports setting the tempo and time signature once at the beginning of the track.
+
+Section heads use the Marker meta-event
+
+The final missing piece of information is which string the note should be played on for each midi note event. Midi tab format represents this as midi control change messages, on the arbitrarily chosen controller 88 (one of the many controller IDs left undefined in the spec.) Midi messages to change the value of controller 88 should be interpreted as setting the string index that all following notes should be played on. Note that string index 0 corresponds to the LAST tuning note (index goes strings from top to bottom as shown on a tab.) For example: to play the second fret on the A string, you would first write an event to set controller 88 to 4, then a note on event on note B2.
+
+Notes:
+ - it is invalid to write a note event on a note that is lower than the currently selected string is tuned. Ex: select string 2 (tuned to G3); note on C2 is invalid. must be same note as tuning or higher (G3+)
+	- If they occur, QuickTabs will simply not attempt to copy these events to the tab and moves on.
+ - velocity is ignored by midi tab format. when saving it is always set to 127.
+ - channels are ignored. when saving all channeled events are on channel 0.
+ - all other control messages besides 85 are ignored
+ - the only midi messages that need to be recognized for a fully functional midi tab file implementation are note on, note off, control changes on 88, meta-sequencename, meta-marker, meta-endoftrack, meta-settempo and meta-timesignature. since midi messages are variable length implementations must also know how to skip all unsupported messages. this may force you to just implement certain frustratingly-lengthed messages such as system exclusive.
+ - i use meta events and undefined controllers because i do not want to pay the yearly fee for a proper System Exclusive ID

@@ -1,4 +1,6 @@
 QTZ Format shitty documentation
+Byte order: little endian
+Bit order in bitmask: i0=least significant bit, i7=most significant bit
 
 # metadata
 BYTE song name length
@@ -20,6 +22,7 @@ foreach (section head) {
 	UTF8 section name | length = section name length
 }
 # bitmask and tab data. Length of bitmask in bytes would be ceiling of bitlength / 8
+INT compressed length of bitmask	# (uncompressed length can be calculated as shown in other comments)
 ZLIB {
 	BITMASK beat info bitmask | bitlength = (step count - section head count) * (string count + 3) {
 		foreach (beat step) {
@@ -30,6 +33,7 @@ ZLIB {
 		}
 	}
 }
+INT uncompressed length of tab data	# (compressed length can be calculated because this is the last field in the file)
 ZLIB {
 	BYTE[] list of fret numbers | length = total number of spots (strings on beats) that are played
 }

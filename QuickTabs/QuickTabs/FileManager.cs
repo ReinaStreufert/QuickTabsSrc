@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
+using QuickTabs.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace QuickTabs
 {
     internal static class FileManager
     {
-        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat(), new QtzFormat() };
+        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat(), new QtzFormat(), new MidiFormat() };
 
         private static bool isSaved = true;
         public static bool IsSaved

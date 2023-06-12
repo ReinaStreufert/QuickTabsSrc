@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.Songwriting
+namespace QuickTabs.Songwriting // previously CSharpMinor
 {
+    // this file was taken directly from a project i wrote years ago and contains markedly worse code than anything else in the project
     public class Chord
     {
         public Note RootNote;

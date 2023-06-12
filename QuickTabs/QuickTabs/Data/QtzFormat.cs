@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs
+namespace QuickTabs.Data
 {
     internal class QtzFormat : FileFormat
     {
@@ -20,8 +20,8 @@ namespace QuickTabs
             Song song = new Song();
             using (FileStream fs = new FileStream(fileName, FileMode.Open))
             {
-                //try
-                //{
+                try
+                {
                     // meta data
                     int nameLength = fs.ReadByte();
                     byte[] nameBytes = new byte[nameLength];
@@ -29,6 +29,10 @@ namespace QuickTabs
                     song.Name = Encoding.UTF8.GetString(nameBytes);
                     byte[] tempoBytes = new byte[2];
                     fs.Read(tempoBytes, 0, 2);
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        tempoBytes = tempoBytes.Reverse().ToArray();
+                    }
                     song.Tempo = BitConverter.ToInt16(tempoBytes, 0);
                     int t1 = fs.ReadByte();
                     int t2 = fs.ReadByte();
@@ -45,6 +49,10 @@ namespace QuickTabs
                     song.Tab.Tuning = new Tuning(tuningNotes);
                     byte[] stepCountBytes = new byte[4];
                     fs.Read(stepCountBytes, 0, 4);
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        stepCountBytes = stepCountBytes.Reverse().ToArray();
+                    }
                     song.Tab.SetLength(BitConverter.ToInt32(stepCountBytes, 0));
 
                     // section heads
@@ -54,6 +62,10 @@ namespace QuickTabs
                         SectionHead sectionHead = new SectionHead();
                         byte[] positionBytes = new byte[4];
                         fs.Read(positionBytes, 0, 4);
+                        if (!BitConverter.IsLittleEndian)
+                        {
+                            positionBytes = positionBytes.Reverse().ToArray();
+                        }
                         int position = BitConverter.ToInt32(positionBytes, 0);
                         int sectionNameLength = fs.ReadByte();
                         byte[] sectionNameBytes = new byte[sectionNameLength];
@@ -65,9 +77,13 @@ namespace QuickTabs
                     // bitmask and tab data
                     byte[] bitmaskCompressedLengthBytes = new byte[4];
                     fs.Read(bitmaskCompressedLengthBytes, 0, 4);
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        bitmaskCompressedLengthBytes = bitmaskCompressedLengthBytes.Reverse().ToArray();
+                    }
                     int bitmaskCompressedLength = BitConverter.ToInt32(bitmaskCompressedLengthBytes, 0);
                     long bitmaskStart = fs.Position;
-                    Bitmask bitmask = new Bitmask(song.Tab.BeatCount * (tuningCount + 3));
+                    BitEditor bitmask = new BitEditor(song.Tab.BeatCount * (tuningCount + 3));
                     using (ZLibStream bitmaskZLib = new ZLibStream(fs, CompressionMode.Decompress, true))
                     {
                         bitmaskZLib.Read(bitmask.ByteArray, 0, bitmask.ByteArray.Length);
@@ -75,6 +91,10 @@ namespace QuickTabs
                     fs.Seek(bitmaskStart + bitmaskCompressedLength, SeekOrigin.Begin);
                     byte[] tabDataLengthBytes = new byte[4];
                     fs.Read(tabDataLengthBytes, 0, 4);
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        tabDataLengthBytes = tabDataLengthBytes.Reverse().ToArray();
+                    }
                     int tabDataLength = BitConverter.ToInt32(tabDataLengthBytes, 0);
                     byte[] tabData = new byte[tabDataLength];
                     using (ZLibStream tabDataZLib = new ZLibStream(fs, CompressionMode.Decompress, true))
@@ -103,7 +123,7 @@ namespace QuickTabs
                             }
                         }
                     }
-                /*} catch (IndexOutOfRangeException ex)
+                } catch (IndexOutOfRangeException ex)
                 {
                     failed = true;
                     return null;
@@ -111,7 +131,7 @@ namespace QuickTabs
                 {
                     failed = true;
                     return null;
-                }*/
+                }
             }
             failed = false;
             return song;
@@ -126,6 +146,10 @@ namespace QuickTabs
                 fs.WriteByte((byte)nameBytes.Length);
                 fs.Write(nameBytes, 0, nameBytes.Length);
                 byte[] tempoBytes = BitConverter.GetBytes((ushort)song.Tempo);
+                if (!BitConverter.IsLittleEndian)
+                {
+                    tempoBytes = tempoBytes.Reverse().ToArray();
+                }
                 fs.Write(tempoBytes, 0, 2);
                 fs.WriteByte((byte)song.TimeSignature.T1);
                 fs.WriteByte((byte)song.TimeSignature.T2);
@@ -139,6 +163,10 @@ namespace QuickTabs
                     fs.Write(noteBytes, 0, noteBytes.Length);
                 }
                 byte[] stepCountBytes = BitConverter.GetBytes(song.Tab.Count);
+                if (!BitConverter.IsLittleEndian)
+                {
+                    stepCountBytes = stepCountBytes.Reverse().ToArray();
+                }
                 fs.Write(stepCountBytes, 0, 4);
 
                 // section heads
@@ -154,6 +182,10 @@ namespace QuickTabs
                 foreach (SectionHead sectionHead in sectionHeads)
                 {
                     byte[] positionBytes = BitConverter.GetBytes(sectionHead.IndexWithinTab);
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        positionBytes = positionBytes.Reverse().ToArray();
+                    }
                     fs.Write(positionBytes, 0, 4);
                     byte[] sectionNameBytes = Encoding.UTF8.GetBytes(sectionHead.Name);
                     fs.WriteByte((byte)sectionNameBytes.Length);
@@ -161,7 +193,7 @@ namespace QuickTabs
                 }
 
                 // bitmask and tab data
-                Bitmask bitmask = new Bitmask(song.Tab.BeatCount * (tuning.Count + 3));
+                BitEditor bitmask = new BitEditor(song.Tab.BeatCount * (tuning.Count + 3));
                 List<byte> tabData = new List<byte>();
                 int bitmaskI = 0;
                 bool[] strings = new bool[tuning.Count];
@@ -199,10 +231,18 @@ namespace QuickTabs
                 long tabDataStart = fs.Position;
                 int bitmaskCompressedLength = (int)(tabDataStart - bitmaskStart);
                 byte[] bitmaskCompressedLengthBytes = BitConverter.GetBytes(bitmaskCompressedLength);
+                if (!BitConverter.IsLittleEndian)
+                {
+                    bitmaskCompressedLengthBytes = bitmaskCompressedLengthBytes.Reverse().ToArray();
+                }
                 fs.Seek(bitmaskStart - 4, SeekOrigin.Begin);
                 fs.Write(bitmaskCompressedLengthBytes, 0, 4);
                 fs.Seek(tabDataStart, SeekOrigin.Begin);
                 byte[] tabDataLengthBytes = BitConverter.GetBytes(tabDataBytes.Length);
+                if (!BitConverter.IsLittleEndian)
+                {
+                    tabDataLengthBytes = tabDataLengthBytes.Reverse().ToArray();
+                }
                 fs.Write(tabDataLengthBytes, 0, 4);
                 using (ZLibStream tabDataZLib = new ZLibStream(fs, CompressionLevel.Optimal, true))
                 {
@@ -225,105 +265,6 @@ namespace QuickTabs
         private int getNoteLength(int code)
         {
             return noteLengthCodes[code];
-        }
-
-        private class Bitmask
-        {
-            private int length;
-            private byte[] bytes;
-
-            public byte[] ByteArray
-            {
-                get { return bytes; }
-            }
-            public int Count
-            {
-                get { return length; }
-            }
-
-            public Bitmask(int count)
-            {
-                length = count;
-                bytes = new byte[(int)Math.Ceiling(count / 8F)];
-            }
-
-            public bool this[int index]
-            {
-                get
-                {
-                    if (index < 0 || index >= length)
-                    {
-                        throw new IndexOutOfRangeException();
-                    }
-                    int bitIndex;
-                    int byteIndex = findByteIndex(index, out bitIndex);
-                    return getBit(bytes[byteIndex], bitIndex);
-                }
-                set
-                {
-                    if (index < 0 || index >= length)
-                    {
-                        throw new IndexOutOfRangeException();
-                    }
-                    int bitIndex;
-                    int byteIndex = findByteIndex(index, out bitIndex);
-                    bytes[byteIndex] = modifyBit(bytes[byteIndex], bitIndex, value);
-                }
-            }
-            public int ReadBitsAsNumber(int index, int count)
-            {
-                if (index < 0 || index + (count - 1) >= length)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                int result = 0;
-                for (int i = index; i < index + count; i++)
-                {
-                    result <<= 1;
-                    if (this[i])
-                    {
-                        result |= 0x01;
-                    }
-                }
-                return result;
-            }
-            public void WriteNumberAsBits(int index, int count, int value)
-            {
-                if (index < 0 || index + (count - 1) >= length)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                for (int i = count - 1; i >= 0; i--)
-                {
-                    this[index + i] = (value & 0x01) > 0;
-                    value >>= 1;
-                }
-            }
-
-            private int findByteIndex(int index, out int positionInByte)
-            {
-                int byteIndex = (int)Math.Floor(index / 8F);
-                positionInByte = index - (byteIndex * 8);
-                return byteIndex;
-            }
-            private bool getBit(byte b, int index)
-            {
-                return (b & getFocus(index)) > 0;
-            }
-            private byte modifyBit(byte b, int index, bool val)
-            {
-                byte focus = getFocus(index);
-                byte modified = (byte)(b | focus); // first make the bit on no matter what
-                if (!val)
-                {
-                    modified = (byte)(modified ^ focus); // then we flip it if were trying to set to false
-                }
-                return modified;
-            }
-            private byte getFocus(int index)
-            {
-                return (byte)(0x01 << index);
-            }
         }
     }
 }
