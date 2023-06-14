@@ -1,4 +1,5 @@
-﻿using QuickTabs.Synthesization;
+﻿using QuickTabs.Forms;
+using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,34 +20,43 @@ namespace QuickTabs.Controls
             playbackSection.SectionName = "Player";
             if (AudioEngine.Enabled)
             {
-                playbackSection.ToggleType = ToggleType.Togglable;
-                playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
-                playPause.Selected = false;
-                playPause.Click += () => { playPauseClick(false); };
-                ShortcutManager.AddShortcut(Keys.None, Keys.Space, () => { playPauseClick(true); });
-                playbackSection.AddItem(playPause);
-                repeat = new ContextItem(DrawingIcons.Repeat, "Repeat");
-                repeat.Selected = false;
-                repeat.Click += repeatClick;
-                playbackSection.AddItem(repeat);
-                metronome = new ContextItem(DrawingIcons.Metronome, "Metronome");
-                metronome.Selected = false;
-                metronome.Click += metronomeClick;
-                playbackSection.AddItem(metronome);
-                ShortcutManager.AddShortcut(Keys.None, Keys.X, silencePressed);
+                setupEnabledPlaybackSection();
             }
             else
             {
                 playbackSection.ToggleType = ToggleType.NotTogglable;
                 ContextItem downloadAsio = new ContextItem(DrawingIcons.Download, "Install ASIO driver...");
                 downloadAsio.Selected = true;
+                downloadAsio.Click += downloadAsioClick;
                 playbackSection.AddItem(downloadAsio);
                 ContextItem recheckAsio = new ContextItem(DrawingIcons.Reload, "Check for driver again...");
                 recheckAsio.Selected = true;
+                recheckAsio.Click += recheckAsioClick;
                 playbackSection.AddItem(recheckAsio);
+
+                AsioDownloader.DownloadFailed += AsioDownloader_DownloadFailed;
             }
             Sections.Add(playbackSection);
         }
+        private void setupEnabledPlaybackSection()
+        {
+            playbackSection.ToggleType = ToggleType.Togglable;
+            playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
+            playPause.Selected = false;
+            playPause.Click += () => { playPauseClick(false); };
+            ShortcutManager.AddShortcut(Keys.None, Keys.Space, () => { playPauseClick(true); });
+            playbackSection.AddItem(playPause);
+            repeat = new ContextItem(DrawingIcons.Repeat, "Repeat");
+            repeat.Selected = false;
+            repeat.Click += repeatClick;
+            playbackSection.AddItem(repeat);
+            metronome = new ContextItem(DrawingIcons.Metronome, "Metronome");
+            metronome.Selected = false;
+            metronome.Click += metronomeClick;
+            playbackSection.AddItem(metronome);
+            ShortcutManager.AddShortcut(Keys.None, Keys.X, silencePressed);
+        }
+
         private void playPauseClick(bool fromShortcut) // this whole fromShortcut bullshit is because if you click the button directly, ContextMenu will already toggle it after this gets called. but if this is called from the shortcut, it will not.
         {
             if (tabPlayer == null || !tabPlayer.IsPlaying)
@@ -141,6 +151,31 @@ namespace QuickTabs.Controls
                 AudioEngine.Tick += eventHandler;
                 // because threads
             }
+        }
+        private void downloadAsioClick()
+        {
+            AsioDownloader.DownloadAndInstall();
+        }
+        private void recheckAsioClick()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            AudioEngine.Initialize();
+            this.Cursor = Cursors.Default;
+            if (AudioEngine.Enabled)
+            {
+                playbackSection.ClearItems();
+                setupEnabledPlaybackSection();
+            }
+        }
+        private void AsioDownloader_DownloadFailed()
+        {
+            this.Invoke(() =>
+            {
+                using (GenericMessage genericMessage = new GenericMessage())
+                {
+                    genericMessage.Text = "Could not automatically download ASIO installer. You will have to find it on the ASIO website.";
+                }
+            });
         }
     }
 }

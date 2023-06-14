@@ -454,6 +454,10 @@ namespace QuickTabs.Controls
                 };
             }
         }
+        public void ClearItems()
+        {
+            items.Clear();
+        }
         public ContextItem this[int i]
         {
             get
