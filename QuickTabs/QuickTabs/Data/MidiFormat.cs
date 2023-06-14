@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NAudio.Midi;
+using QuickTabs.Songwriting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,326 +16,260 @@ namespace QuickTabs.Data
 
         public override Song Open(string fileName, out bool failed)
         {
-            throw new NotImplementedException();
-        }
+            MidiFile midiFile;
+            //try
+            //{
+                midiFile = new MidiFile(fileName);
+            //} catch
+            /*{
+                throw new Exception();
+                failed = true;
+                return null;
+            }*/
+            if (midiFile.FileFormat != 0 || /*in case somehow idk*/ midiFile.Tracks > 1)
+            {
+                throw new Exception();
+                failed = true;
+                return null;
+            }
+            if (midiFile.DeltaTicksPerQuarterNote != 2)
+            {
+                throw new Exception();
+                failed = true;
+                return null;
+            }
 
+            Song song = new Song();
+            Tab tab = song.Tab;
+            tab.SetLength(1);
+            bool tuningSet = false;
+            bool nameSet = false;
+            bool tsSet = false;
+            bool tempoSet = false;
+            int selectedString = 0;
+            foreach (MidiEvent midiEvent in midiFile.Events[0])
+            {
+                tab.SetLength(tab.Count + midiEvent.DeltaTime);
+                if (midiEvent.CommandCode == MidiCommandCode.NoteOn)
+                {
+                    if (!tuningSet || !nameSet || !tsSet || !tempoSet)
+                    {
+                        throw new Exception();
+                        failed = true;
+                        return null;
+                    }
+                    NoteOnEvent noteOnEvent = (NoteOnEvent)midiEvent;
+                    Beat currentBeat = (Beat)tab[tab.Count - 1];
+                    Note stringNote = tab.Tuning.GetMusicalNote(selectedString);
+                    if (noteOnEvent.NoteNumber < stringNote.MidiNumber)
+                    {
+                        throw new Exception();
+                        failed = true;
+                        return null;
+                    }
+                    Note eventNote = new Note(noteOnEvent.NoteName);
+                    int fret = Note.ToSemitones(stringNote, eventNote);
+                    currentBeat[new Fret(selectedString, fret)] = true;
+                    currentBeat.NoteLength = noteOnEvent.NoteLength;
+                } else if (midiEvent.CommandCode == MidiCommandCode.ControlChange)
+                {
+                    ControlChangeEvent controlChangeEvent = (ControlChangeEvent)midiEvent;
+                    if (controlChangeEvent.Controller == (MidiController)88)
+                    {
+                        if (controlChangeEvent.ControllerValue >= 0 && controlChangeEvent.ControllerValue < tab.Tuning.Count)
+                        {
+                            selectedString = controlChangeEvent.ControllerValue;
+                        } else
+                        {
+                            throw new Exception();
+                            failed = true;
+                            return null;
+                        }
+                    }
+                } else if (midiEvent.CommandCode == MidiCommandCode.MetaEvent)
+                {
+                    MetaEvent metaEvent = (MetaEvent)midiEvent;
+                    if (metaEvent.MetaEventType == MetaEventType.Marker)
+                    {
+                        TextEvent markerEvent = (TextEvent)metaEvent;
+                        SectionHead sh = new SectionHead();
+                        sh.Name = markerEvent.Text;
+                        tab[tab.Count - 1] = sh;
+                        tab.SetLength(tab.Count + 1);
+                    } else if (metaEvent.MetaEventType == MetaEventType.TextEvent)
+                    {
+                        TextEvent textEvent = (TextEvent)metaEvent;
+                        if (textEvent.Text.Substring(0, 8) == "tuning: ")
+                        {
+                            if (tuningSet)
+                            {
+                                throw new Exception();
+                                failed = true;
+                                return null;
+                            }
+                            string tuningString = textEvent.Text.Substring(8);
+                            string[] tuningNotes = tuningString.Split(' ').Reverse().ToArray();
+                            tab.Tuning = new Tuning(tuningNotes);
+                            tuningSet = true;
+                        }
+                    } else if (metaEvent.MetaEventType == MetaEventType.SequenceTrackName)
+                    {
+                        if (nameSet)
+                        {
+                            throw new Exception();
+                            failed = true;
+                            return null;
+                        }
+                        TextEvent sequenceName = (TextEvent)metaEvent;
+                        song.Name = sequenceName.Text;
+                        nameSet = true;
+                    } else if (metaEvent.MetaEventType == MetaEventType.SetTempo)
+                    {
+                        if (tempoSet)
+                        {
+                            throw new Exception();
+                            failed = true;
+                            return null;
+                        }
+                        TempoEvent setTempo = (TempoEvent)metaEvent;
+                        song.Tempo = msecPerQuarterToBPM(setTempo.MicrosecondsPerQuarterNote);
+                        tempoSet = true;
+                    } else if (metaEvent.MetaEventType == MetaEventType.TimeSignature)
+                    {
+                        if (tsSet)
+                        {
+                            throw new Exception();
+                            failed = true;
+                            return null;
+                        }
+                        TimeSignatureEvent timeSignature = (TimeSignatureEvent)metaEvent;
+                        song.TimeSignature = new TimeSignature(timeSignature.Numerator, tsMidiDenominatorToQTDenominator(timeSignature.Denominator));
+                        tsSet = true;
+                    } else if (metaEvent.MetaEventType == MetaEventType.EndTrack)
+                    {
+                        tab.SetLength(tab.Count - 1);
+                        break;
+                    }
+                }
+            }
+            failed = false;
+            return song;
+        }
         public override void Save(Song song, string fileName)
         {
-            throw new NotImplementedException();
-        }
+            MidiEventCollection midiEvents = new MidiEventCollection(0, 2);
 
-        private class MidiStreamReader // MidiStreamReader assumes a delta time format of 2 ticks per quarter note (0x00 0x02)
-        {
-            private Stream stream;
-            private long midiStart;
-
-            public MidiStreamReader(Stream stream)
+            Tuning tuning = song.Tab.Tuning;
+            string tuningText = "tuning:";
+            for (int i = tuning.Count - 1; i >= 0; i--)
             {
-                this.stream = stream;
-                midiStart = stream.Position;
+                tuningText += " " + tuning.GetMusicalNote(i).ToString();
             }
+            TextEvent tuningEvent = new TextEvent(tuningText, MetaEventType.TextEvent, 0);
+            midiEvents.AddEvent(tuningEvent, 0);
+            TextEvent nameEvent = new TextEvent(song.Name, MetaEventType.SequenceTrackName, 0);
+            midiEvents.AddEvent(nameEvent, 0);
+            TempoEvent tempoEvent = new TempoEvent(bpmToMsecsPerQuarter(song.Tempo), 0);
+            midiEvents.AddEvent(tempoEvent, 0);
+            TimeSignatureEvent tsEvent = new TimeSignatureEvent(0, song.TimeSignature.T1, tsQTDenominatorToMidiDenominator(song.TimeSignature.T2), 2, 8);
+            midiEvents.AddEvent(tsEvent, 0);
 
-
-        }
-        private abstract class MidiMessage
-        {
-            public abstract MidiMessageType MessageType { get; }
-            public abstract byte StatusIdentifier { get; }     // defines what to look for in status byte to recognize the specific midi message type
-            public abstract byte StatusBitmask { get; }        // defines which bits of the status bytes to look in when checking if a status matches the identifier
-            public abstract void ReadData(Stream stream);           // defines the message-type dependent operation that reads the correct length of data bytes for the message
-
-            public byte Status { get; set; }
-            public byte[] Data { get; set; }
-
-            private static Type[] midiMessageTypes = new Type[] { typeof(NoteOnMessage), typeof(NoteOffMessage), typeof(ControlChangeMessage) };
-            public static MidiMessage FromStream(Stream stream)
+            long absoluteTime = 0;
+            int selectedString = 0;
+            List<PlayingBeat> playingBeats = new List<PlayingBeat>();
+            foreach (Step step in song.Tab)
             {
-                byte status = (byte)stream.ReadByte();
-                foreach (Type type in midiMessageTypes)
+                if (step.Type == Enums.StepType.Beat)
                 {
-                    MidiMessage message = (MidiMessage)type.GetConstructor(new Type[0]).Invoke(null);
-                    if ((status & message.StatusBitmask) == message.StatusIdentifier)
+                    foreach (PlayingBeat playingBeat in playingBeats.ToArray())
                     {
-                        message.ReadData(stream);
-                        return message;
+                        playingBeat.timeLeft--;
+                        if (playingBeat.timeLeft <= 0)
+                        {
+                            playingBeats.Remove(playingBeat);
+                            foreach (Fret fret in playingBeat.beat)
+                            {
+                                Note stringNote = tuning.GetMusicalNote(fret.String);
+                                NoteEvent noteOff = new NoteEvent(absoluteTime, 1, MidiCommandCode.NoteOff, stringNote.MidiNumber + fret.Space, 127);
+                                midiEvents.AddEvent(noteOff, 0);
+                            }
+                        }
                     }
-                }
-                return new InvalidMidiMessage();
-            }
-        }
-        private class InvalidMidiMessage : MidiMessage
-        {
-            public override MidiMessageType MessageType => MidiMessageType.Unsupported;
-            public override byte StatusIdentifier => 0x00;
-            public override byte StatusBitmask => 0x00;
-
-            public override void ReadData(Stream stream)
-            {
-                return;
-            }
-        }
-        private abstract class ChannelMidiMessage : MidiMessage
-        {
-            public override byte StatusBitmask { get => 0xF0; }
-            public int MidiChannel
-            {
-                get
-                {
-                    return Status & 0x0F;
-                }
-                set
-                {
-                    Status = (byte)((Status & 0xF0) | (value & 0x0F));
-                }
-            }
-        }
-        private abstract class NoteMessage : ChannelMidiMessage
-        {
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[2];
-                stream.Read(Data, 0, 2);
-            }
-            public byte NoteNumber
-            {
-                get
-                {
-                    return Data[0];
-                }
-                set
-                {
-                    Data[0] = value;
-                }
-            }
-            public byte Velocity
-            {
-                get
-                {
-                    return Data[1];
-                }
-                set
-                {
-                    Data[1] = value;
-                }
-            }
-        }
-        // all supported messages
-        private class NoteOnMessage : NoteMessage
-        {
-            public override byte StatusIdentifier => 0x80;
-            public override MidiMessageType MessageType => MidiMessageType.NoteOn;
-        }
-        private class NoteOffMessage : NoteMessage
-        {
-            public override byte StatusIdentifier => 0x90;
-            public override MidiMessageType MessageType => MidiMessageType.NoteOff;
-        }
-        private class ControlChangeMessage : ChannelMidiMessage
-        {
-            public override byte StatusIdentifier => 0xB0;
-            public override MidiMessageType MessageType => MidiMessageType.ControlChange;
-
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[2];
-                stream.Read(Data, 0, 2);
-            }
-
-            public byte ControllerNumber
-            {
-                get
-                {
-                    return Data[0];
-                }
-                set
-                {
-                    Data[0] = value;
-                }
-            }
-            public byte NewValue
-            {
-                get
-                {
-                    return Data[1];
-                }
-                set
-                {
-                    Data[1] = value;
-                }
-            }
-        }
-        private class MetaMessage : MidiMessage
-        {
-            public override MidiMessageType MessageType => MidiMessageType.MetaEvent;
-            public override byte StatusBitmask => 0xFF;
-            public override byte StatusIdentifier => 0xFF;
-
-            public MetaEventType MetaType { get; set; }
-
-            public override void ReadData(Stream stream)
-            {
-                MetaType = (MetaEventType)stream.ReadByte();
-                int dataLength = stream.ReadByte();
-                Data = new byte[dataLength];
-                stream.Read(Data, 0, dataLength);
-
-                if ((byte)MetaType <= 0x07)
-                {
-
-                }
-            }
-
-            public abstract class MidiMetadata
-            {
-                public byte[] Data { get; set; }
-            }
-            public class MetadataString : MidiMetadata
-            {
-                public string Text
-                {
-                    get
+                    Beat beat = (Beat)step;
+                    bool empty = true;
+                    foreach (Fret fret in beat)
                     {
-                        return Encoding.ASCII.GetString(Data);
+                        empty = false;
+                        if (selectedString != fret.String)
+                        {
+                            ControlChangeEvent controlChangeEvent = new ControlChangeEvent(absoluteTime, 1, (MidiController)88, fret.String);
+                            midiEvents.AddEvent(controlChangeEvent, 0);
+                            selectedString = fret.String;
+                        }
+                        Note stringNote = tuning.GetMusicalNote(fret.String);
+                        NoteEvent noteOn = new NoteEvent(absoluteTime, 1, MidiCommandCode.NoteOn, stringNote.MidiNumber + fret.Space, 127);
+                        midiEvents.AddEvent(noteOn, 0);
                     }
-                    set
+                    if (!empty)
                     {
-                        byte[] newData = Encoding.ASCII.GetBytes(value);
-                        byte[] data = Data;
-                        Array.Resize(ref data, newData.Length);
-                        newData.CopyTo(data, 0);
+                        PlayingBeat playingBeat = new PlayingBeat();
+                        playingBeat.beat = beat;
+                        playingBeat.timeLeft = beat.NoteLength;
+                        playingBeats.Add(playingBeat);
                     }
-                }
-            }
-        }
-
-        private abstract class UnsupportedChannelMidiMessage1 : ChannelMidiMessage // 1 as in 1 byte of data
-        {
-            public override MidiMessageType MessageType => MidiMessageType.Unsupported;
-
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[1];
-                stream.Read(Data, 0, 1);
-            }
-        }
-        private abstract class UnsupportedChannelMidiMessage2 : ChannelMidiMessage
-        {
-            public override MidiMessageType MessageType => MidiMessageType.Unsupported;
-
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[2];
-                stream.Read(Data, 0, 2);
-            }
-        }
-        private abstract class UnsupportedMidiMessage : MidiMessage
-        {
-            public override byte StatusBitmask => 0xFF;
-            public override MidiMessageType MessageType => MidiMessageType.Unsupported;
-        }
-        private abstract class UnsupportedMidiMessage0 : UnsupportedMidiMessage
-        {
-            public override void ReadData(Stream stream)
-            {
-                return;
-            }
-        }
-        private abstract class UnsupportedMidiMessage1 : UnsupportedMidiMessage
-        {
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[1];
-                stream.Read(Data, 0, 1);
-            }
-        }
-        private abstract class UnsupportedMidiMessage2 : UnsupportedMidiMessage
-        {
-            public override void ReadData(Stream stream)
-            {
-                Data = new byte[2];
-                stream.Read(Data, 0, 2);
-            }
-        }
-        // all unsupported messages
-        private class PolyphonicKeyPressureMessage : UnsupportedChannelMidiMessage2
-        {
-            public override byte StatusIdentifier => 0xA0;
-        }
-        private class ProgramChangeMessage : UnsupportedChannelMidiMessage1
-        {
-            public override byte StatusIdentifier => 0xC0;
-        }
-        private class ChannelPressureMessage : UnsupportedChannelMidiMessage1
-        {
-            public override byte StatusIdentifier => 0xD0;
-        }
-        private class PitchWheelMessage : UnsupportedChannelMidiMessage2
-        {
-            public override byte StatusIdentifier => 0xE0;
-        }
-        private class SysExMessage : UnsupportedMidiMessage
-        {
-            public override byte StatusIdentifier => 0xF0;
-
-            public override void ReadData(Stream stream)
-            {
-                const byte terminator = 0b11110111;
-                List<byte> bytes= new List<byte>();
-                for (; ;)
+                    absoluteTime++;
+                } else if (step.Type == Enums.StepType.SectionHead)
                 {
-                    int nextByte = stream.ReadByte();
-                    if (nextByte == terminator)
-                    {
-                        break;
-                    } else
-                    {
-                        bytes.Add((byte)nextByte);
-                    }
+                    SectionHead sectionHead = (SectionHead)step;
+                    TextEvent markerEvent = new TextEvent(sectionHead.Name, MetaEventType.Marker, absoluteTime);
+                    midiEvents.AddEvent(markerEvent, 0);
                 }
-                Data = bytes.ToArray();
             }
+            foreach (PlayingBeat playingBeat in playingBeats.ToArray())
+            {
+                foreach (Fret fret in playingBeat.beat)
+                {
+                    Note stringNote = tuning.GetMusicalNote(fret.String);
+                    NoteEvent noteOff = new NoteEvent(absoluteTime, 1, MidiCommandCode.NoteOff, stringNote.MidiNumber + fret.Space, 127);
+                    midiEvents.AddEvent(noteOff, 0);
+                }
+            }
+            playingBeats.Clear();
+            MetaEvent endOfTrack = new MetaEvent(MetaEventType.EndTrack, 0, absoluteTime);
+            midiEvents.AddEvent(endOfTrack, 0);
+
+            MidiFile.Export(fileName, midiEvents);
         }
-        private class SongPositionMessage : UnsupportedMidiMessage2
+
+        private int msecPerQuarterToBPM(int msecs)
         {
-            public override byte StatusIdentifier => 0xF2;
+            int minuteMsecs = 60 * 1000000;
+            return (int)Math.Round(minuteMsecs / (double)msecs);
         }
-        private class SongSelectMessage : UnsupportedMidiMessage1
+        private int bpmToMsecsPerQuarter(int bpm)
         {
-            public override byte StatusIdentifier => 0xF3;
+            double beatsPerSec = bpm / 60F;
+            double secPerBeat = 1 / beatsPerSec;
+            return (int)Math.Round(secPerBeat * 1000000);
         }
-        private class TuneRequestMessage : UnsupportedMidiMessage0
+        private int tsMidiDenominatorToQTDenominator(int denom)
         {
-            public override byte StatusIdentifier => 0xF6;
+            return 1 << denom;
         }
-        private class RealTimeMessage : UnsupportedMidiMessage0
+        private int tsQTDenominatorToMidiDenominator(int denom)
         {
-            public override byte StatusBitmask => 0xF8;     // ]
-            public override byte StatusIdentifier => 0xF8;  // ] - this covers all IDs 0xF8 and above
+            int shifts = 0;
+            while (denom > 0)
+            {
+                denom >>= 1;
+                shifts++;
+            }
+            return shifts - 1;
         }
-        private enum MidiMessageType
+        private class PlayingBeat
         {
-            NoteOn,
-            NoteOff,
-            ControlChange,
-            MetaEvent,
-            Unsupported
-        }
-        private enum MetaEventType : byte
-        {
-            SequenceNumber = 0x00,
-            Text = 0x01,
-            CopyrightNotice = 0x02,
-            SequenceName = 0x03,
-            InstrumentName = 0x04,
-            Lyric = 0x05,
-            Marker = 0x06,
-            CuePoint = 0x07, // end of string metadata types
-            MidiChannelPrefix = 0x20,
-            EndOfTrack = 0x2F,
-            SetTempo = 0x51,
-            SMPTEOffset = 0x54,
-            TimeSignature = 0x58,
-            KeySignature = 0x59
+            public Beat beat;
+            public int timeLeft;
         }
     }
 }
