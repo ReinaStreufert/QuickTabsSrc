@@ -165,6 +165,8 @@ namespace QuickTabs.Controls
             {
                 playbackSection.ClearItems();
                 setupEnabledPlaybackSection();
+                updateUI();
+                Invalidate();
             }
         }
         private void AsioDownloader_DownloadFailed()
