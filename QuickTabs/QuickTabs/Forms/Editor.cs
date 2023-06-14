@@ -1,6 +1,7 @@
 using QuickTabs.Controls;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
+using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs
 {
@@ -136,6 +137,23 @@ namespace QuickTabs
                     message.ShowDialog();
                     e.Cancel = !message.Continue;
                 }
+            }
+        }
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            if (Updater.WasJustUpdated)
+            {
+                Timer t = new Timer();
+                t.Interval = 200;
+                t.Tick += (object sender, EventArgs e) =>
+                {
+                    t.Stop();
+                    ReleaseNotes releaseNotes = new ReleaseNotes();
+                    releaseNotes.ShowDialog();
+                    t.Dispose();
+                };
+                t.Start();
             }
         }
     }

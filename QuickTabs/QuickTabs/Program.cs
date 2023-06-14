@@ -19,6 +19,7 @@ namespace QuickTabs
             Application.SetCompatibleTextRenderingDefault(false);
             Task iconLoader = new Task(DrawingIcons.LoadAll);
             iconLoader.Start();
+            Updater.Initialize();
             Application.Run(new Forms.Splash(iconLoader));
         }
     }
