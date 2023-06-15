@@ -15,8 +15,8 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 0;
-        public const string SelfReleaseNotes = "Development version";
+        public const int SelfReleaseVersion = 1;
+        public const string SelfReleaseNotes = "testy test";
         public const string VersionStatusUrl = "http://192.168.1.146:8080/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
 
         public static bool WasJustUpdated { get; private set; } = false;
@@ -98,7 +98,10 @@ namespace QuickTabs
             exeTask = httpClient.GetByteArrayAsync(latestExecutableUrl).ContinueWith(executableReceived);
             Task[] waitTasks = new Task[dependencyTasks.Count + 1];
             waitTasks[0] = exeTask;
-            dependencyTasks.CopyTo(waitTasks, 1);
+            if (dependencyTasks.Count > 0)
+            {
+                dependencyTasks.CopyTo(waitTasks, 1);
+            }
             Task.WaitAll(waitTasks);
             foreach (Task task in waitTasks)
             {
