@@ -70,7 +70,7 @@
             // 
             this.chooseButton.BackColor = System.Drawing.Color.DodgerBlue;
             this.chooseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chooseButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.chooseButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.chooseButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.chooseButton.Location = new System.Drawing.Point(597, 326);
             this.chooseButton.Name = "chooseButton";
@@ -87,7 +87,7 @@
             this.startShortcutCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.startShortcutCheck.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.startShortcutCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.startShortcutCheck.Location = new System.Drawing.Point(49, 382);
+            this.startShortcutCheck.Location = new System.Drawing.Point(49, 396);
             this.startShortcutCheck.Name = "startShortcutCheck";
             this.startShortcutCheck.Size = new System.Drawing.Size(328, 49);
             this.startShortcutCheck.TabIndex = 4;
@@ -100,9 +100,9 @@
             this.installButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.installButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.installButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.installButton.Location = new System.Drawing.Point(49, 437);
+            this.installButton.Location = new System.Drawing.Point(49, 451);
             this.installButton.Name = "installButton";
-            this.installButton.Size = new System.Drawing.Size(699, 50);
+            this.installButton.Size = new System.Drawing.Size(699, 74);
             this.installButton.TabIndex = 5;
             this.installButton.Text = "Install and start";
             this.installButton.UseVisualStyleBackColor = false;
@@ -113,7 +113,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.ClientSize = new System.Drawing.Size(800, 523);
+            this.ClientSize = new System.Drawing.Size(800, 560);
             this.Controls.Add(this.installButton);
             this.Controls.Add(this.startShortcutCheck);
             this.Controls.Add(this.chooseButton);
