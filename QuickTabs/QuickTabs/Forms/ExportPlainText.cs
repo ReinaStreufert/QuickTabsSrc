@@ -24,6 +24,7 @@ namespace QuickTabs.Forms
             this.AutoScaleMode = AutoScaleMode.Dpi;
             DrawingConstants.ApplyThemeToUIForm(this);
 
+            previewBox.Font = new Font("Consolas", 9, GraphicsUnit.Point);
             previewBox.ReadOnly = true;
             previewBox.ScrollBars = ScrollBars.Both;
             staffStyle.SelectedIndex = 0;

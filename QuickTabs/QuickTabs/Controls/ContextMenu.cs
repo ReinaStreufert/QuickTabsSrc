@@ -122,7 +122,7 @@ namespace QuickTabs.Controls
                     CollapsedSection collapsedSection = new CollapsedSection();
                     collapsedSection.Section = section;
                     Size textSize;
-                    using (Font font = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+                    using (Font font = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
                         textSize = TextRenderer.MeasureText(section.SectionName, font);
                     Size collapsedSectionSize = new Size(textSize.Width + DrawingConstants.MediumMargin, this.Height);
                     collapsedSection.Location = new Rectangle(x, centerY - collapsedSectionSize.Height / 2, collapsedSectionSize.Width, collapsedSectionSize.Height);
@@ -338,7 +338,7 @@ namespace QuickTabs.Controls
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
-            using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             //using (Font largeFont = new Font("Montserrat", DrawingConstants.MediumTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             using (SolidBrush gray = new SolidBrush(DrawingConstants.FadedGray))
             using (Pen seperatorPen = new Pen(DrawingConstants.ContrastColor, DrawingConstants.SeperatorLineWidth))

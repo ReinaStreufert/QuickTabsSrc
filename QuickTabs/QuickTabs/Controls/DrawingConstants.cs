@@ -13,6 +13,9 @@ namespace QuickTabs.Controls
     {
         public static Theme CurrentTheme { get; private set; } = Theme.DarkMode;
         public static float CurrentScale { get; private set; } = 1.0F;
+        public static FontFamily Montserrat { get; private set; }
+
+        private static PrivateFontCollection fonts = new PrivateFontCollection();
 
         public static int LargeMargin { get; private set; } = 40;
         public static int MediumMargin { get; private set; } = 30;
@@ -157,12 +160,26 @@ namespace QuickTabs.Controls
             }
             CurrentTheme = theme;
         }
+        public static void LoadFonts()
+        {
+            if (File.Exists("fonts\\Montserrat-VariableFont_wght.ttf"))
+            {
+                fonts.AddFontFile("fonts\\Montserrat-VariableFont_wght.ttf");
+                Montserrat = fonts.Families[0];
+            } else
+            {
+                Montserrat = new FontFamily("Segoe UI");
+            }
+        }
         public static void ApplyThemeToUIForm(Control form)
         {
             form.BackColor = UIAreaBackColor;
             foreach (Control control in form.Controls)
             {
                 Type type = control.GetType();
+                Font font = new Font(Montserrat, control.Font.Size, control.Font.Style, control.Font.Unit);
+                control.Font.Dispose();
+                control.Font = font;
                 if (type == typeof(Label) || type == typeof(CheckBox) || type == typeof(LinkLabel))
                 {
                     control.BackColor = UIAreaBackColor;

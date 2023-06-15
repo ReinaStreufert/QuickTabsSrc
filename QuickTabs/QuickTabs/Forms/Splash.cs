@@ -147,6 +147,10 @@ namespace QuickTabs.Forms
             if (firstTick)
             {
                 firstTick = false;
+                DrawingConstants.LoadFonts();
+                failedLabel.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+                startAnyway.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+                exit.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
                 AudioEngine.Initialize();
             }
             if (iconLoader.IsCompletedSuccessfully)

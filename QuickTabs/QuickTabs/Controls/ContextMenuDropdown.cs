@@ -80,7 +80,7 @@ namespace QuickTabs.Controls
                 int width = this.Width;
 
                 using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
-                using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
+                using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
                 using (SolidBrush contrast = new SolidBrush(DrawingConstants.ContrastColor))
                 using (SolidBrush fadedGray = new SolidBrush(DrawingConstants.FadedGray))
                 {

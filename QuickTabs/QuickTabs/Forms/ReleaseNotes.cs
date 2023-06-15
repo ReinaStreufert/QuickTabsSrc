@@ -18,6 +18,7 @@ namespace QuickTabs.Forms
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Dpi;
             DrawingConstants.ApplyThemeToUIForm(this);
+            releaseNotesBox.Font = new Font("Consolas", 9, GraphicsUnit.Point);
         }
 
         protected override void OnShown(EventArgs e)

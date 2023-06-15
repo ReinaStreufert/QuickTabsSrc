@@ -644,9 +644,8 @@ namespace QuickTabs.Controls
             using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
             using (Pen backPen = new Pen(DrawingConstants.ContrastColor, DrawingConstants.PenWidth))
             using (Pen forePen = new Pen(DrawingConstants.HighlightBlue, DrawingConstants.BoldPenWidth))
-            using (Font font = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
-            using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
-            using (Font twoDigitFont = new Font("Montserrat", DrawingConstants.TwoDigitTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (Font twoDigitFont = new Font(DrawingConstants.Montserrat, DrawingConstants.TwoDigitTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
             {
                 int stringCount = Song.Tab.Tuning.Count;
                 int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2);
@@ -662,7 +661,7 @@ namespace QuickTabs.Controls
                     // heading
                     if (row.Head != "")
                     {
-                        g.DrawString(row.Head, font, textBrush, startX, startY - DrawingConstants.SmallTextYOffset);
+                        g.DrawString(row.Head, boldFont, textBrush, startX, startY - DrawingConstants.SmallTextYOffset);
                     }
 
                     // strings

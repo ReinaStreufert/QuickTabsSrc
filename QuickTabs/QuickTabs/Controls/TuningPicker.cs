@@ -319,7 +319,7 @@ namespace QuickTabs.Controls
 
             using (SolidBrush highlightBrush = new SolidBrush(DrawingConstants.HighlightColor))
             using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
-            using (Font font = new Font("Montserrat", DrawingConstants.MediumTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
+            using (Font font = new Font(DrawingConstants.Montserrat, DrawingConstants.MediumTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
             {
                 foreach (Button button in buttons)
                 {

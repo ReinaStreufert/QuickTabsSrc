@@ -429,7 +429,7 @@ namespace QuickTabs.Controls.Tools
                 if (ViewFretCounter)
                 {
                     using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
-                    using (Font boldFont = new Font("Montserrat", DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
+                    using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
                     {
                         for (int i = viewportStart; i < viewportStart + viewportLength; i++)
                         {

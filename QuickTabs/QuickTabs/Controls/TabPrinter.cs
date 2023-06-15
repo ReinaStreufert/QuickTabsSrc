@@ -107,8 +107,8 @@ namespace QuickTabs.Controls
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            using (Font headFont = new Font("Montserrat", headTextSize, FontStyle.Bold, GraphicsUnit.Point))
-            using (Font subFont = new Font("Montserrat", subTextSize, FontStyle.Regular, GraphicsUnit.Point))
+            using (Font headFont = new Font(DrawingConstants.Montserrat, headTextSize, FontStyle.Bold, GraphicsUnit.Point))
+            using (Font subFont = new Font(DrawingConstants.Montserrat, subTextSize, FontStyle.Regular, GraphicsUnit.Point))
             using (SolidBrush black = new SolidBrush(Color.Black))
             {
                 int width = e.MarginBounds.Width;
