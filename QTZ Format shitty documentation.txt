@@ -1,6 +1,10 @@
-QTZ Format shitty documentation
+QTZ Format (ver 0) shitty documentation
 Byte order: little endian
 Bit order in bitmask: i0=least significant bit, i7=most significant bit
+
+# 4 byte header
+UTF8 "QT"
+SHORT 0 (format version)
 
 # metadata
 BYTE song name length

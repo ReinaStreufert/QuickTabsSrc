@@ -34,12 +34,11 @@
             // 
             // messageLabel
             // 
-            this.messageLabel.AutoSize = true;
-            this.messageLabel.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.messageLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.messageLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.messageLabel.Location = new System.Drawing.Point(12, 9);
             this.messageLabel.Name = "messageLabel";
-            this.messageLabel.Size = new System.Drawing.Size(65, 33);
+            this.messageLabel.Size = new System.Drawing.Size(776, 110);
             this.messageLabel.TabIndex = 0;
             this.messageLabel.Text = "Text";
             // 
@@ -47,7 +46,7 @@
             // 
             this.saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(154)))), ((int)(((byte)(231)))));
             this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.saveButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.saveButton.Location = new System.Drawing.Point(650, 63);
             this.saveButton.Name = "saveButton";
@@ -73,7 +72,6 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

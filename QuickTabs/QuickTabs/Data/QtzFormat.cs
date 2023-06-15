@@ -1,4 +1,5 @@
-﻿using QuickTabs.Songwriting;
+﻿using QuickTabs.Forms;
+using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -13,6 +14,8 @@ namespace QuickTabs.Data
         public override string Extension => ".qtz";
         public override string Name => "QuickTabs Bytecode File (*.qtz)";
 
+        private readonly byte[] signature = new byte[] { (byte)'Q', (byte)'T' };
+        private const ushort formatVersion = 0;
         private readonly int[] noteLengthCodes = new int[] { 1, 2, 3, 4, 6, 8, 12 };
 
         public override Song Open(string fileName, out bool failed)
@@ -22,6 +25,29 @@ namespace QuickTabs.Data
             {
                 try
                 {
+                    // header
+                    byte[] signatureBytes = new byte[2];
+                    fs.Read(signatureBytes, 0, 2);
+                    if (!signature.SequenceEqual(signatureBytes))
+                    {
+                        failed = true;
+                        return null;
+                    }
+                    byte[] versionBytes = new byte[2];
+                    fs.Read(versionBytes, 0, 2);
+                    ushort fileVersion = BitConverter.ToUInt16(versionBytes, 0);
+                    if (fileVersion > formatVersion)
+                    {
+                        using (GenericMessage message = new GenericMessage())
+                        {
+                            message.Text = "Could not open file";
+                            message.Message = "File was saved from a later, incompatible QuickTabs version. Restart with internet connection to update.";
+                            message.ShowDialog();
+                        }
+                        failed = false;
+                        return null;
+                    }
+
                     // meta data
                     int nameLength = fs.ReadByte();
                     byte[] nameBytes = new byte[nameLength];
@@ -131,6 +157,10 @@ namespace QuickTabs.Data
                 {
                     failed = true;
                     return null;
+                } catch (OverflowException ex)
+                {
+                    failed = true;
+                    return null;
                 }
             }
             failed = false;
@@ -141,6 +171,11 @@ namespace QuickTabs.Data
         {
             using (FileStream fs = new FileStream(fileName, FileMode.Create))
             {
+                // header
+                fs.Write(signature, 0, 2);
+                byte[] versionBytes = BitConverter.GetBytes(formatVersion);
+                fs.Write(versionBytes, 0, 2);
+
                 // metadata
                 byte[] nameBytes = Encoding.UTF8.GetBytes(song.Name);
                 fs.WriteByte((byte)nameBytes.Length);
