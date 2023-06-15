@@ -120,6 +120,7 @@ namespace QuickTabs.Controls
             {
                 Properties.QuickTabs.Default.ViewLargeFretboard = largeFretboard;
                 Properties.QuickTabs.Default.Save();
+                Fretboard.Refresh();
             }
         }
         private void changeTheme()

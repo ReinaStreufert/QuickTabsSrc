@@ -17,10 +17,24 @@ namespace QuickTabs
             ApplicationConfiguration.Initialize();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
-            Task iconLoader = new Task(DrawingIcons.LoadAll);
-            iconLoader.Start();
-            Updater.Initialize();
-            Application.Run(new Forms.Splash(iconLoader));
+
+            Environment.CurrentDirectory = Path.GetDirectoryName(InstallOperations.SelfExe);
+            if (!Directory.Exists("icons") || !Directory.Exists("fonts"))
+            {
+                // launch installer
+                if (!InstallOperations.IsElevated)
+                {
+                    InstallOperations.RestartElevated();
+                }
+                Application.Run(new Forms.Installer());
+            } else
+            {
+                // startup normally
+                Task iconLoader = new Task(DrawingIcons.LoadAll);
+                iconLoader.Start();
+                Updater.Initialize();
+                Application.Run(new Forms.Splash(iconLoader));
+            }
         }
     }
 }

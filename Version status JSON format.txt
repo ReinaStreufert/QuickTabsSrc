@@ -3,15 +3,14 @@ Version status JSON format (for auto updater)
 {
 	"latest-version": 0,
 	"latest-exe": "<QuickTabs.exe url>"
-	"latest-dll": "<QuickTabs.dll url>"
 	"dependencies": [
 		{
-			"name": "NAudio.dll",
-			"url": ""
+			"name": "icons\\newicon.png",
+			"url": "..."
 		},
 		{
-			"name": "NAudio.core.dll",
-			"url": ""
+			"name": "fonts\\newfont.ttf",
+			"url": "..."
 		}
 		...
 	]

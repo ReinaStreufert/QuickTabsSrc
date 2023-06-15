@@ -17,7 +17,7 @@ namespace QuickTabs
 
         public const int SelfReleaseVersion = 0;
         public const string SelfReleaseNotes = "Development version";
-        private const string versionStatusUrl = "http://localhost:4040/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
+        public const string VersionStatusUrl = "http://192.168.1.146:4040/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
 
         public static bool WasJustUpdated { get; private set; } = false;
 
@@ -32,7 +32,7 @@ namespace QuickTabs
             } else
             {
                 httpClient = new HttpClient();
-                httpClient.GetStringAsync(versionStatusUrl).ContinueWith(statusReceived);
+                httpClient.GetStringAsync(VersionStatusUrl).ContinueWith(statusReceived);
             }
         }
 
@@ -60,7 +60,6 @@ namespace QuickTabs
             UpdateStarted?.Invoke();
 
             string latestExecutableUrl;
-            string latestDllUrl;
             if (statusJson.ContainsKey("latest-exe") && statusJson["latest-exe"].Type == JTokenType.String)
             {
                 latestExecutableUrl = statusJson["latest-exe"].ToString();
@@ -69,18 +68,8 @@ namespace QuickTabs
                 UpdateFailed?.Invoke();
                 return;
             }
-            if (statusJson.ContainsKey("latest-dll") && statusJson["latest-dll"].Type == JTokenType.String)
-            {
-                latestDllUrl = statusJson["latest-dll"].ToString();
-            }
-            else
-            {
-                UpdateFailed?.Invoke();
-                return;
-            }
 
             Task exeTask;
-            Task dllTask;
             List<Task> dependencyTasks = new List<Task>();
             if (statusJson.ContainsKey("dependencies") && statusJson["dependencies"].Type == JTokenType.Array)
             {
@@ -107,11 +96,9 @@ namespace QuickTabs
                 return;
             }
             exeTask = httpClient.GetByteArrayAsync(latestExecutableUrl).ContinueWith(executableReceived);
-            dllTask = httpClient.GetByteArrayAsync(latestDllUrl).ContinueWith(dllReceived);
-            Task[] waitTasks = new Task[dependencyTasks.Count + 2];
+            Task[] waitTasks = new Task[dependencyTasks.Count + 1];
             waitTasks[0] = exeTask;
-            waitTasks[1] = dllTask;
-            dependencyTasks.CopyTo(waitTasks, 2);
+            dependencyTasks.CopyTo(waitTasks, 1);
             Task.WaitAll(waitTasks);
             foreach (Task task in waitTasks)
             {
@@ -134,15 +121,6 @@ namespace QuickTabs
             File.Move("QuickTabs.exe", "QuickTabsOld.exe");
             File.WriteAllBytes("QuickTabs.exe", task.Result);
         }
-        private static void dllReceived(Task<byte[]> task)
-        {
-            if (task.IsFaulted)
-            {
-                return;
-            }
-            File.Move("QuickTabs.dll", "QuickTabsOld.dll");
-            File.WriteAllBytes("QuickTabs.dll", task.Result);
-        }
         private static void dependencyReceived(Task<byte[]> task, object name)
         {
             if (task.IsFaulted)
@@ -154,7 +132,6 @@ namespace QuickTabs
         private static void completeUpdate(Task task)
         {
             File.Delete("QuickTabsOld.exe");
-            File.Delete("QuickTabsOld.dll");
         }
         private static void rollbackUpdate()
         {
@@ -162,11 +139,6 @@ namespace QuickTabs
             {
                 File.Delete("QuickTabs.exe");
                 File.Move("QuickTabsOld.exe", "QuickTabs.exe");
-            }
-            if (File.Exists("QuickTabsOld.dll"))
-            {
-                File.Delete("QuickTabs.dll");
-                File.Move("QuickTabsOld.dll", "QuickTabs.dll");
             }
         }
     }

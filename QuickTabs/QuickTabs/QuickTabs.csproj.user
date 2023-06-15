@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_LastSelectedProfileId>C:\Users\Reina\Documents\GitHub\QuickTabs\QuickTabs\QuickTabs\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Update="Controls\ContextMenu.cs">
       <SubType>Component</SubType>
@@ -53,6 +56,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\GenericMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Installer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\InstallerMessage.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\PrintTab.cs">

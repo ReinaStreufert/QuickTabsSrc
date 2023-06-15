@@ -68,7 +68,12 @@ namespace QuickTabs.Controls.Tools
                 strings.Add(new String() { Index = i });
             }
             fretAreaWidth = this.Width - DrawingConstants.FretboardButtonAreaWidth;
-            viewportLength = (int)Math.Round(fretAreaWidth / DrawingConstants.TargetFretWidth);
+            float targetFretWidth = DrawingConstants.TargetFretWidth;
+            if (Properties.QuickTabs.Default.ViewLargeFretboard)
+            {
+                targetFretWidth = targetFretWidth * 1.5F;
+            }
+            viewportLength = (int)Math.Round(fretAreaWidth / targetFretWidth);
 
             buttons = new List<Button>();
 
