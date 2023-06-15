@@ -17,7 +17,7 @@ namespace QuickTabs
 
         public const int SelfReleaseVersion = 0;
         public const string SelfReleaseNotes = "Development version";
-        public const string VersionStatusUrl = "http://192.168.1.146:4040/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
+        public const string VersionStatusUrl = "http://192.168.1.146:8080/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
 
         public static bool WasJustUpdated { get; private set; } = false;
 
