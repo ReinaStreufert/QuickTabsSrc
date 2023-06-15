@@ -108,12 +108,12 @@ namespace QuickTabs.Controls
             if (largeFretboard)
             {
                 largeFretboard = false;
-                MainForm.FretboardHeight = 350;
+                MainForm.FretboardHeight = 440;
                 MainForm.RefreshLayout();
             } else
             {
                 largeFretboard = true;
-                MainForm.FretboardHeight = 440;
+                MainForm.FretboardHeight = 530;
                 MainForm.RefreshLayout();
             }
             if (Properties.QuickTabs.Default.ViewLargeFretboard != largeFretboard)

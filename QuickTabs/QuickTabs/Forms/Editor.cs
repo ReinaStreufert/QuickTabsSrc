@@ -10,7 +10,7 @@ namespace QuickTabs
         public override Color BackColor { get => DrawingConstants.EmptySpaceBackColor; set => base.BackColor = value; }
 
         public int ContextMenuHeight { get; set; } = 160;
-        public int FretboardHeight { get; set; } = 350;
+        public int FretboardHeight { get; set; } = 440;
 
         private QuickTabsContextMenu contextMenu;
         private LogoPanel tabEditorPanel;
