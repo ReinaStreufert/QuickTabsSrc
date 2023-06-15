@@ -21,6 +21,12 @@ namespace QuickTabs.Forms
             installPathInput.Text = InstallOperations.DefaultInstallDir;
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            chooseButton.Height = installPathInput.Height; // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        }
+
         private void chooseButton_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
