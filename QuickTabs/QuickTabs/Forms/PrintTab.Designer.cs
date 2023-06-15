@@ -30,7 +30,6 @@
         {
             this.label6 = new System.Windows.Forms.Label();
             this.printerSelect = new System.Windows.Forms.ComboBox();
-            this.printPreview = new System.Windows.Forms.PrintPreviewControl();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.scaleInput = new System.Windows.Forms.NumericUpDown();
@@ -53,10 +52,9 @@
             this.label9 = new System.Windows.Forms.Label();
             this.copiesInput = new System.Windows.Forms.NumericUpDown();
             this.printButton = new System.Windows.Forms.Button();
-            this.invalidPreviewPanel = new System.Windows.Forms.Panel();
-            this.updatePreviewLink = new System.Windows.Forms.LinkLabel();
             this.includeCoverCheck = new System.Windows.Forms.CheckBox();
             this.systemDialogLink = new System.Windows.Forms.LinkLabel();
+            this.previewLocation = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.scaleInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewZoomInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.previewPageInput)).BeginInit();
@@ -65,17 +63,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.rightMarginInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftMarginInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.copiesInput)).BeginInit();
-            this.invalidPreviewPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label6.Location = new System.Drawing.Point(12, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(102, 33);
+            this.label6.Size = new System.Drawing.Size(91, 29);
             this.label6.TabIndex = 15;
             this.label6.Text = "Printer";
             // 
@@ -84,47 +81,40 @@
             this.printerSelect.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.printerSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.printerSelect.DropDownWidth = 500;
-            this.printerSelect.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.printerSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.printerSelect.FormattingEnabled = true;
             this.printerSelect.Location = new System.Drawing.Point(18, 45);
             this.printerSelect.Name = "printerSelect";
-            this.printerSelect.Size = new System.Drawing.Size(306, 41);
+            this.printerSelect.Size = new System.Drawing.Size(306, 37);
             this.printerSelect.TabIndex = 16;
             this.printerSelect.SelectedIndexChanged += new System.EventHandler(this.printerSelect_SelectedIndexChanged);
-            // 
-            // printPreview
-            // 
-            this.printPreview.Location = new System.Drawing.Point(340, 45);
-            this.printPreview.Name = "printPreview";
-            this.printPreview.Size = new System.Drawing.Size(758, 681);
-            this.printPreview.TabIndex = 17;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label1.Location = new System.Drawing.Point(333, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(116, 33);
+            this.label1.Size = new System.Drawing.Size(107, 29);
             this.label1.TabIndex = 18;
             this.label1.Text = "Preview";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label2.Location = new System.Drawing.Point(12, 89);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(81, 33);
+            this.label2.Size = new System.Drawing.Size(79, 29);
             this.label2.TabIndex = 19;
             this.label2.Text = "Scale";
             // 
             // scaleInput
             // 
             this.scaleInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.scaleInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.scaleInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.scaleInput.ForeColor = System.Drawing.Color.White;
             this.scaleInput.Increment = new decimal(new int[] {
             14,
@@ -143,7 +133,7 @@
             0,
             0});
             this.scaleInput.Name = "scaleInput";
-            this.scaleInput.Size = new System.Drawing.Size(90, 37);
+            this.scaleInput.Size = new System.Drawing.Size(90, 35);
             this.scaleInput.TabIndex = 20;
             this.scaleInput.Value = new decimal(new int[] {
             60,
@@ -155,18 +145,18 @@
             // percentText
             // 
             this.percentText.AutoSize = true;
-            this.percentText.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.percentText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.percentText.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.percentText.Location = new System.Drawing.Point(114, 126);
             this.percentText.Name = "percentText";
-            this.percentText.Size = new System.Drawing.Size(35, 33);
+            this.percentText.Size = new System.Drawing.Size(35, 29);
             this.percentText.TabIndex = 21;
             this.percentText.Text = "%";
             // 
             // previewZoomInput
             // 
             this.previewZoomInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.previewZoomInput.Font = new System.Drawing.Font("Montserrat", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.previewZoomInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.previewZoomInput.ForeColor = System.Drawing.Color.White;
             this.previewZoomInput.Increment = new decimal(new int[] {
             10,
@@ -185,7 +175,7 @@
             0,
             0});
             this.previewZoomInput.Name = "previewZoomInput";
-            this.previewZoomInput.Size = new System.Drawing.Size(90, 30);
+            this.previewZoomInput.Size = new System.Drawing.Size(90, 29);
             this.previewZoomInput.TabIndex = 22;
             this.previewZoomInput.Value = new decimal(new int[] {
             100,
@@ -197,29 +187,29 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label3.Location = new System.Drawing.Point(454, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(86, 33);
+            this.label3.Size = new System.Drawing.Size(75, 29);
             this.label3.TabIndex = 23;
             this.label3.Text = "Zoom";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label4.Location = new System.Drawing.Point(641, 8);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(76, 33);
+            this.label4.Size = new System.Drawing.Size(70, 29);
             this.label4.TabIndex = 24;
             this.label4.Text = "Page";
             // 
             // previewPageInput
             // 
             this.previewPageInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.previewPageInput.Font = new System.Drawing.Font("Montserrat", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.previewPageInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.previewPageInput.ForeColor = System.Drawing.Color.White;
             this.previewPageInput.Location = new System.Drawing.Point(723, 10);
             this.previewPageInput.Maximum = new decimal(new int[] {
@@ -233,7 +223,7 @@
             0,
             0});
             this.previewPageInput.Name = "previewPageInput";
-            this.previewPageInput.Size = new System.Drawing.Size(90, 30);
+            this.previewPageInput.Size = new System.Drawing.Size(90, 29);
             this.previewPageInput.TabIndex = 25;
             this.previewPageInput.Value = new decimal(new int[] {
             1,
@@ -245,11 +235,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label5.Location = new System.Drawing.Point(12, 165);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(115, 33);
+            this.label5.Size = new System.Drawing.Size(104, 29);
             this.label5.TabIndex = 26;
             this.label5.Text = "Options";
             // 
@@ -258,11 +248,11 @@
             this.useColorCheck.AutoSize = true;
             this.useColorCheck.Checked = true;
             this.useColorCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.useColorCheck.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.useColorCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.useColorCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.useColorCheck.Location = new System.Drawing.Point(18, 201);
             this.useColorCheck.Name = "useColorCheck";
-            this.useColorCheck.Size = new System.Drawing.Size(158, 37);
+            this.useColorCheck.Size = new System.Drawing.Size(148, 33);
             this.useColorCheck.TabIndex = 27;
             this.useColorCheck.Text = "Use color";
             this.useColorCheck.UseVisualStyleBackColor = true;
@@ -271,11 +261,11 @@
             // doubleSidedCheck
             // 
             this.doubleSidedCheck.AutoSize = true;
-            this.doubleSidedCheck.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.doubleSidedCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.doubleSidedCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.doubleSidedCheck.Location = new System.Drawing.Point(18, 244);
             this.doubleSidedCheck.Name = "doubleSidedCheck";
-            this.doubleSidedCheck.Size = new System.Drawing.Size(264, 37);
+            this.doubleSidedCheck.Size = new System.Drawing.Size(241, 33);
             this.doubleSidedCheck.TabIndex = 28;
             this.doubleSidedCheck.Text = "Print double sided";
             this.doubleSidedCheck.UseVisualStyleBackColor = true;
@@ -284,11 +274,11 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label7.Location = new System.Drawing.Point(12, 370);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(145, 33);
+            this.label7.Size = new System.Drawing.Size(137, 29);
             this.label7.TabIndex = 29;
             this.label7.Text = "Paper size";
             // 
@@ -297,22 +287,22 @@
             this.paperSizeSelect.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.paperSizeSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.paperSizeSelect.DropDownWidth = 500;
-            this.paperSizeSelect.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.paperSizeSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.paperSizeSelect.FormattingEnabled = true;
             this.paperSizeSelect.Location = new System.Drawing.Point(18, 406);
             this.paperSizeSelect.Name = "paperSizeSelect";
-            this.paperSizeSelect.Size = new System.Drawing.Size(306, 41);
+            this.paperSizeSelect.Size = new System.Drawing.Size(306, 37);
             this.paperSizeSelect.TabIndex = 30;
             this.paperSizeSelect.SelectedIndexChanged += new System.EventHandler(this.paperSizeSelect_SelectedIndexChanged);
             // 
             // landscapeCheck
             // 
             this.landscapeCheck.AutoSize = true;
-            this.landscapeCheck.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.landscapeCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.landscapeCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.landscapeCheck.Location = new System.Drawing.Point(18, 287);
             this.landscapeCheck.Name = "landscapeCheck";
-            this.landscapeCheck.Size = new System.Drawing.Size(177, 37);
+            this.landscapeCheck.Size = new System.Drawing.Size(163, 33);
             this.landscapeCheck.TabIndex = 31;
             this.landscapeCheck.Text = "Landscape";
             this.landscapeCheck.UseVisualStyleBackColor = true;
@@ -321,11 +311,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label8.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label8.Location = new System.Drawing.Point(12, 450);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(166, 33);
+            this.label8.Size = new System.Drawing.Size(152, 29);
             this.label8.TabIndex = 32;
             this.label8.Text = "Margins (in)";
             // 
@@ -333,7 +323,7 @@
             // 
             this.topMarginInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.topMarginInput.DecimalPlaces = 2;
-            this.topMarginInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.topMarginInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.topMarginInput.ForeColor = System.Drawing.Color.White;
             this.topMarginInput.Increment = new decimal(new int[] {
             2,
@@ -347,7 +337,7 @@
             0,
             0});
             this.topMarginInput.Name = "topMarginInput";
-            this.topMarginInput.Size = new System.Drawing.Size(90, 37);
+            this.topMarginInput.Size = new System.Drawing.Size(90, 35);
             this.topMarginInput.TabIndex = 33;
             this.topMarginInput.Value = new decimal(new int[] {
             2,
@@ -360,7 +350,7 @@
             // 
             this.bottomMarginInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.bottomMarginInput.DecimalPlaces = 2;
-            this.bottomMarginInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.bottomMarginInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.bottomMarginInput.ForeColor = System.Drawing.Color.White;
             this.bottomMarginInput.Increment = new decimal(new int[] {
             2,
@@ -374,7 +364,7 @@
             0,
             0});
             this.bottomMarginInput.Name = "bottomMarginInput";
-            this.bottomMarginInput.Size = new System.Drawing.Size(90, 37);
+            this.bottomMarginInput.Size = new System.Drawing.Size(90, 35);
             this.bottomMarginInput.TabIndex = 34;
             this.bottomMarginInput.Value = new decimal(new int[] {
             2,
@@ -387,7 +377,7 @@
             // 
             this.rightMarginInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.rightMarginInput.DecimalPlaces = 2;
-            this.rightMarginInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.rightMarginInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rightMarginInput.ForeColor = System.Drawing.Color.White;
             this.rightMarginInput.Increment = new decimal(new int[] {
             2,
@@ -401,7 +391,7 @@
             0,
             0});
             this.rightMarginInput.Name = "rightMarginInput";
-            this.rightMarginInput.Size = new System.Drawing.Size(90, 37);
+            this.rightMarginInput.Size = new System.Drawing.Size(90, 35);
             this.rightMarginInput.TabIndex = 35;
             this.rightMarginInput.Value = new decimal(new int[] {
             2,
@@ -414,7 +404,7 @@
             // 
             this.leftMarginInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.leftMarginInput.DecimalPlaces = 2;
-            this.leftMarginInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.leftMarginInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.leftMarginInput.ForeColor = System.Drawing.Color.White;
             this.leftMarginInput.Increment = new decimal(new int[] {
             2,
@@ -428,7 +418,7 @@
             0,
             0});
             this.leftMarginInput.Name = "leftMarginInput";
-            this.leftMarginInput.Size = new System.Drawing.Size(90, 37);
+            this.leftMarginInput.Size = new System.Drawing.Size(90, 35);
             this.leftMarginInput.TabIndex = 36;
             this.leftMarginInput.Value = new decimal(new int[] {
             2,
@@ -440,18 +430,18 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label9.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label9.Location = new System.Drawing.Point(11, 575);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(101, 33);
+            this.label9.Size = new System.Drawing.Size(96, 29);
             this.label9.TabIndex = 37;
             this.label9.Text = "Copies";
             // 
             // copiesInput
             // 
             this.copiesInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.copiesInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.copiesInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.copiesInput.ForeColor = System.Drawing.Color.White;
             this.copiesInput.Location = new System.Drawing.Point(18, 611);
             this.copiesInput.Maximum = new decimal(new int[] {
@@ -465,7 +455,7 @@
             0,
             0});
             this.copiesInput.Name = "copiesInput";
-            this.copiesInput.Size = new System.Drawing.Size(90, 37);
+            this.copiesInput.Size = new System.Drawing.Size(90, 35);
             this.copiesInput.TabIndex = 38;
             this.copiesInput.Value = new decimal(new int[] {
             1,
@@ -478,7 +468,7 @@
             // 
             this.printButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(154)))), ((int)(((byte)(231)))));
             this.printButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.printButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.printButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.printButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.printButton.Location = new System.Drawing.Point(18, 654);
             this.printButton.Name = "printButton";
@@ -488,36 +478,14 @@
             this.printButton.UseVisualStyleBackColor = false;
             this.printButton.Click += new System.EventHandler(this.printButton_Click);
             // 
-            // invalidPreviewPanel
-            // 
-            this.invalidPreviewPanel.Controls.Add(this.updatePreviewLink);
-            this.invalidPreviewPanel.Location = new System.Drawing.Point(340, 46);
-            this.invalidPreviewPanel.Name = "invalidPreviewPanel";
-            this.invalidPreviewPanel.Size = new System.Drawing.Size(758, 680);
-            this.invalidPreviewPanel.TabIndex = 40;
-            // 
-            // updatePreviewLink
-            // 
-            this.updatePreviewLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
-            this.updatePreviewLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.updatePreviewLink.LinkColor = System.Drawing.Color.White;
-            this.updatePreviewLink.Location = new System.Drawing.Point(3, 3);
-            this.updatePreviewLink.Name = "updatePreviewLink";
-            this.updatePreviewLink.Size = new System.Drawing.Size(847, 737);
-            this.updatePreviewLink.TabIndex = 0;
-            this.updatePreviewLink.TabStop = true;
-            this.updatePreviewLink.Text = "Update preview";
-            this.updatePreviewLink.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.updatePreviewLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.updatePreviewLink_LinkClicked);
-            // 
             // includeCoverCheck
             // 
             this.includeCoverCheck.AutoSize = true;
-            this.includeCoverCheck.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.includeCoverCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.includeCoverCheck.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.includeCoverCheck.Location = new System.Drawing.Point(18, 330);
             this.includeCoverCheck.Name = "includeCoverCheck";
-            this.includeCoverCheck.Size = new System.Drawing.Size(254, 37);
+            this.includeCoverCheck.Size = new System.Drawing.Size(228, 33);
             this.includeCoverCheck.TabIndex = 41;
             this.includeCoverCheck.Text = "Include title page";
             this.includeCoverCheck.UseVisualStyleBackColor = true;
@@ -527,15 +495,22 @@
             // 
             this.systemDialogLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
             this.systemDialogLink.AutoSize = true;
-            this.systemDialogLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.systemDialogLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.systemDialogLink.LinkColor = System.Drawing.Color.White;
             this.systemDialogLink.Location = new System.Drawing.Point(13, 713);
             this.systemDialogLink.Name = "systemDialogLink";
-            this.systemDialogLink.Size = new System.Drawing.Size(264, 33);
+            this.systemDialogLink.Size = new System.Drawing.Size(230, 29);
             this.systemDialogLink.TabIndex = 42;
             this.systemDialogLink.TabStop = true;
             this.systemDialogLink.Text = "System print options";
             this.systemDialogLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.systemDialogLink_LinkClicked);
+            // 
+            // previewLocation
+            // 
+            this.previewLocation.Location = new System.Drawing.Point(339, 44);
+            this.previewLocation.Name = "previewLocation";
+            this.previewLocation.Size = new System.Drawing.Size(400, 200);
+            this.previewLocation.TabIndex = 43;
             // 
             // PrintTab
             // 
@@ -543,9 +518,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.WindowText;
             this.ClientSize = new System.Drawing.Size(1188, 783);
+            this.Controls.Add(this.previewLocation);
             this.Controls.Add(this.systemDialogLink);
             this.Controls.Add(this.includeCoverCheck);
-            this.Controls.Add(this.invalidPreviewPanel);
             this.Controls.Add(this.printButton);
             this.Controls.Add(this.copiesInput);
             this.Controls.Add(this.label9);
@@ -568,7 +543,6 @@
             this.Controls.Add(this.scaleInput);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.printPreview);
             this.Controls.Add(this.printerSelect);
             this.Controls.Add(this.label6);
             this.Name = "PrintTab";
@@ -582,7 +556,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.rightMarginInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftMarginInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.copiesInput)).EndInit();
-            this.invalidPreviewPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -592,7 +565,6 @@
 
         private Label label6;
         private ComboBox printerSelect;
-        private PrintPreviewControl printPreview;
         private Label label1;
         private Label label2;
         private NumericUpDown scaleInput;
@@ -615,9 +587,8 @@
         private Label label9;
         private NumericUpDown copiesInput;
         private Button printButton;
-        private Panel invalidPreviewPanel;
-        private LinkLabel updatePreviewLink;
         private CheckBox includeCoverCheck;
         private LinkLabel systemDialogLink;
+        private Panel previewLocation;
     }
 }

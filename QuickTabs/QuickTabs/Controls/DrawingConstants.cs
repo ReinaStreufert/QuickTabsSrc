@@ -107,6 +107,7 @@ namespace QuickTabs.Controls
         public static int DropdownIconArea { get; private set; } = 70;
         public static int ScrollbarLargeChange { get; private set; } = 100;
         public static int ScrollbarSmallChange { get; private set; } = 20;
+        public static int PrintPreviewOutlineWidth { get; private set; } = 5;
         public static void Scale(float scale)
         {
             CurrentScale *= scale;
@@ -178,7 +179,7 @@ namespace QuickTabs.Controls
             {
                 Type type = control.GetType();
                 Font font = new Font(Montserrat, control.Font.Size, control.Font.Style, control.Font.Unit);
-                control.Font.Dispose();
+                //control.Font.Dispose();
                 control.Font = font;
                 if (type == typeof(Label) || type == typeof(CheckBox) || type == typeof(LinkLabel))
                 {

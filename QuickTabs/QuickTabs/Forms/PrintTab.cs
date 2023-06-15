@@ -19,6 +19,7 @@ namespace QuickTabs.Forms
         private TabPrinter tabPrinter;
         private PrinterSettings printerSettings;
         private PageSettings pageSettings;
+        private QTPrintPreview printPreview = null;
         private bool preferredUseColor = true;
         private bool preferredDoubleSided = false;
 
@@ -27,7 +28,6 @@ namespace QuickTabs.Forms
             InitializeComponent();
             this.AutoScaleMode = AutoScaleMode.Dpi;
             DrawingConstants.ApplyThemeToUIForm(this);
-            invalidPreviewPanel.Visible = false;
         }
 
         protected override void OnShown(EventArgs e)
@@ -37,7 +37,13 @@ namespace QuickTabs.Forms
             tabPrinter.Song = Song;
             tabPrinter.Scale = 0.6F;
             tabPrinter.OnPageCountSet += TabPrinter_OnPageCountSet;
-            printPreview.Document = tabPrinter.Document;
+            this.Cursor = Cursors.WaitCursor;
+            printPreview = new QTPrintPreview(tabPrinter.GeneratePreview());
+            this.Cursor = Cursors.Default;
+            printPreview.Location = previewLocation.Location;
+            printPreview.Size = new Size(this.ClientSize.Width - printPreview.Location.X, this.ClientSize.Height - printPreview.Location.Y);
+            Controls.Add(printPreview);
+            Controls.SetChildIndex(printPreview, 0);
             pageSettings = tabPrinter.Document.DefaultPageSettings;
             printerSettings = tabPrinter.Document.PrinterSettings;
             printerSettings.Duplex = Duplex.Simplex;
@@ -55,7 +61,6 @@ namespace QuickTabs.Forms
             rightMarginInput.Value = margins.Right / (decimal)100;
             topMarginInput.Value = margins.Top / (decimal)100;
             bottomMarginInput.Value = margins.Bottom / (decimal)100;
-            invalidPreviewPanel.Visible = false;
         }
 
         private void TabPrinter_OnPageCountSet(int count)
@@ -66,32 +71,41 @@ namespace QuickTabs.Forms
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
+            if (printPreview == null)
+            {
+                return;
+            }
+            printPreview.Location = previewLocation.Location;
             printPreview.Size = new Size(this.ClientSize.Width - printPreview.Location.X, this.ClientSize.Height - printPreview.Location.Y);
-            invalidPreviewPanel.Location = new Point(printPreview.Location.X, 0);
-            invalidPreviewPanel.Size = new Size(printPreview.Size.Width, this.ClientSize.Height);
-            updatePreviewLink.Location = new Point(0, 0);
-            updatePreviewLink.Size = invalidPreviewPanel.Size;
+        }
+
+        private void refreshPreview()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            printPreview.PreviewSource = tabPrinter.GeneratePreview();
+            this.Cursor = Cursors.Default;
         }
 
         private void invalidatePreview()
         {
-            invalidPreviewPanel.Visible = true;
+            printPreview.InvalidatePreview();
         }
 
         private void scaleInput_ValueChanged(object sender, EventArgs e)
         {
             tabPrinter.Scale = (float)scaleInput.Value / 100F;
+            refreshPreview();
             invalidatePreview();
         }
 
         private void previewZoomInput_ValueChanged(object sender, EventArgs e)
         {
-            printPreview.Zoom = (double)previewZoomInput.Value / 100D;
+            printPreview.Zoom = (float)previewZoomInput.Value / 100F;
         }
 
         private void previewPageInput_ValueChanged(object sender, EventArgs e)
         {
-            printPreview.StartPage = ((int)previewPageInput.Value) - 1;
+            printPreview.Page = ((int)previewPageInput.Value) - 1;
         }
 
         private void printerSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -187,12 +201,14 @@ namespace QuickTabs.Forms
         private void landscapeCheck_CheckedChanged(object sender, EventArgs e)
         {
             pageSettings.Landscape = landscapeCheck.Checked;
+            refreshPreview();
             invalidatePreview();
         }
 
         private void includeCoverCheck_CheckedChanged(object sender, EventArgs e)
         {
             tabPrinter.IncludeCover = includeCoverCheck.Checked;
+            refreshPreview();
             invalidatePreview();
         }
 
@@ -204,6 +220,7 @@ namespace QuickTabs.Forms
             margins.Top = (int)(topMarginInput.Value * 100);
             margins.Bottom = (int)(bottomMarginInput.Value * 100);
             pageSettings.Margins = margins;
+            refreshPreview();
             invalidatePreview();
         }
 
@@ -218,6 +235,7 @@ namespace QuickTabs.Forms
             if (newSize.PaperName != pageSettings.PaperSize.PaperName)
             {
                 pageSettings.PaperSize = newSize;
+                refreshPreview();
                 invalidatePreview();
             }
         }
@@ -226,12 +244,6 @@ namespace QuickTabs.Forms
         {
             tabPrinter.Document.Print();
             this.Close();
-        }
-
-        private void updatePreviewLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            printPreview.InvalidatePreview();
-            invalidPreviewPanel.Visible = false;
         }
 
         private void systemDialogLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -272,6 +284,7 @@ namespace QuickTabs.Forms
                 topMarginInput.Value = margins.Top / (decimal)100;
                 bottomMarginInput.Value = margins.Bottom / (decimal)100;
                 copiesInput.Value = printerSettings.Copies;
+                refreshPreview();
                 invalidatePreview(); // because who knows what weird thing you changed in the print dialog that this dialog cant detect
             }
         }

@@ -80,7 +80,7 @@ namespace QuickTabs.Controls
                 int width = this.Width;
 
                 using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
-                using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
+                using (Font font = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Regular, GraphicsUnit.Pixel))
                 using (SolidBrush contrast = new SolidBrush(DrawingConstants.ContrastColor))
                 using (SolidBrush fadedGray = new SolidBrush(DrawingConstants.FadedGray))
                 {
@@ -105,7 +105,7 @@ namespace QuickTabs.Controls
                             usedIcon = item.Icon[DrawingConstants.FadedGray];
                         }
                         g.DrawImage(usedIcon, centerIconX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
-                        SizeF textSize = g.MeasureString(item.CollapsedText, boldFont);
+                        SizeF textSize = g.MeasureString(item.CollapsedText, font);
                         SolidBrush usedBrush;
                         if (item.Selected)
                         {
@@ -120,7 +120,7 @@ namespace QuickTabs.Controls
                                 usedBrush = contrast;
                             }
                         }
-                        g.DrawString(item.CollapsedText, boldFont, usedBrush, textStartX, centerY - textSize.Height / 2);
+                        g.DrawString(item.CollapsedText, font, usedBrush, textStartX, centerY - textSize.Height / 2);
                         if (item.Selected && Section.ToggleType != ToggleType.NotTogglable)
                         {
                             g.DrawImage(DrawingIcons.Check[DrawingConstants.ContrastColor], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);

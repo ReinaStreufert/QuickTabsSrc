@@ -16,17 +16,31 @@ namespace QuickTabs.Controls
         public bool IncludeCover { get; set; } = false;
         public event PageCountSet OnPageCountSet;
 
+        private PageSettings pageSettings;
         private List<List<UIRow>> pages;
         private int currentPageIndex = -1;
         private float calculatedScale;
 
-        private const float headTextSize = 52; // pt
-        private const float subTextSize = 24; // pt
+        private const float headTextSize = 80; // 100ths of an inch
+        private const float subTextSize = 35; // 100ths of an inch
 
         public TabPrinter()
         {
             Document.BeginPrint += Document_BeginPrint;
             Document.PrintPage += Document_PrintPage;
+            pageSettings = Document.DefaultPageSettings;
+        }
+
+        public DocumentPreview GeneratePreview()
+        {
+            Document_BeginPrint(null, null);
+            PrintedTabPreview docPreview = new PrintedTabPreview();
+            docPreview.Parent = this;
+            docPreview.Pages = pages;
+            docPreview.PreviewPage = previewPage;
+            docPreview.DrawCover = drawCover;
+            docPreview.PageSettings = pageSettings;
+            return docPreview;
         }
 
         protected override void OnControlAdded(ControlEventArgs e)
@@ -42,7 +56,6 @@ namespace QuickTabs.Controls
 
             // first calculate layout (row breaks) for the entire tab so we can calculate page breaks.
             this.MaxHeight = int.MaxValue;
-            PageSettings pageSettings = Document.DefaultPageSettings;
             int marginWidth = pageSettings.Margins.Left + pageSettings.Margins.Right;
             int marginHeight = pageSettings.Margins.Top + pageSettings.Margins.Bottom;
             int printAreaWidth = (int)((pageSettings.Bounds.Width - marginWidth) / calculatedScale); // ex: if were drawing at half scale (0.5), there is now double the available space for breaking calculations
@@ -102,13 +115,25 @@ namespace QuickTabs.Controls
             e.HasMorePages = (currentPageIndex < pages.Count);
         }
 
+        private void previewPage(int page, PrintPageEventArgs e)
+        {
+            tabUI = pages[page];
+            e.Graphics.TranslateTransform(e.MarginBounds.X, e.MarginBounds.Y);
+            e.Graphics.ScaleTransform(calculatedScale, calculatedScale);
+            PaintEventArgs paintEventArgs = new PaintEventArgs(e.Graphics, new Rectangle(0, 0, e.MarginBounds.Width, e.MarginBounds.Height));
+            Enums.Theme originalTheme = DrawingConstants.CurrentTheme;
+            DrawingConstants.SetTheme(Enums.Theme.LightMode);
+            this.OnPaint(paintEventArgs);
+            DrawingConstants.SetTheme(originalTheme);
+        }
+
         private void drawCover(PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            using (Font headFont = new Font(DrawingConstants.Montserrat, headTextSize, FontStyle.Bold, GraphicsUnit.Point))
-            using (Font subFont = new Font(DrawingConstants.Montserrat, subTextSize, FontStyle.Regular, GraphicsUnit.Point))
+            using (Font headFont = new Font(DrawingConstants.Montserrat, headTextSize, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (Font subFont = new Font(DrawingConstants.Montserrat, subTextSize, FontStyle.Regular, GraphicsUnit.Pixel))
             using (SolidBrush black = new SolidBrush(Color.Black))
             {
                 int width = e.MarginBounds.Width;
@@ -175,6 +200,86 @@ namespace QuickTabs.Controls
             lines.Add(currentLine);
             size = new SizeF(totalSize.Width, font.GetHeight(g) * lines.Count);
             return lines.ToArray();
+        }
+
+        public abstract class DocumentPreview
+        {
+            public abstract int PageCount { get; }
+            public abstract Size GetSize(float zoom);
+            public abstract void Draw(int page, Graphics g, float zoom);
+        }
+        private class PrintedTabPreview : DocumentPreview
+        {
+            private TabPrinter parent;
+            public TabPrinter Parent
+            {
+                get
+                {
+                    return parent;
+                }
+                set
+                {
+                    parent = value;
+                }
+            }
+            public List<List<UIRow>> Pages { get; set; }
+            public Action<PrintPageEventArgs> DrawCover { get; set; }
+            public Action<int, PrintPageEventArgs> PreviewPage { get; set; }
+            private PageSettings pageSettings;
+            public PageSettings PageSettings
+            {
+                get
+                {
+                    return pageSettings;
+                }
+                set
+                {
+                    pageSettings = value;
+                    Margins margins = pageSettings.Margins;
+                    pageBounds = pageSettings.Bounds;
+                    marginBounds = new Rectangle(margins.Left, margins.Top, pageBounds.Width - margins.Left - margins.Right, pageBounds.Height - margins.Top - margins.Bottom);
+                }
+            }
+
+            private Rectangle pageBounds;
+            private Rectangle marginBounds;
+
+            public override int PageCount
+            {
+                get
+                {
+                    if (Parent.IncludeCover)
+                    {
+                        return Pages.Count + 1;
+                    } else
+                    {
+                        return Pages.Count;
+                    }
+                }
+            }
+
+            public override void Draw(int page, Graphics g, float zoom)
+            {
+                g.ScaleTransform(zoom, zoom);
+                PrintPageEventArgs printPageEventArgs = new PrintPageEventArgs(g, marginBounds, pageBounds, pageSettings);
+
+                if (Parent.IncludeCover)
+                {
+                    if (page > 0)
+                    {
+                        page--;
+                    } else
+                    {
+                        DrawCover(printPageEventArgs);
+                        return;
+                    }
+                }
+                PreviewPage(page, printPageEventArgs);
+            }
+            public override Size GetSize(float zoom)
+            {
+                return new Size((int)(pageBounds.Width * zoom), (int)(pageBounds.Height * zoom));
+            }
         }
     }
 }

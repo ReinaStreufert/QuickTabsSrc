@@ -28,6 +28,9 @@
     <Compile Update="Controls\QTContextMenuSections\ViewSection.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Controls\QTPrintPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Controls\QuickTabsContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
