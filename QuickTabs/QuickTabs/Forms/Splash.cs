@@ -59,7 +59,7 @@ namespace QuickTabs.Forms
         {
             get 
             { 
-                if (Properties.QuickTabs.Default.ViewDarkMode)
+                if (QTSettings.Current.ViewDarkMode)
                 {
                     return darkGray;
                 } else
@@ -180,7 +180,7 @@ namespace QuickTabs.Forms
             base.OnPaint(e);
             Graphics g = e.Graphics;
             Bitmap logo;
-            if (Properties.QuickTabs.Default.ViewDarkMode)
+            if (QTSettings.Current.ViewDarkMode)
             {
                 logo = logoSource[Color.White];
             } else

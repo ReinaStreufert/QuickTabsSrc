@@ -69,7 +69,7 @@ namespace QuickTabs.Controls.Tools
             }
             fretAreaWidth = this.Width - DrawingConstants.FretboardButtonAreaWidth;
             float targetFretWidth = DrawingConstants.TargetFretWidth;
-            if (Properties.QuickTabs.Default.ViewLargeFretboard)
+            if (QTSettings.Current.ViewLargeFretboard)
             {
                 targetFretWidth = targetFretWidth * 1.5F;
             }

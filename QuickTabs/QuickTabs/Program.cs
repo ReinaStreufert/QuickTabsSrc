@@ -17,6 +17,7 @@ namespace QuickTabs
             ApplicationConfiguration.Initialize();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
+            QTSettings.Current.Initialize();
 
             Environment.CurrentDirectory = Path.GetDirectoryName(InstallOperations.SelfExe);
             if (!Directory.Exists("icons") || !Directory.Exists("fonts"))

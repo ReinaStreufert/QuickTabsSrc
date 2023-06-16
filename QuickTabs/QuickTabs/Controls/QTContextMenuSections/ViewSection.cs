@@ -19,7 +19,7 @@ namespace QuickTabs.Controls
             viewSection.SectionName = "View";
             viewSection.ToggleType = ToggleType.Togglable;
             ContextItem fretCounts = new ContextItem(DrawingIcons.Counter, "Fret counter");
-            fretCounts.Selected = Properties.QuickTabs.Default.ViewFretCounter;
+            fretCounts.Selected = QTSettings.Current.ViewFretCounter;
             if (!fretCounts.Selected)
             {
                 viewFretCountClick();
@@ -27,7 +27,7 @@ namespace QuickTabs.Controls
             fretCounts.Click += viewFretCountClick;
             viewSection.AddItem(fretCounts);
             ContextItem dots = new ContextItem(DrawingIcons.Dots, "Fret navigation dots");
-            dots.Selected = Properties.QuickTabs.Default.ViewNavDots;
+            dots.Selected = QTSettings.Current.ViewNavDots;
             if (!dots.Selected)
             {
                 viewDotsClick();
@@ -35,7 +35,7 @@ namespace QuickTabs.Controls
             dots.Click += viewDotsClick;
             viewSection.AddItem(dots);
             ContextItem compactContextMenu = new ContextItem(DrawingIcons.CompactContextMenu, "Compact context menu");
-            compactContextMenu.Selected = Properties.QuickTabs.Default.ViewCompactCtxMenu;
+            compactContextMenu.Selected = QTSettings.Current.ViewCompactCtxMenu;
             if (compactContextMenu.Selected)
             {
                 compactContextClick();
@@ -43,7 +43,7 @@ namespace QuickTabs.Controls
             compactContextMenu.Click += compactContextClick;
             viewSection.AddItem(compactContextMenu);
             ContextItem largeFretboard = new ContextItem(DrawingIcons.LargeFretboard, "Large fretboard");
-            largeFretboard.Selected = Properties.QuickTabs.Default.ViewLargeFretboard;
+            largeFretboard.Selected = QTSettings.Current.ViewLargeFretboard;
             if (largeFretboard.Selected)
             {
                 largeFretboardClick();
@@ -51,7 +51,7 @@ namespace QuickTabs.Controls
             largeFretboard.Click += largeFretboardClick;
             viewSection.AddItem(largeFretboard);
             ContextItem darkMode = new ContextItem(DrawingIcons.DarkMode, "Dark mode");
-            darkMode.Selected = Properties.QuickTabs.Default.ViewDarkMode;
+            darkMode.Selected = QTSettings.Current.ViewDarkMode;
             if (!darkMode.Selected)
             {
                 changeTheme();
@@ -64,20 +64,20 @@ namespace QuickTabs.Controls
         {
             Fretboard.ViewDots = !Fretboard.ViewDots;
             Fretboard.Refresh();
-            if (Properties.QuickTabs.Default.ViewNavDots != Fretboard.ViewDots)
+            if (QTSettings.Current.ViewNavDots != Fretboard.ViewDots)
             {
-                Properties.QuickTabs.Default.ViewNavDots = Fretboard.ViewDots;
-                Properties.QuickTabs.Default.Save();
+                QTSettings.Current.ViewNavDots = Fretboard.ViewDots;
+                QTSettings.Current.Save();
             }
         }
         private void viewFretCountClick()
         {
             Fretboard.ViewFretCounter = !Fretboard.ViewFretCounter;
             Fretboard.Refresh();
-            if (Properties.QuickTabs.Default.ViewFretCounter != Fretboard.ViewFretCounter)
+            if (QTSettings.Current.ViewFretCounter != Fretboard.ViewFretCounter)
             {
-                Properties.QuickTabs.Default.ViewFretCounter = Fretboard.ViewFretCounter;
-                Properties.QuickTabs.Default.Save();
+                QTSettings.Current.ViewFretCounter = Fretboard.ViewFretCounter;
+                QTSettings.Current.Save();
             }
         }
         private void compactContextClick()
@@ -97,10 +97,10 @@ namespace QuickTabs.Controls
                 MainForm.ContextMenuHeight = 80;
                 MainForm.RefreshLayout();
             }
-            if (Properties.QuickTabs.Default.ViewCompactCtxMenu != compactContext)
+            if (QTSettings.Current.ViewCompactCtxMenu != compactContext)
             {
-                Properties.QuickTabs.Default.ViewCompactCtxMenu = compactContext;
-                Properties.QuickTabs.Default.Save();
+                QTSettings.Current.ViewCompactCtxMenu = compactContext;
+                QTSettings.Current.Save();
             }
         }
         private void largeFretboardClick()
@@ -116,10 +116,10 @@ namespace QuickTabs.Controls
                 MainForm.FretboardHeight = 530;
                 MainForm.RefreshLayout();
             }
-            if (Properties.QuickTabs.Default.ViewLargeFretboard != largeFretboard)
+            if (QTSettings.Current.ViewLargeFretboard != largeFretboard)
             {
-                Properties.QuickTabs.Default.ViewLargeFretboard = largeFretboard;
-                Properties.QuickTabs.Default.Save();
+                QTSettings.Current.ViewLargeFretboard = largeFretboard;
+                QTSettings.Current.Save();
                 Fretboard.Refresh();
             }
         }
@@ -133,10 +133,10 @@ namespace QuickTabs.Controls
                 DrawingConstants.SetTheme(Theme.DarkMode);
             }
             deepInvalidate(MainForm); // invalidate EVERYTHING
-            if (Properties.QuickTabs.Default.ViewDarkMode != (DrawingConstants.CurrentTheme == Theme.DarkMode))
+            if (QTSettings.Current.ViewDarkMode != (DrawingConstants.CurrentTheme == Theme.DarkMode))
             {
-                Properties.QuickTabs.Default.ViewDarkMode = (DrawingConstants.CurrentTheme == Theme.DarkMode);
-                Properties.QuickTabs.Default.Save();
+                QTSettings.Current.ViewDarkMode = (DrawingConstants.CurrentTheme == Theme.DarkMode);
+                QTSettings.Current.Save();
             }
 
         }
