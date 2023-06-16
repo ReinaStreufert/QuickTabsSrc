@@ -1,3 +1,0 @@
-NEXT IMPLEMENTATION LIST
-----
-write installer

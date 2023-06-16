@@ -1,2 +1,0 @@
-KNOWN BUGS
-- Horizontal shift does not yet behave correctly around edges and section breaks
