@@ -39,9 +39,14 @@ namespace QuickTabs.Forms
 
         private void installButton_Click(object sender, EventArgs e)
         {
+            InstallOperations.InstallStarted += InstallOperations_InstallStarted;
             InstallOperations.InstallFailed += InstallOperations_InstallFailed;
             InstallOperations.InstallComplete += InstallOperations_InstallComplete;
             InstallOperations.StartInstall(installPathInput.Text, startShortcutCheck.Checked);
+        }
+
+        private void InstallOperations_InstallStarted()
+        {
             this.Cursor = Cursors.WaitCursor;
         }
 
@@ -53,12 +58,15 @@ namespace QuickTabs.Forms
 
         private void InstallOperations_InstallFailed(string errMessage)
         {
-            using (InstallerMessage message = new InstallerMessage())
+            this.Invoke(() =>
             {
-                message.Message = errMessage;
-                message.ShowDialog();
-            }
-            this.Cursor = Cursors.Default;
+                using (InstallerMessage message = new InstallerMessage())
+                {
+                    message.Message = errMessage;
+                    message.ShowDialog();
+                }
+                this.Cursor = Cursors.Default;
+            });
         }
 
         private void Splash_FormClosed(object? sender, FormClosedEventArgs e)

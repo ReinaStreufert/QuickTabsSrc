@@ -1,6 +1,7 @@
 ﻿using IWshRuntimeLibrary;
 using Newtonsoft.Json.Linq;
 using QuickTabs.Forms;
+using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ namespace QuickTabs
 {
     internal static class InstallOperations
     {
+        public static event Action InstallStarted;          //  ]
         public static event Action<string> InstallComplete; //  ]
         public static event Action<string> InstallFailed; //    ] may be called outside of the main thread
 
@@ -51,6 +53,7 @@ namespace QuickTabs
             startInfo.UseShellExecute = true;
             startInfo.Verb = "runas";
             System.Diagnostics.Process.Start(startInfo);
+            AudioEngine.Stop();
             Environment.Exit(0);
         }
         public static void StartInstall(string installDir, bool createStartShortcut)
@@ -82,9 +85,11 @@ namespace QuickTabs
             {
                 startShortcutPath = "";
             }
+            InstallStarted?.Invoke();
             if (httpClient == null)
             {
                 httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromMilliseconds(4000);
             }
             httpClient.GetStringAsync(Updater.VersionStatusUrl).ContinueWith(statusReceived);
         }
