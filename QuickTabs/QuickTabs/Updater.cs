@@ -15,8 +15,8 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 1;
-        public const string SelfReleaseNotes = "testy test";
+        public const int SelfReleaseVersion = 0;
+        public const string SelfReleaseNotes = "development version";
         public const string VersionStatusUrl = "http://192.168.1.146:8080/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
 
         public static bool WasJustUpdated { get; private set; } = false;
@@ -58,6 +58,10 @@ namespace QuickTabs
         private static void update(JObject statusJson)
         {
             UpdateStarted?.Invoke();
+            if (!InstallOperations.IsElevated)
+            {
+                InstallOperations.RestartElevated();
+            }
 
             string latestExecutableUrl;
             if (statusJson.ContainsKey("latest-exe") && statusJson["latest-exe"].Type == JTokenType.String)
