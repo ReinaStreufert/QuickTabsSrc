@@ -15,8 +15,8 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 0;
-        public const string SelfReleaseNotes = "development version";
+        public const int SelfReleaseVersion = 1;
+        public const string SelfReleaseNotes = "test update";
         public const string VersionStatusUrl = "http://192.168.1.146:8080/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
 
         public static bool WasJustUpdated { get; private set; } = false;

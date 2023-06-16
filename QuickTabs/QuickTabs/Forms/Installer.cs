@@ -53,12 +53,12 @@ namespace QuickTabs.Forms
 
         private void InstallOperations_InstallFailed(string errMessage)
         {
-            this.Cursor = Cursors.Default;
             using (InstallerMessage message = new InstallerMessage())
             {
                 message.Message = errMessage;
                 message.ShowDialog();
             }
+            this.Cursor = Cursors.Default;
         }
 
         private void Splash_FormClosed(object? sender, FormClosedEventArgs e)
