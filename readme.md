@@ -1,6 +1,6 @@
 # About QuickTabs
 
-QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor. As a songwriter with ADHD I found trying to jot down tabs quickly while the idea is fresh in my mind with a *text editor* to be next to impossible. I wrote QuickTabs as a solution to this. It is still in beta and currently limited to eighth notes as the smallest division, but it is still relatively featureful even including a synthesizer-based tab player. QuickTabs was written in C# and as of now is unfortanately only for Windows.
+QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor. As a songwriter with ADHD I found trying to jot down tabs quickly while the idea is fresh in my mind with a damn *text editor* to be next to impossible. I wrote QuickTabs as a solution to this. It is still in beta and currently limited to eighth notes as the smallest division, but it is still relatively featureful even including a synthesizer-based tab player. QuickTabs was written in C# and as of now is unfortanately only for Windows.
 
 # Features
 
@@ -17,9 +17,10 @@ QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor.
 * Save and open in 3 formats:
     * `.qtjson`: Format i developed based on json to represent QuickTabs tabs.
     * `.qtz`: Bytecode version of `.qtjson`. Contrast: much much smaller files than json-based, but not hand readable or editable at all.
-    * `.mid`: Midi tab format. This is an extension of Standard Midi File which includes tab-specific info but is fully compatible with any generic midi supporting application. This compatibility only goes one way. Normal midi files do not have enough information to represent a string instrument tab.
+    * `.mid`: Midi tab format. This is an extension of Standard Midi File I developed which includes tab-specific info but is fully compatible with any generic midi supporting application. This compatibility only goes one way; Normal midi files do not have enough information to represent a string instrument tab.
 * Automatically stays up to date to latest version.
 * Basic view preference options (with persistence including over updates.)
 * Probably some more stuff that im forgetting about.
 
-Detailed information on all of these features can be found in /docs/
+Detailed information on all of these features can be found in [/docs/](/docs/)
+
