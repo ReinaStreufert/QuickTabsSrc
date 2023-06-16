@@ -165,7 +165,7 @@
             0});
             this.previewZoomInput.Location = new System.Drawing.Point(543, 10);
             this.previewZoomInput.Maximum = new decimal(new int[] {
-            200,
+            400,
             0,
             0,
             0});

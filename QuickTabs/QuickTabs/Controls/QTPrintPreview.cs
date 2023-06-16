@@ -79,6 +79,14 @@ namespace QuickTabs.Controls
 
         public void InvalidatePreview()
         {
+            if (this.VScroll)
+            {
+                this.VerticalScroll.Value = 0;
+            }
+            if (this.HScroll)
+            {
+                this.HorizontalScroll.Value = 0;
+            }
             pagePreview.RefreshPage();
             centerPagePreview();
         }

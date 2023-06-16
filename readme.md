@@ -24,3 +24,18 @@ QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor.
 
 Detailed information on all of these features can be found in [/docs/](/docs/)
 
+# Prebuilt installer
+
+To get started quickly you may download QuickTabs prebuilt [here](dead). On open QuickTabs will detect if it has not been installed on your machine and open to an installer if so. The installer will move QuickTabs to a permanent install directory, download its dependencies, and create start menu shortcuts if desired.
+
+# Future plans
+
+* Allow for beat divisions down to the 32nd note.
+* Make note lengths per individual note instead of per each entire beat.
+* Parallel track support (abilitity to notate multiple same-length tabs to be played at once, with individually set tuning. Player will support this change)
+* Lyric notation
+* Slide and hammer notation
+
+# Why Windows Forms ??
+
+Because I did not originally plan on sharing this project with anyone, but it got too useful to keep to myself. I had a lot of previous experience in Windows Forms and I like writing my own layout code much better than trying to fight with something like CSS. In the future when I get tired enough of GDI+'s poor performance I may choose to implement my own layout system with Direct2D using SharpDX and move away from winforms. Or I may explore cross-platform options. I am not sure yet and this is likely very in the future because it will be quite a bit of work.
