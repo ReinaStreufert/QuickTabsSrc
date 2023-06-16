@@ -30,8 +30,8 @@ To get started quickly you may download QuickTabs prebuilt [here](dead). On open
 
 # Future plans
 
-* Allow for beat divisions down to the 32nd note.
-* Make note lengths per individual note instead of per each entire beat.
+* Allow for step divisions down to the 32nd note.
+* Make note lengths per individual note instead of per each entire step.
 * Parallel track support (abilitity to notate multiple same-length tabs to be played at once, with individually set tuning. Player will support this change)
 * Lyric notation
 * Slide and hammer notation

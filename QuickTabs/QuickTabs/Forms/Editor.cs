@@ -155,6 +155,7 @@ namespace QuickTabs
                 };
                 t.Start();
             }
+            this.Activate();
         }
     }
 }

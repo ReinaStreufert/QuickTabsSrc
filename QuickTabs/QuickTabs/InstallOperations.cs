@@ -45,6 +45,7 @@ namespace QuickTabs
         private static string originalExePath = "";
         private static string startShortcutPath = "";
         private static string resolvedInstallDir = "";
+        private static bool devStatusFailed = false;
         private static HttpClient httpClient = null;
 
         public static void RestartElevated()
@@ -91,7 +92,12 @@ namespace QuickTabs
                 httpClient = new HttpClient();
                 httpClient.Timeout = TimeSpan.FromMilliseconds(4000);
             }
-            httpClient.GetStringAsync(Updater.VersionStatusUrl).ContinueWith(statusReceived);
+            string vStatusUrl = Updater.VersionStatusUrl;
+            if (Updater.DevMode)
+            {
+                vStatusUrl = Updater.DevStatusUrl;
+            }
+            httpClient.GetStringAsync(vStatusUrl).ContinueWith(statusReceived);
         }
 
         private static bool isAdministrator()
@@ -133,7 +139,14 @@ namespace QuickTabs
         {
             if (task.IsFaulted)
             {
-                onFail("Could not download external dependencies. Check internet connection.");
+                if (Updater.DevMode && !devStatusFailed)
+                {
+                    devStatusFailed = true;
+                    httpClient.GetStringAsync(Updater.VersionStatusUrl).ContinueWith(statusReceived);
+                } else
+                {
+                    onFail("Could not download external dependencies. Check internet connection.");
+                }
                 return;
             }
             JObject statusJson;

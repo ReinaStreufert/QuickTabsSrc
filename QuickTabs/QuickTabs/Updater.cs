@@ -16,13 +16,16 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 2;
-        public const string SelfReleaseNotes = "persistence probably will work this time:)";
-        public const string VersionStatusUrl = "http://192.168.1.146:8080/updater/status.json"; // will be URL of version status json file hosted on github pages. this tells the client what the latest version number is and where to find executables and dependencies.
+        public const int SelfReleaseVersion = 0;
+        public const string SelfReleaseNotes = "First release version";
+        public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
+        public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
+        public const bool DevMode = true;
 
         public static bool WasJustUpdated { get; private set; } = false;
 
         private static HttpClient httpClient;
+        private static bool devStatusFailed = false;
 
         public static void Initialize()
         {
@@ -33,7 +36,13 @@ namespace QuickTabs
             } else
             {
                 httpClient = new HttpClient();
-                httpClient.GetStringAsync(VersionStatusUrl).ContinueWith(statusReceived);
+                httpClient.Timeout = TimeSpan.FromMilliseconds(4000);
+                string vStatusUrl = VersionStatusUrl;
+                if (DevMode)
+                {
+                    vStatusUrl = DevStatusUrl;
+                }
+                httpClient.GetStringAsync(vStatusUrl).ContinueWith(statusReceived);
             }
         }
 
@@ -41,6 +50,11 @@ namespace QuickTabs
         {
             if (task.IsFaulted)
             {
+                if (DevMode && !devStatusFailed)
+                {
+                    devStatusFailed = true;
+                    httpClient.GetStringAsync(VersionStatusUrl).ContinueWith(statusReceived);
+                }
                 return;
             }
             JObject statusJson = JObject.Parse(task.Result);

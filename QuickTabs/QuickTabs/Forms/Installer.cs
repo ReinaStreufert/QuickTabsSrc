@@ -25,6 +25,7 @@ namespace QuickTabs.Forms
         {
             base.OnShown(e);
             chooseButton.Height = installPathInput.Height; // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            this.Activate();
         }
 
         private void chooseButton_Click(object sender, EventArgs e)

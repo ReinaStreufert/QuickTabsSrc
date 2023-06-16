@@ -142,6 +142,8 @@ namespace QuickTabs.Forms
             checkCompleteTimer.Tick += CheckCompleteTimer_Tick;
         }
 
+        
+
         private void CheckCompleteTimer_Tick(object? sender, EventArgs e)
         {
             if (firstTick)
@@ -215,6 +217,7 @@ namespace QuickTabs.Forms
             }
             this.Invalidate();
             checkCompleteTimer.Start();
+            this.Activate();
         }
 
         private void startAnyway_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
