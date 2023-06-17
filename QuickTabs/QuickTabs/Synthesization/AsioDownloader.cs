@@ -32,7 +32,7 @@ namespace QuickTabs.Synthesization
                 DownloadFailed?.Invoke();
                 return;
             }
-            exePath = Guid.NewGuid().ToString() + ".exe";
+            exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Guid.NewGuid().ToString() + ".exe");
             File.WriteAllBytes(exePath, task.Result);
             ProcessStartInfo psi = new ProcessStartInfo(exePath);
             psi.UseShellExecute = true; // show UAC message to user instead of crashing because installer requires elevation

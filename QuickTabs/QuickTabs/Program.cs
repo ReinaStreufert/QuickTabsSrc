@@ -25,7 +25,10 @@ namespace QuickTabs
                 // launch installer
                 if (!InstallOperations.IsElevated)
                 {
-                    InstallOperations.RestartElevated();
+                    if (!InstallOperations.RestartElevated())
+                    {
+                        return; // exit
+                    }
                 }
                 Application.Run(new Forms.Installer());
             } else

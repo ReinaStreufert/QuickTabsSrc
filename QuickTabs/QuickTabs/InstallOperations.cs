@@ -48,14 +48,21 @@ namespace QuickTabs
         private static bool devStatusFailed = false;
         private static HttpClient httpClient = null;
 
-        public static void RestartElevated()
+        public static bool RestartElevated()
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(SelfExe);
             startInfo.UseShellExecute = true;
             startInfo.Verb = "runas";
-            System.Diagnostics.Process.Start(startInfo);
+            try
+            {
+                System.Diagnostics.Process.Start(startInfo);
+            } catch
+            {
+                return false;
+            }
             AudioEngine.Stop();
             Environment.Exit(0);
+            return true; // this technically exists for no reason
         }
         public static void StartInstall(string installDir, bool createStartShortcut)
         {
@@ -137,7 +144,7 @@ namespace QuickTabs
         }
         private static void statusReceived(Task<string> task)
         {
-            if (task.IsFaulted)
+            if (!task.IsCompletedSuccessfully)
             {
                 if (Updater.DevMode && !devStatusFailed)
                 {
@@ -169,7 +176,7 @@ namespace QuickTabs
         }
         private static void installImageReceived(Task<byte[]> task)
         {
-            if (task.IsFaulted)
+            if (!task.IsCompletedSuccessfully)
             {
                 onFail("There was an error while attempting to download external dependencies.");
                 return;

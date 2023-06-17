@@ -6,7 +6,7 @@ Click on any step to select it, or click and drag to select multiple steps. You 
 
 ### Modifying a step
 
-The main way to modify a step is using the fretboard at the bottom of the window. Here you may set which strings are playing and which fret is held on each playing string, as well as the sustain time for the step. Detailed info on how to use the fretboard can be found in [/docs/Fretboard](/docs/Fretboard.md). You can also transform a step or multiple steps using the operations in the `Selection` section of the context menu.
+The main way to modify a step is using the fretboard at the bottom of the window. Here you may set which strings are playing and which fret is held on each playing string, as well as the sustain time for the step. Detailed info on how to use the fretboard can be found in [Fretboard](/docs/Fretboard.md). You can also transform a step or multiple steps using the operations in the `Selection` section of the context menu. More info on that in [Selection operations](/docs/Selection%20operations.md).
 
 ### Adding/removing measures
 
@@ -14,4 +14,4 @@ You may add and remove measures using either `Measure->Add measure` and `Measure
 
 ### Sections
 
-Sections created and removed through `Measure->Add or split section` and `Measure->Collate section` or with `Shift+Plus` and `Shift+Minus`. If your selection starts in the last measure of the tab, add/split section will create a new section with one new measure at the end of the tab. Otherwise, add/split section will split the current section into two, breaking in between this measure and the next. To use collate section, you must first select the first step in a section. Collate section will join the current section to the end of the previous section. You can also rename a section using `Measure->Rename section`
+Sections created and removed through `Measure->Add or split section` and `Measure->Collate section` or with `Shift+Plus` and `Shift+Minus`. If your selection starts in the last measure of the tab, add/split section will create a new section with one new measure at the end of the tab. Otherwise, add/split section will split the current section into two, breaking in between this measure and the next. To use collate section, you must first select the first step in a section. Collate section will join the current section to the end of the previous section. You can also rename a section using `Measure->Rename section`.

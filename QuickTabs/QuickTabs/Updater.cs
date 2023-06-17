@@ -13,11 +13,12 @@ namespace QuickTabs
 {
     internal static class Updater
     {
+        public static bool IsUpdating { get; private set; } = false;
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 0;
-        public const string SelfReleaseNotes = "First release version";
+        public const int SelfReleaseVersion = 2;
+        public const string SelfReleaseNotes = "Fixed saying no to update";
         public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
         public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
         public const bool DevMode = true;
@@ -25,6 +26,7 @@ namespace QuickTabs
         public static bool WasJustUpdated { get; private set; } = false;
 
         private static HttpClient httpClient;
+        private static HttpClient downloaderClient;
         private static bool devStatusFailed = false;
 
         public static void Initialize()
@@ -48,7 +50,7 @@ namespace QuickTabs
 
         private static void statusReceived(Task<string> task)
         {
-            if (task.IsFaulted)
+            if (!task.IsCompletedSuccessfully)
             {
                 if (DevMode && !devStatusFailed)
                 {
@@ -73,10 +75,20 @@ namespace QuickTabs
         private static void update(JObject statusJson)
         {
             UpdateStarted?.Invoke();
+            IsUpdating = true;
             if (!InstallOperations.IsElevated)
             {
-                InstallOperations.RestartElevated();
+                if (!InstallOperations.RestartElevated())
+                {
+                    IsUpdating = false;
+                    UpdateFailed?.Invoke();
+                    return;
+                }
             }
+
+            downloaderClient = new HttpClient();
+            downloaderClient.Timeout = TimeSpan.FromSeconds(30); // binary downloads may take significantly longer
+
             string latestExeKey;
             if (Environment.Is64BitProcess)
             {
@@ -91,6 +103,7 @@ namespace QuickTabs
                 latestExecutableUrl = statusJson[latestExeKey].ToString();
             } else
             {
+                IsUpdating = false;
                 UpdateFailed?.Invoke();
                 return;
             }
@@ -110,7 +123,7 @@ namespace QuickTabs
                             string url = dependency["url"].ToString();
                             if (!File.Exists(name))
                             {
-                                Task<byte[]> dependencyTask = httpClient.GetByteArrayAsync(url);
+                                Task<byte[]> dependencyTask = downloaderClient.GetByteArrayAsync(url);
                                 dependencyTasks.Add(dependencyTask.ContinueWith(dependencyReceived, name));
                             }
                         }
@@ -118,10 +131,11 @@ namespace QuickTabs
                 }
             } else
             {
+                IsUpdating = false;
                 UpdateFailed?.Invoke();
                 return;
             }
-            exeTask = httpClient.GetByteArrayAsync(latestExecutableUrl).ContinueWith(executableReceived);
+            exeTask = downloaderClient.GetByteArrayAsync(latestExecutableUrl).ContinueWith(executableReceived);
             Task[] waitTasks = new Task[dependencyTasks.Count + 1];
             waitTasks[0] = exeTask;
             if (dependencyTasks.Count > 0)
@@ -131,34 +145,44 @@ namespace QuickTabs
             Task.WaitAll(waitTasks);
             foreach (Task task in waitTasks)
             {
-                if (task.IsFaulted)
+                if (!task.IsCompletedSuccessfully)
                 {
+                    IsUpdating = false;
                     rollbackUpdate();
                     UpdateFailed?.Invoke();
                     return;
                 }
             }
-            ProcessStartInfo psi = new ProcessStartInfo("QuickTabs.exe");
-            psi.UseShellExecute = true;
-            psi.Verb = "runas";
-            Process.Start(psi);
-            AudioEngine.Stop();
-            Environment.Exit(0);
+            if (File.Exists("QuicktabsOld.exe") && File.Exists("QuickTabs.exe")) // final just-in-case fail check
+            {
+                ProcessStartInfo psi = new ProcessStartInfo("QuickTabs.exe");
+                psi.UseShellExecute = true;
+                psi.Verb = "runas";
+                Process.Start(psi);
+                AudioEngine.Stop();
+                Environment.Exit(0);
+            } else
+            {
+                IsUpdating = false;
+                rollbackUpdate();
+                UpdateFailed?.Invoke();
+                return;
+            }
         }
         private static void executableReceived(Task<byte[]> task)
         {
-            if (task.IsFaulted)
+            if (!task.IsCompletedSuccessfully)
             {
-                return;
+                throw new Exception();
             }
             File.Move("QuickTabs.exe", "QuickTabsOld.exe");
             File.WriteAllBytes("QuickTabs.exe", task.Result);
         }
         private static void dependencyReceived(Task<byte[]> task, object name)
         {
-            if (task.IsFaulted)
+            if (!task.IsCompletedSuccessfully)
             {
-                return;
+                throw new Exception();
             }
             File.WriteAllBytes((string)name, task.Result);
         }

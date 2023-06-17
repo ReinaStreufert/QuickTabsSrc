@@ -35,6 +35,7 @@ To get started quickly you may download QuickTabs prebuilt [here](dead). On open
 * Parallel track support (abilitity to notate multiple same-length tabs to be played at once, with individually set tuning. Player will support this change)
 * Lyric notation
 * Slide and hammer notation
+* More flexible theme editing
 
 # Why Windows Forms ??
 

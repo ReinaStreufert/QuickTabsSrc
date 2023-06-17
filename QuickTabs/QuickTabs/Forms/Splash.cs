@@ -125,10 +125,13 @@ namespace QuickTabs.Forms
         private Timer checkCompleteTimer = new Timer();
         private MultiColorBitmap logoSource;
         private bool firstTick = true;
+        private bool editorStarted = false;
 
         public Splash(Task iconLoader)
         {
             InitializeComponent();
+            Updater.UpdateStarted += Updater_UpdateStarted;
+            Updater.UpdateFailed += Updater_UpdateFailed;
             logoSource = new MultiColorBitmap(Resources.logo);
             logoSource.AddColor(Color.White);
             logoSource.AddColor(darkGray);
@@ -142,7 +145,24 @@ namespace QuickTabs.Forms
             checkCompleteTimer.Tick += CheckCompleteTimer_Tick;
         }
 
-        
+        private void Updater_UpdateFailed()
+        {
+            this.Invoke(() =>
+            {
+                if (!editorStarted)
+                {
+                    checkCompleteTimer.Start();
+                }
+            });
+        }
+
+        private void Updater_UpdateStarted()
+        {
+            this.Invoke(() =>
+            {
+                checkCompleteTimer.Stop();
+            });
+        }
 
         private void CheckCompleteTimer_Tick(object? sender, EventArgs e)
         {
@@ -155,13 +175,9 @@ namespace QuickTabs.Forms
                 exit.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
                 AudioEngine.Initialize();
             }
-            if (iconLoader.IsCompletedSuccessfully)
+            if (iconLoader.IsCompletedSuccessfully && !Updater.IsUpdating)
             {
-                Editor editor = new Editor();
-                editor.FormClosed += Editor_FormClosed;
-                editor.Show();
-                checkCompleteTimer.Stop();
-                this.Visible = false;
+                startEditor();
             } else if (iconLoader.IsFaulted)
             {
                 failedLabel.Visible = true;
@@ -169,6 +185,16 @@ namespace QuickTabs.Forms
                 exit.Visible = true;
                 checkCompleteTimer.Stop();
             }
+        }
+
+        private void startEditor()
+        {
+            editorStarted = true;
+            Editor editor = new Editor();
+            editor.FormClosed += Editor_FormClosed;
+            editor.Show();
+            checkCompleteTimer.Stop();
+            this.Visible = false;
         }
 
         private void Editor_FormClosed(object? sender, FormClosedEventArgs e)
