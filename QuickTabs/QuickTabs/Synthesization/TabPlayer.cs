@@ -29,6 +29,7 @@ namespace QuickTabs.Synthesization
                         playStartTime = DateTime.Now;
                     }
                     bpm = value;
+                    eighthNoteLength = calculateEighthNoteDuration();
                 }
             }
         }
@@ -57,7 +58,7 @@ namespace QuickTabs.Synthesization
             {
                 if (IsPlaying)
                 {
-                    TimeSpan elapsedSinceStart = DateTime.Now - playStartTime;
+                    TimeSpan elapsedSinceStart = lastTickTimestamp - playStartTime;
                     int beat = playStartBeat + calculateElapsedEighthNotes(elapsedSinceStart) + nonBeats;
                     if (beat >= Tab.Count)
                     {
@@ -66,7 +67,8 @@ namespace QuickTabs.Synthesization
                             beat = 1;
                             playStartBeat = 1;
                             nonBeats = 0;
-                            playStartTime = DateTime.Now;
+                            playStartTime = lastTickTimestamp;
+                            playStartTimeUnset = true;
                         } else
                         {
                             beat = Tab.Count - 1;
@@ -102,11 +104,14 @@ namespace QuickTabs.Synthesization
         }
         private int playStartBeat;
         private DateTime playStartTime;
+        private bool playStartTimeUnset;
+        private DateTime lastTickTimestamp;
         private int nonBeats = 1;
         private int lastPosition;
         private int metronomeCounter;
         private int metronomeBeatsPerMeasure;
         private bool metronomeDisoriented = false;
+        private float eighthNoteLength;
         private readonly Note metronomeHighNote = new Note("G5");
         private readonly Note metronomeLowNote = new Note("A4");
 
@@ -117,7 +122,9 @@ namespace QuickTabs.Synthesization
 
         public void Start()
         {
+            AudioEngine.AudioEngineTick initTick;
             playStartTime = DateTime.Now;
+            playStartTimeUnset = true;
             lastPosition = -1;
             IsPlaying = true;
             AudioEngine.Tick += AudioEngine_Tick;
@@ -129,15 +136,21 @@ namespace QuickTabs.Synthesization
             IsPlaying = false;
         }
 
-        private void AudioEngine_Tick()
+        private void AudioEngine_Tick(DateTime timestamp, float bufferDurationMS)
         {
-            int position = Position;
             if (!IsPlaying)
             {
                 AudioEngine.SilenceAll();
                 AudioEngine.Tick -= AudioEngine_Tick;
                 return;
             }
+            lastTickTimestamp = timestamp;
+            if (playStartTimeUnset)
+            {
+                playStartTime = timestamp;
+                playStartTimeUnset = false;
+            }
+            int position = Position;
             if (position != lastPosition)
             {
                 if (metronome)
@@ -164,9 +177,16 @@ namespace QuickTabs.Synthesization
                 foreach (Fret fret in beat)
                 {
                     Songwriting.Note note = Songwriting.Note.FromSemitones(Tab.Tuning.GetMusicalNote(fret.String), fret.Space);
-                    AudioEngine.PlayNote(note, calculateEighthNoteDuration() * beat.NoteLength, 0.25F);
+                    AudioEngine.PlayNote(note, (int)(eighthNoteLength * beat.NoteLength), 0.25F);
                 }
                 lastPosition = position;
+            } else
+            {
+                int timeUntilNextBeat = calculateTimeUntilNextEighthNote();
+                if (timeUntilNextBeat < bufferDurationMS)
+                {
+                    AudioEngine.SetMidtick(timeUntilNextBeat);
+                }
             }
         }
 
@@ -191,17 +211,22 @@ namespace QuickTabs.Synthesization
 
         private int calculateElapsedEighthNotes(TimeSpan elapsedTime)
         {
-            float beatsPerSecond = BPM / 60F;
-            float beatDurationMs = 1000 / beatsPerSecond;
-            float eightNoteDurationMs = beatDurationMs / 2;
-            return (int)Math.Floor(elapsedTime.TotalMilliseconds / eightNoteDurationMs);
+            return (int)Math.Floor(elapsedTime.TotalMilliseconds / eighthNoteLength);
         }
-        private int calculateEighthNoteDuration()
+        private int calculateTimeUntilNextEighthNote()
+        {
+            TimeSpan elapsedTime = lastTickTimestamp - playStartTime;
+            float exactElapsedSteps = (float)elapsedTime.TotalMilliseconds / eighthNoteLength;
+            int floorElapsedSteps = (int)Math.Floor(exactElapsedSteps);
+            float durationThroughStep = exactElapsedSteps - floorElapsedSteps;
+            return (int)Math.Ceiling((1 - durationThroughStep) * eighthNoteLength);
+        }
+        private float calculateEighthNoteDuration()
         {
             float beatsPerSecond = BPM / 60F;
             float beatDurationMs = 1000 / beatsPerSecond;
             float eighthNoteDurationMs = beatDurationMs / 2;
-            return (int)eighthNoteDurationMs;
+            return eighthNoteDurationMs;
         }
     }
 }

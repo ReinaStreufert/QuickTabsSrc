@@ -11,6 +11,10 @@ namespace QuickTabs.Synthesization
     {
         public WaveFormat WaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
 
+        public int MidtickSamples { get; set; } = 0;
+        public int SamplesWritten { get; private set; } = 0;
+        public DateTime StartTime { get; private set; }
+
         private List<FrequencyTracker> frequencies = new List<FrequencyTracker>();
         private float[] floatBuffer;
 
@@ -52,16 +56,38 @@ namespace QuickTabs.Synthesization
 
         public int Read(byte[] buffer, int offset, int count)
         {
+            if (SamplesWritten < 1)
+            {
+                StartTime = DateTime.Now;
+            }
             BeforeBufferFill?.Invoke();
             int channelCount = WaveFormat.Channels;
             int floatCount = count / 4;
+            int midtickFinalFloatCount = floatCount;
+            if (MidtickSamples > 0)
+            {
+                floatCount = MidtickSamples * channelCount;
+            }
             for (int i = 0; i < floatCount; i += channelCount)
             {
                 float sample = getNextSample();
                 for (int ii = i; ii < i + channelCount; ii++)
                 {
-                    
                     floatBuffer[ii] = sample;
+                }
+            }
+            if (MidtickSamples > 0)
+            {
+                MidtickSamples = 0;
+                //System.Diagnostics.Debug.WriteLine("midtick");
+                BeforeBufferFill?.Invoke();
+                for (int i = floatCount; i < midtickFinalFloatCount; i += channelCount)
+                {
+                    float sample = getNextSample();
+                    for (int ii = i; ii < i + channelCount; ii++)
+                    {
+                        floatBuffer[ii] = sample;
+                    }
                 }
             }
             Buffer.BlockCopy(floatBuffer, 0, buffer, offset, count);
@@ -118,6 +144,7 @@ namespace QuickTabs.Synthesization
                     }
                 }
             }
+            SamplesWritten++;
             return sample;
         }
 

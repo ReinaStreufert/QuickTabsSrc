@@ -344,8 +344,8 @@ namespace QuickTabs.Controls.Tools
                         strings[stringIndex].SelectedFret = fretIndex;
                         if (AudioEngine.Enabled)
                         {
-                            Action action = null;
-                            action = () =>
+                            AudioEngine.AudioEngineTick action = null;
+                            action = (DateTime timestamp, float bufferDurationMS) =>
                             {
                                 //AudioEngine.PlayKick(new Note("C4"), 100, 0.25F);
                                 AudioEngine.PlayNote(Note.FromSemitones(Song.Tab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, 0.25F);

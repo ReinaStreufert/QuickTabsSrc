@@ -18,7 +18,7 @@ namespace QuickTabs
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
         public const int SelfReleaseVersion = 2;
-        public const string SelfReleaseNotes = "Fixed saying no to update";
+        public const string SelfReleaseNotes = "Fixed player weirdness with large buffer sizes";
         public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
         public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
         public const bool DevMode = true;
@@ -38,7 +38,7 @@ namespace QuickTabs
             } else
             {
                 httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromMilliseconds(4000);
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
                 string vStatusUrl = VersionStatusUrl;
                 if (DevMode)
                 {
@@ -87,7 +87,7 @@ namespace QuickTabs
             }
 
             downloaderClient = new HttpClient();
-            downloaderClient.Timeout = TimeSpan.FromSeconds(30); // binary downloads may take significantly longer
+            downloaderClient.Timeout = TimeSpan.FromSeconds(60); // binary downloads may take significantly longer
 
             string latestExeKey;
             if (Environment.Is64BitProcess)

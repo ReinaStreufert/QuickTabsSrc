@@ -10,7 +10,7 @@ These options allow you to customize which document properties are included at t
 
 ### Staff style
 
-Export plain text offers two styles of tab diagram: `QuickTabs style` and `Standard spaced`. `QuickTabs style` was created to offer a way to include note lengths in the diagram. By not including an empty spacing step between each eighth note as is traditional, QuickTabs can use the ">" character to represent that a note should be sustained for a certain length of time. In `QuickTabs style`, double-digit fret numbers are handled by making only that step 2 characters with a whitespace character on the lines that are not 2-digits. `Standard spaced` is the traditional way of writing tabs where every step gets 2 characters no matter its content, and where not length notation is not supported.
+Export plain text offers two styles of tab diagram: `QuickTabs style` and `Standard spaced`. `QuickTabs style` was created to offer a way to include note lengths in the diagram. By not including an empty spacing step between each eighth note as is traditional, QuickTabs can use the `>` character to represent that a note should be sustained for a certain length of time. In `QuickTabs style`, double-digit fret numbers are handled by making only that step 2 characters with a whitespace character on the lines that are not 2-digits. `Standard spaced` is the traditional way of writing tabs where every step gets 2 characters no matter its content, and where not length notation is not supported.
 
 I honestly think that standard spaced looks better, but QuickTabs style works better.
 

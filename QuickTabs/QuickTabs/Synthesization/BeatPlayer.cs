@@ -28,7 +28,7 @@ namespace QuickTabs.Synthesization
             AudioEngine.Tick += AudioEngine_Tick;
         }
 
-        private void AudioEngine_Tick()
+        private void AudioEngine_Tick(DateTime timestamp, float bufferDurationMS)
         {
             foreach (Fret fret in Beat)
             {

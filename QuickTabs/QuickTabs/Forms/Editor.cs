@@ -1,6 +1,7 @@
 using QuickTabs.Controls;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
+using System.Diagnostics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs
@@ -25,6 +26,8 @@ namespace QuickTabs
 
         public Editor()
         {
+            Debug.WriteLine("test");
+
             InitializeComponent();
             //DrawingIcons.LoadAll();
             this.AutoScaleMode = AutoScaleMode.Dpi;

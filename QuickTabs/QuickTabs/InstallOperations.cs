@@ -97,7 +97,7 @@ namespace QuickTabs
             if (httpClient == null)
             {
                 httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromMilliseconds(4000);
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
             }
             string vStatusUrl = Updater.VersionStatusUrl;
             if (Updater.DevMode)

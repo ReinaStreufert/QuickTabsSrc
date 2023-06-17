@@ -142,8 +142,8 @@ namespace QuickTabs.Controls
         {
             if (tabPlayer == null || !tabPlayer.IsPlaying)
             {
-                Action eventHandler = null;
-                eventHandler = () =>
+                AudioEngine.AudioEngineTick eventHandler = null;
+                eventHandler = (DateTime timestamp, float bufferDurationMS) =>
                 {
                     AudioEngine.SilenceAll();
                     AudioEngine.Tick -= eventHandler;

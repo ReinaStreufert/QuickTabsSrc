@@ -9,12 +9,16 @@ namespace QuickTabs.Synthesization
 {
     internal static class AudioEngine
     {
+        public delegate void AudioEngineTick(DateTime timestamp, float bufferDurationMs);
+
         public static bool Enabled { get; set; } = false;
-        public static event Action Tick;
+        public static event AudioEngineTick Tick;
 
         private static AsioOut asioOut;
         private static SquareOscillator oscillator;
         private static List<PlayingNote> playingNotes = new List<PlayingNote>();
+        private static float bufferDurationMs;
+        private static DateTime lastTickTimestamp;
 
         public static void Initialize()
         {
@@ -24,6 +28,7 @@ namespace QuickTabs.Synthesization
                 oscillator = new SquareOscillator();
                 asioOut.Init(oscillator);
                 oscillator.InitializeBuffer(asioOut.FramesPerBuffer);
+                bufferDurationMs = asioOut.FramesPerBuffer * (1000F / oscillator.WaveFormat.SampleRate);
                 oscillator.BeforeBufferFill += Oscillator_BeforeBufferFill;
                 asioOut.Play();
                 Enabled = true;
@@ -48,7 +53,7 @@ namespace QuickTabs.Synthesization
             }
             PlayingNote playingNote = new PlayingNote();
             playingNote.DurationMs = duration;
-            playingNote.StartTime = DateTime.Now;
+            playingNote.StartTime = lastTickTimestamp;
             if (simulatePluck)
             {
                 float startFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber + 4);
@@ -87,18 +92,26 @@ namespace QuickTabs.Synthesization
             oscillator.ClearAllFrequencies();
         }
 
+        public static void SetMidtick(float timeMS) // to be called only from AudioEngine.Tick. indicates that the AudioEngine should tick again part way through filling the buffer.
+        {
+            int timeSamples = (int)Math.Ceiling(timeMS * (oscillator.WaveFormat.SampleRate / 1000F));
+            oscillator.MidtickSamples = timeSamples;
+        }
+
         private static void Oscillator_BeforeBufferFill()
         {
+            DateTime timestamp = oscillator.StartTime.AddMilliseconds(oscillator.SamplesWritten * (1000F / oscillator.WaveFormat.SampleRate));
+            lastTickTimestamp = timestamp;
             foreach (PlayingNote playingNote in playingNotes.ToArray())
             {
-                TimeSpan elapsed = DateTime.Now - playingNote.StartTime;
+                TimeSpan elapsed = timestamp - playingNote.StartTime;
                 if (elapsed.TotalMilliseconds >= playingNote.DurationMs)
                 {
                     playingNotes.Remove(playingNote);
                     oscillator.ClearFrequency(playingNote.Frequency);
                 }
             }
-            Tick?.Invoke();
+            Tick?.Invoke(timestamp, bufferDurationMs);
         }
 
         private class PlayingNote
