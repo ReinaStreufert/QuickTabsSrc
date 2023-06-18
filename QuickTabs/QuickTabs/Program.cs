@@ -36,8 +36,9 @@ namespace QuickTabs
                 // startup normally
                 Task iconLoader = new Task(DrawingIcons.LoadAll);
                 iconLoader.Start();
+                Forms.Splash splash = new Forms.Splash(iconLoader);
                 Updater.Initialize();
-                Application.Run(new Forms.Splash(iconLoader));
+                Application.Run(splash);
             }
         }
     }

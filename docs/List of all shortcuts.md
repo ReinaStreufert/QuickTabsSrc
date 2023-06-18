@@ -14,6 +14,7 @@
 
 * `Space`: Play/pause player
 * `X`: Silence step preview
+* `Ctrl+Shift+A`: Open ASIO4ALL control panel if available
 
 ### History shortcuts
 

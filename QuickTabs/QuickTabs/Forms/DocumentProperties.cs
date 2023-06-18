@@ -165,7 +165,13 @@ namespace QuickTabs.Forms
 
         private void TapTempo_OnSetTempo(int bpm)
         {
-            tempoInput.Value = bpm;
+            if (bpm > tempoInput.Maximum)
+            {
+                tempoInput.Value = tempoInput.Maximum;
+            } else
+            {
+                tempoInput.Value = bpm;
+            }
         }
 
         private void tapTempoLink_LinkClicked(object sender, MouseEventArgs e)

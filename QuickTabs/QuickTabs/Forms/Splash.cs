@@ -139,7 +139,15 @@ namespace QuickTabs.Forms
             logoWidth = (int)(logoWidth * (this.DeviceDpi / 192.0F));
             failedLabel.Visible = false;
             startAnyway.Visible = false;
+            updatingLabel.Visible = false;
             exit.Visible = false;
+            if (!QTSettings.Current.ViewDarkMode)
+            {
+                failedLabel.ForeColor = Color.Black;
+                startAnyway.ForeColor = Color.Black;
+                exit.ForeColor = Color.Black;
+                updatingLabel.ForeColor = Color.Black;
+            }
             this.iconLoader = iconLoader;
             checkCompleteTimer.Interval = 100;
             checkCompleteTimer.Tick += CheckCompleteTimer_Tick;
@@ -147,8 +155,16 @@ namespace QuickTabs.Forms
 
         private void Updater_UpdateFailed()
         {
+            System.Diagnostics.Debug.WriteLine("update failed");
             this.Invoke(() =>
             {
+                updatingLabel.Visible = false;
+                using (InstallerMessage message = new InstallerMessage())
+                {
+                    message.Text = "Update";
+                    message.Message = "Failed to update to the latest version. QuickTabs will try again next time you reopen it.";
+                    message.ShowDialog();
+                }
                 if (!editorStarted)
                 {
                     checkCompleteTimer.Start();
@@ -158,10 +174,27 @@ namespace QuickTabs.Forms
 
         private void Updater_UpdateStarted()
         {
-            this.Invoke(() =>
+            System.Diagnostics.Debug.WriteLine("update started");
+            MethodInvoker action = () =>
             {
-                checkCompleteTimer.Stop();
-            });
+                updatingLabel.Visible = true;
+                if (checkCompleteTimer.Enabled)
+                {
+                    checkCompleteTimer.Stop();
+                    if (firstTick) // check if we stopped the timer before it could do main initializations
+                    {
+                        firstTick = false;
+                        doMainThreadInitializations();
+                    }
+                }
+            };
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(action);
+            } else
+            {
+                action();
+            }
         }
 
         private void CheckCompleteTimer_Tick(object? sender, EventArgs e)
@@ -169,21 +202,21 @@ namespace QuickTabs.Forms
             if (firstTick)
             {
                 firstTick = false;
-                DrawingConstants.LoadFonts();
-                failedLabel.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
-                startAnyway.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
-                exit.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
-                AudioEngine.Initialize();
+                doMainThreadInitializations();
             }
-            if (iconLoader.IsCompletedSuccessfully && !Updater.IsUpdating)
+            if (!Updater.IsUpdating)
             {
-                startEditor();
-            } else if (iconLoader.IsFaulted)
-            {
-                failedLabel.Visible = true;
-                startAnyway.Visible = true;
-                exit.Visible = true;
-                checkCompleteTimer.Stop();
+                if (iconLoader.IsCompletedSuccessfully)
+                {
+                    startEditor();
+                }
+                else if (iconLoader.IsFaulted)
+                {
+                    failedLabel.Visible = true;
+                    startAnyway.Visible = true;
+                    exit.Visible = true;
+                    checkCompleteTimer.Stop();
+                }
             }
         }
 
@@ -195,6 +228,16 @@ namespace QuickTabs.Forms
             editor.Show();
             checkCompleteTimer.Stop();
             this.Visible = false;
+        }
+
+        private void doMainThreadInitializations()
+        {
+            DrawingConstants.LoadFonts();
+            failedLabel.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+            startAnyway.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+            updatingLabel.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+            exit.Font = new Font(DrawingConstants.Montserrat, 12, FontStyle.Bold, GraphicsUnit.Point);
+            AudioEngine.Initialize();
         }
 
         private void Editor_FormClosed(object? sender, FormClosedEventArgs e)

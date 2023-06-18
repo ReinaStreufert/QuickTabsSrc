@@ -53,22 +53,22 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Montserrat", 19.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(609, 73);
+            this.label1.Size = new System.Drawing.Size(523, 61);
             this.label1.TabIndex = 0;
             this.label1.Text = "Document Properties";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label2.Location = new System.Drawing.Point(24, 82);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(159, 33);
+            this.label2.Size = new System.Drawing.Size(145, 29);
             this.label2.TabIndex = 1;
             this.label2.Text = "Song name";
             // 
@@ -76,17 +76,17 @@
             // 
             this.nameInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.nameInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.nameInput.Font = new System.Drawing.Font("Montserrat Light", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.nameInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.nameInput.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.nameInput.Location = new System.Drawing.Point(28, 118);
             this.nameInput.Name = "nameInput";
-            this.nameInput.Size = new System.Drawing.Size(605, 37);
+            this.nameInput.Size = new System.Drawing.Size(605, 35);
             this.nameInput.TabIndex = 2;
             // 
             // tempoInput
             // 
             this.tempoInput.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.tempoInput.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tempoInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tempoInput.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.tempoInput.Increment = new decimal(new int[] {
             10,
@@ -95,7 +95,7 @@
             0});
             this.tempoInput.Location = new System.Drawing.Point(639, 118);
             this.tempoInput.Maximum = new decimal(new int[] {
-            300,
+            400,
             0,
             0,
             0});
@@ -105,7 +105,7 @@
             0,
             0});
             this.tempoInput.Name = "tempoInput";
-            this.tempoInput.Size = new System.Drawing.Size(103, 37);
+            this.tempoInput.Size = new System.Drawing.Size(103, 35);
             this.tempoInput.TabIndex = 3;
             this.tempoInput.Value = new decimal(new int[] {
             120,
@@ -116,7 +116,7 @@
             // ts1Input
             // 
             this.ts1Input.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ts1Input.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.ts1Input.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.ts1Input.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.ts1Input.Location = new System.Drawing.Point(748, 118);
             this.ts1Input.Maximum = new decimal(new int[] {
@@ -130,7 +130,7 @@
             0,
             0});
             this.ts1Input.Name = "ts1Input";
-            this.ts1Input.Size = new System.Drawing.Size(91, 37);
+            this.ts1Input.Size = new System.Drawing.Size(91, 35);
             this.ts1Input.TabIndex = 4;
             this.ts1Input.Value = new decimal(new int[] {
             4,
@@ -142,18 +142,18 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label3.Location = new System.Drawing.Point(842, 121);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(24, 33);
+            this.label3.Size = new System.Drawing.Size(21, 29);
             this.label3.TabIndex = 5;
             this.label3.Text = "/";
             // 
             // ts2Input
             // 
             this.ts2Input.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ts2Input.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.ts2Input.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.ts2Input.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.ts2Input.Location = new System.Drawing.Point(869, 117);
             this.ts2Input.Maximum = new decimal(new int[] {
@@ -167,7 +167,7 @@
             0,
             0});
             this.ts2Input.Name = "ts2Input";
-            this.ts2Input.Size = new System.Drawing.Size(91, 37);
+            this.ts2Input.Size = new System.Drawing.Size(91, 35);
             this.ts2Input.TabIndex = 6;
             this.ts2Input.Value = new decimal(new int[] {
             4,
@@ -179,33 +179,33 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label4.Location = new System.Drawing.Point(632, 82);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(74, 33);
+            this.label4.Size = new System.Drawing.Size(68, 29);
             this.label4.TabIndex = 7;
             this.label4.Text = "BPM";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label5.Location = new System.Drawing.Point(742, 81);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(204, 33);
+            this.label5.Size = new System.Drawing.Size(188, 29);
             this.label5.TabIndex = 8;
             this.label5.Text = "Time signature";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label6.Location = new System.Drawing.Point(27, 164);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(104, 33);
+            this.label6.Size = new System.Drawing.Size(94, 29);
             this.label6.TabIndex = 10;
             this.label6.Text = "Tuning";
             // 
@@ -213,7 +213,7 @@
             // 
             this.saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(154)))), ((int)(((byte)(231)))));
             this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.saveButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.saveButton.Location = new System.Drawing.Point(688, 315);
             this.saveButton.Name = "saveButton";
@@ -227,7 +227,7 @@
             // 
             this.cancelButton.BackColor = System.Drawing.Color.White;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cancelButton.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.cancelButton.Location = new System.Drawing.Point(405, 315);
             this.cancelButton.Name = "cancelButton";
@@ -246,7 +246,7 @@
             // 
             // ts1DisabledLabel
             // 
-            this.ts1DisabledLabel.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.ts1DisabledLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ts1DisabledLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.ts1DisabledLabel.Location = new System.Drawing.Point(748, 117);
             this.ts1DisabledLabel.Name = "ts1DisabledLabel";
@@ -257,7 +257,7 @@
             // 
             // ts2DisabledLabel
             // 
-            this.ts2DisabledLabel.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.ts2DisabledLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ts2DisabledLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.ts2DisabledLabel.Location = new System.Drawing.Point(869, 117);
             this.ts2DisabledLabel.Name = "ts2DisabledLabel";
@@ -269,11 +269,11 @@
             // tuningPresetLink
             // 
             this.tuningPresetLink.AutoSize = true;
-            this.tuningPresetLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tuningPresetLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tuningPresetLink.LinkColor = System.Drawing.Color.White;
             this.tuningPresetLink.Location = new System.Drawing.Point(137, 164);
             this.tuningPresetLink.Name = "tuningPresetLink";
-            this.tuningPresetLink.Size = new System.Drawing.Size(103, 33);
+            this.tuningPresetLink.Size = new System.Drawing.Size(95, 29);
             this.tuningPresetLink.TabIndex = 16;
             this.tuningPresetLink.TabStop = true;
             this.tuningPresetLink.Text = "Presets";
@@ -283,11 +283,11 @@
             // 
             this.tapTempoLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
             this.tapTempoLink.AutoSize = true;
-            this.tapTempoLink.Font = new System.Drawing.Font("Montserrat", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.tapTempoLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tapTempoLink.LinkColor = System.Drawing.Color.White;
             this.tapTempoLink.Location = new System.Drawing.Point(692, 164);
             this.tapTempoLink.Name = "tapTempoLink";
-            this.tapTempoLink.Size = new System.Drawing.Size(58, 33);
+            this.tapTempoLink.Size = new System.Drawing.Size(56, 29);
             this.tapTempoLink.TabIndex = 17;
             this.tapTempoLink.TabStop = true;
             this.tapTempoLink.Text = "Tap";

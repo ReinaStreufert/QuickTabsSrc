@@ -32,6 +32,7 @@ namespace QuickTabs.Synthesization
                 oscillator.BeforeBufferFill += Oscillator_BeforeBufferFill;
                 asioOut.Play();
                 Enabled = true;
+                ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.A, asioOut.ShowControlPanel);
             }
         }
 

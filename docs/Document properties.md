@@ -10,7 +10,7 @@ This is simply the title of the song. The only thing this affects is the title g
 
 ### BPM
 
-This is the tempo of the song in beats per minute. This will change how fast the player moves through steps and change the tempo of the metronome. You may enter a number or use the `Tap` button below to detect a tempo. Tap tempo updates the BPM every time you click through a full measure (4 times if the time signature is set to 4/4). Tap tempo expects you to click once per beat, on the beat, just like a metronome.
+This is the tempo of the song in beats per minute. This will change how fast the player moves through steps and change the tempo of the metronome. You may enter a number or use the `Tap` button below to detect a tempo. Tap tempo updates the BPM every time you click through a full measure (4 times if the time signature is set to 4/4). Tap tempo expects you to click once per beat, on the beat, just like a metronome. The maximum allowed tempo is 400 BPM. You cannot input higher than that, and if you tap faster than 400 it will still only set to 400.
 
 ### Time signature
 

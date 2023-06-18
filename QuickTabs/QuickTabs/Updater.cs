@@ -17,8 +17,8 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 2;
-        public const string SelfReleaseNotes = "Fixed player weirdness with large buffer sizes";
+        public const int SelfReleaseVersion = 0;
+        public const string SelfReleaseNotes = "working on update text";
         public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
         public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
         public const bool DevMode = true;
@@ -142,7 +142,16 @@ namespace QuickTabs
             {
                 dependencyTasks.CopyTo(waitTasks, 1);
             }
-            Task.WaitAll(waitTasks);
+            try
+            {
+                Task.WaitAll(waitTasks);
+            } catch (AggregateException ex)
+            {
+                IsUpdating = false;
+                rollbackUpdate();
+                UpdateFailed?.Invoke();
+                return;
+            }
             foreach (Task task in waitTasks)
             {
                 if (!task.IsCompletedSuccessfully)

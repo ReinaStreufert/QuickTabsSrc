@@ -68,7 +68,6 @@ namespace QuickTabs.Synthesization
                             playStartBeat = 1;
                             nonBeats = 0;
                             playStartTime = lastTickTimestamp;
-                            playStartTimeUnset = true;
                         } else
                         {
                             beat = Tab.Count - 1;
