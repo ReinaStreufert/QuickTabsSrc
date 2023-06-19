@@ -2,6 +2,8 @@
 
 QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor. As a songwriter with ADHD I found trying to jot down tabs quickly while the idea is fresh in my mind with a damn *text editor* to be next to impossible. I wrote QuickTabs as a solution to this. It is still in beta and currently limited to eighth notes as the smallest division, but it is still relatively featureful even including a synthesizer-based tab player. QuickTabs was written in C# and as of now is unfortanately only for Windows.
 
+![Screenshot of QuickTabs](/screenshot.png)
+
 # Features
 
 * Edit tabs by selecting eighth-note spaces on the tab, then manipulating it on the visual fretboard representation shown at the bottom.
