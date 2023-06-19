@@ -27,7 +27,7 @@ Detailed information on all of these features can be found in [/docs/](/docs/)
 
 # Prebuilt installer
 
-To get started quickly you may download QuickTabs prebuilt [here](dead). On open QuickTabs will detect if it has not been installed on your machine and open to an installer if so. The installer will move QuickTabs to a permanent install directory, download its dependencies, and create start menu shortcuts if desired.
+To get started quickly you may download the QuickTabs already built (64 bit [here](https://github.com/ReinaStreufert/QuickTabsSrc/releases/download/v0.1.0/QuickTabs-x64.exe), 32 bit [here.](https://github.com/ReinaStreufert/QuickTabsSrc/releases/download/v0.1.0/QuickTabs-x86.exe)) On open QuickTabs will detect if it has not been installed on your machine and open to an installer if so. The installer will move QuickTabs to a permanent install directory, download its dependencies, and create start menu shortcuts if desired.
 
 # Future plans
 

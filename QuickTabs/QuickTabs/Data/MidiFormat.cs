@@ -17,15 +17,14 @@ namespace QuickTabs.Data
         public override Song Open(string fileName, out bool failed)
         {
             MidiFile midiFile;
-            //try
-            //{
+            try
+            {
                 midiFile = new MidiFile(fileName);
-            //} catch
-            /*{
-                throw new Exception();
+            } catch
+            {
                 failed = true;
                 return null;
-            }*/
+            }
             if (midiFile.FileFormat != 0 || /*in case somehow idk*/ midiFile.Tracks > 1)
             {
                 throw new Exception();
