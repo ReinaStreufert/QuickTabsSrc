@@ -167,6 +167,14 @@ namespace QuickTabs.Controls
                 setupEnabledPlaybackSection();
                 updateUI();
                 Invalidate();
+            } else
+            {
+                using (GenericMessage genericMessage = new GenericMessage())
+                {
+                    genericMessage.Text = "ASIO not supported";
+                    genericMessage.Message = "ASIO support was still not detected on your device. If you have installed ASIO4ALL, try restarting.";
+                    genericMessage.ShowDialog();
+                }
             }
         }
         private void AsioDownloader_DownloadFailed()
@@ -175,7 +183,9 @@ namespace QuickTabs.Controls
             {
                 using (GenericMessage genericMessage = new GenericMessage())
                 {
-                    genericMessage.Text = "Could not automatically download ASIO installer. You will have to find it on the ASIO website.";
+                    genericMessage.Text = "ASIO4ALL auto download";
+                    genericMessage.Message = "Could not automatically download ASIO4ALL installer. You will have to find it on the ASIO4ALL website.";
+                    genericMessage.ShowDialog();
                 }
             });
         }
