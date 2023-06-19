@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -101,18 +102,41 @@ namespace QuickTabs.Synthesization
 
         private static void Oscillator_BeforeBufferFill()
         {
-            DateTime timestamp = oscillator.StartTime.AddMilliseconds(oscillator.SamplesWritten * (1000F / oscillator.WaveFormat.SampleRate));
-            lastTickTimestamp = timestamp;
-            foreach (PlayingNote playingNote in playingNotes.ToArray())
+            try
             {
-                TimeSpan elapsed = timestamp - playingNote.StartTime;
-                if (elapsed.TotalMilliseconds >= playingNote.DurationMs)
+                DateTime timestamp = oscillator.StartTime.AddMilliseconds(oscillator.SamplesWritten * (1000F / oscillator.WaveFormat.SampleRate));
+                lastTickTimestamp = timestamp;
+                foreach (PlayingNote playingNote in playingNotes.ToArray())
                 {
-                    playingNotes.Remove(playingNote);
-                    oscillator.ClearFrequency(playingNote.Frequency);
+                    TimeSpan elapsed = timestamp - playingNote.StartTime;
+                    if (elapsed.TotalMilliseconds >= playingNote.DurationMs)
+                    {
+                        playingNotes.Remove(playingNote);
+                        oscillator.ClearFrequency(playingNote.Frequency);
+                    }
                 }
+                Tick?.Invoke(timestamp, bufferDurationMs);
+            } catch (Exception ex)
+            {
+                // unhandled exceptions on the audio rendering thread do not get handled by the
+                // crash manager as they should; hence this.
+                try
+                {
+                    if (asioOut.PlaybackState == PlaybackState.Playing || asioOut.PlaybackState == PlaybackState.Paused)
+                    {
+                        if (Application.OpenForms.Count > 0)
+                        {
+                            Application.OpenForms[0].Invoke(new MethodInvoker(() =>
+                            {
+                                asioOut.Stop(); // AsioOut.Stop does NOT like being called from its own callback.
+                                asioOut.Dispose();
+                            }));
+                        }
+                    }
+                } catch { }
+                Enabled = false;
+                CrashManager.FailHard(ex);
             }
-            Tick?.Invoke(timestamp, bufferDurationMs);
         }
 
         private class PlayingNote

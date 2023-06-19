@@ -26,6 +26,10 @@ namespace QuickTabs.Data
                 failed = true;
                 return null;
             }
+            return Open(songJson, out failed);
+        }
+        public Song Open(JObject songJson, out bool failed)
+        {
             Song song = new Song();
             if (songJson.ContainsKey("name") && songJson["name"].Type == JTokenType.String)
             {

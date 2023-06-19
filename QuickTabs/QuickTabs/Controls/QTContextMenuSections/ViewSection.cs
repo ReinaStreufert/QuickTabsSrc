@@ -87,15 +87,15 @@ namespace QuickTabs.Controls
                 compactContext = false;
                 this.Logo = DrawingIcons.QuickTabsLogo;
                 this.Style = Enums.ContextMenuStyle.Responsive;
-                MainForm.ContextMenuHeight = 160;
-                MainForm.RefreshLayout();
+                EditorForm.ContextMenuHeight = 160;
+                EditorForm.RefreshLayout();
             } else
             {
                 compactContext = true;
                 this.Logo = null;
                 this.Style = Enums.ContextMenuStyle.Collapsed;
-                MainForm.ContextMenuHeight = 80;
-                MainForm.RefreshLayout();
+                EditorForm.ContextMenuHeight = 80;
+                EditorForm.RefreshLayout();
             }
             if (QTSettings.Current.ViewCompactCtxMenu != compactContext)
             {
@@ -108,13 +108,13 @@ namespace QuickTabs.Controls
             if (largeFretboard)
             {
                 largeFretboard = false;
-                MainForm.FretboardHeight = 440;
-                MainForm.RefreshLayout();
+                EditorForm.FretboardHeight = 440;
+                EditorForm.RefreshLayout();
             } else
             {
                 largeFretboard = true;
-                MainForm.FretboardHeight = 530;
-                MainForm.RefreshLayout();
+                EditorForm.FretboardHeight = 530;
+                EditorForm.RefreshLayout();
             }
             if (QTSettings.Current.ViewLargeFretboard != largeFretboard)
             {
@@ -132,7 +132,7 @@ namespace QuickTabs.Controls
             {
                 DrawingConstants.SetTheme(Theme.DarkMode);
             }
-            deepInvalidate(MainForm); // invalidate EVERYTHING
+            deepInvalidate(EditorForm); // invalidate EVERYTHING
             if (QTSettings.Current.ViewDarkMode != (DrawingConstants.CurrentTheme == Theme.DarkMode))
             {
                 QTSettings.Current.ViewDarkMode = (DrawingConstants.CurrentTheme == Theme.DarkMode);

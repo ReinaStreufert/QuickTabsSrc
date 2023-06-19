@@ -1,4 +1,6 @@
 using QuickTabs.Controls;
+using QuickTabs.Controls.Tools;
+using QuickTabs.Data;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
 using System.Diagnostics;
@@ -18,13 +20,13 @@ namespace QuickTabs
         private Controls.TabEditor tabEditor;
         private Controls.ToolMenu toolMenu;
         private Controls.Tools.Fretboard fretboard;
+        private Song song = new Song();
 
-        internal Song song = new Song();
         private bool ignoreSizeEvent = false;
         private FormWindowState lastWindowState = FormWindowState.Normal;
         private float scale;
 
-        public Editor()
+        internal Editor()
         {
             Debug.WriteLine("test");
 
@@ -58,12 +60,24 @@ namespace QuickTabs
             contextMenu.Song = song;
             contextMenu.Editor = tabEditor;
             contextMenu.Fretboard = fretboard;
-            contextMenu.MainForm = this;
+            contextMenu.EditorForm = this;
             tabEditor.Selection = new Selection(1, 1);
             History.PushState(song, tabEditor.Selection, false);
             tabEditor.Refresh();
             FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
+        }
+        internal void LoadDocument(Song openedSong, bool loadUnsaved = false)
+        {
+            contextMenu.Song = openedSong;
+            tabEditor.QuietlySelect(new Selection(1, 1));
+            this.song = openedSong;
+            tabEditor.Song = song;
+            fretboard.Song = song;
+            fretboard.Refresh();
+            tabEditor.Refresh();
+            tabEditor.Selection = new Selection(1, 1);
+            History.PushState(song, tabEditor.Selection, loadUnsaved);
         }
         public void RefreshLayout()
         {
@@ -145,15 +159,46 @@ namespace QuickTabs
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            if (Updater.WasJustUpdated)
+            if (CrashManager.ReportAvailable || Updater.WasJustUpdated)
             {
                 Timer t = new Timer();
                 t.Interval = 200;
                 t.Tick += (object sender, EventArgs e) =>
                 {
                     t.Stop();
-                    ReleaseNotes releaseNotes = new ReleaseNotes();
-                    releaseNotes.ShowDialog();
+                    if (CrashManager.ReportAvailable)
+                    {
+                        using (CrashRecovery crashRecovery = new CrashRecovery())
+                        {
+                            crashRecovery.ShowDialog();
+                            if (crashRecovery.AttemptRecover)
+                            {
+                                QtJsonFormat qtjsonParser = new QtJsonFormat();
+                                bool failed;
+                                Song openedSong = qtjsonParser.Open(CrashManager.LastCrashReport.RecoveredSong, out failed);
+                                if (failed)
+                                {
+                                    using (GenericMessage message = new GenericMessage())
+                                    {
+                                        message.Text = "Unsaved data recovery";
+                                        message.Message = "Failed to recover. Song was saved in an invalid format in the crash log.";
+                                        message.ShowDialog();
+                                    }
+                                } else
+                                {
+                                    LoadDocument(openedSong, true);
+                                }
+                            }
+                        }
+                        CrashManager.FlushReport();
+                    }
+                    if (Updater.WasJustUpdated)
+                    {
+                        using (ReleaseNotes releaseNotes = new ReleaseNotes())
+                        {
+                            releaseNotes.ShowDialog();
+                        }
+                    }
                     t.Dispose();
                 };
                 t.Start();

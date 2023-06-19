@@ -144,8 +144,8 @@ namespace QuickTabs.Forms
             if (!QTSettings.Current.ViewDarkMode)
             {
                 failedLabel.ForeColor = Color.Black;
-                startAnyway.ForeColor = Color.Black;
-                exit.ForeColor = Color.Black;
+                startAnyway.LinkColor = Color.Black;
+                exit.LinkColor = Color.Black;
                 updatingLabel.ForeColor = Color.Black;
             }
             this.iconLoader = iconLoader;

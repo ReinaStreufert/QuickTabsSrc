@@ -53,18 +53,22 @@ namespace QuickTabs.Controls
             documentProperties.Click += documentPropertiesClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.D, documentPropertiesClick);
             fileSection.AddItem(documentProperties);
+            /*ContextItem crash = new ContextItem(DrawingIcons.Clear, "Test crash");
+            crash.Selected = true;
+            crash.Click += crashClick;
+            fileSection.AddItem(crash);*/
             Sections.Add(fileSection);
         }
 
         private void saveClick()
         {
             FileManager.Save(Song);
-            MainForm.Cursor = Cursors.WaitCursor;
+            EditorForm.Cursor = Cursors.WaitCursor;
             Timer t = new Timer();
             t.Interval = 150;
             t.Tick += (object sender, EventArgs e) =>
             {
-                MainForm.Cursor = Cursors.Default;
+                EditorForm.Cursor = Cursors.Default;
                 t.Stop();
                 t.Dispose();
             };
@@ -98,7 +102,7 @@ namespace QuickTabs.Controls
                     {
                         errMessage.Text = "Could not open file";
                         errMessage.Message = "Format of file is invalid or unknown";
-                        errMessage.ShowDialog(MainForm);
+                        errMessage.ShowDialog(EditorForm);
                     }
                 }
                 return;
@@ -109,15 +113,7 @@ namespace QuickTabs.Controls
                 tabPlayer.Stop();
                 editor.PlayMode = false; // this gets done by the play cursor update timer, but theres a delay and we need to set the selection right after this
             }
-            Song = openedSong;
-            editor.QuietlySelect(new Selection(1, 1));
-            MainForm.song = Song;
-            editor.Song = Song;
-            Fretboard.Song = Song;
-            Fretboard.Refresh();
-            editor.Refresh();
-            editor.Selection = new Selection(1, 1);
-            History.PushState(Song, editor.Selection, false);
+            EditorForm.LoadDocument(openedSong);
         }
         private void newClick()
         {
@@ -205,6 +201,10 @@ namespace QuickTabs.Controls
                 Fretboard.Refresh();
                 History.PushState(Song, editor.Selection);
             }
+        }
+        private void crashClick()
+        {
+            throw new Exception();
         }
     }
 }

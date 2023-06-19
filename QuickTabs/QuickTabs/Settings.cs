@@ -18,18 +18,28 @@ namespace QuickTabs
 
         private string prefsPath;
 
+        public static string QuickTabsDataDir
+        {
+            get
+            {
+                string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string qtData = Path.Combine(appData, "QuickTabs");
+                if (!Directory.Exists(qtData))
+                {
+                    Directory.CreateDirectory(qtData);
+                }
+                return qtData;
+            }
+        }
+
         public void Initialize()
         {
             if (IsInitialized)
             {
                 return;
             }
-            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string qtData = Path.Combine(appData, "QuickTabs");
-            if (!Directory.Exists(qtData))
-            {
-                Directory.CreateDirectory(qtData);
-            }
+
+            string qtData = QuickTabsDataDir;
             prefsPath = Path.Combine(qtData, "prefs.json");
             if (File.Exists(prefsPath))
             {

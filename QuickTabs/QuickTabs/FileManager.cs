@@ -107,13 +107,13 @@ namespace QuickTabs
             {
                 SaveAs(song); return;
             }
-            IsSaved = true;
             if (File.Exists(CurrentFilePath))
             {
                 File.Delete(CurrentFilePath);
             }
             FileFormat usedFormat = findFormat(CurrentFilePath);
             usedFormat.Save(song, CurrentFilePath);
+            IsSaved = true;
         }
         public static void New()
         {

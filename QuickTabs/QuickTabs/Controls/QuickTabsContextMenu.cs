@@ -15,7 +15,7 @@ namespace QuickTabs.Controls
     {
         public Song Song { get; set; }
         private TabEditor editor;
-        public Editor MainForm { get; set; }
+        public Editor EditorForm { get; set; }
         public TabEditor Editor
         {
             get
@@ -50,7 +50,7 @@ namespace QuickTabs.Controls
 
         public QuickTabsContextMenu(Editor mainForm, TabEditor editor, Fretboard fretboard)
         {
-            MainForm = mainForm;
+            EditorForm = mainForm;
             Editor = editor;
             Fretboard = fretboard;
             Logo = DrawingIcons.QuickTabsLogo;

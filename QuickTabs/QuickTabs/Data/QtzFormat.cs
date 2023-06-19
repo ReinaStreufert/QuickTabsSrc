@@ -21,7 +21,7 @@ namespace QuickTabs.Data
         public override Song Open(string fileName, out bool failed)
         {
             Song song = new Song();
-            using (FileStream fs = new FileStream(fileName, FileMode.Open))
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
                 try
                 {

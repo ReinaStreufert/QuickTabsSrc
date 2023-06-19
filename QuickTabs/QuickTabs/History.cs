@@ -126,6 +126,17 @@ namespace QuickTabs
                 SubstantialChange?.Invoke();
             }
         }
+        public static bool TryGetSafeState(out Song song)
+        {
+            if (currentState == null)
+            {
+                song = null;
+                return false;
+            }
+            song = new Song();
+            currentState.CopyTo(song);
+            return true;
+        }
         public static void ClearHistory()
         {
             currentState = null;
