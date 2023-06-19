@@ -20,11 +20,12 @@ namespace QuickTabs
         }
         public static void ProcessShortcut(Keys Modifiers, Keys Key)
         {
-            foreach (Shortcut shortcut in shortcuts)
+            foreach (Shortcut shortcut in shortcuts.ToArray())
             {
                 if (shortcut.Enabled && shortcut.Modifiers == Modifiers && shortcut.Key == Key)
                 {
                     shortcut.Handler();
+                    return;
                 }
             }
         }

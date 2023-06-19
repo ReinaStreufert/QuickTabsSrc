@@ -20,6 +20,7 @@ QuickTabs is an open-source guitar (or other guitar-like instrument) tab editor.
     * `.mid`: Midi tab format. This is an extension of Standard Midi File I developed which includes tab-specific info but is fully compatible with any generic midi supporting application. This compatibility only goes one way; Normal midi files do not have enough information to represent a string instrument tab.
 * Automatically stays up to date to latest version.
 * Basic view preference options (with persistence including over updates.)
+* Logs crashes and attempts to recover unsaved data.
 * Probably some more stuff that im forgetting about.
 
 Detailed information on all of these features can be found in [/docs/](/docs/)
