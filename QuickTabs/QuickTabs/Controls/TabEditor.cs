@@ -68,6 +68,7 @@ namespace QuickTabs.Controls
         private VScrollBar scrollBar = new VScrollBar();
         private bool scrollbarShown = false;
         private bool selectionChanged = false; // whether the selection has been updated since the last UI update
+        private Dictionary<Step, UIStep> stepDictionary = new Dictionary<Step, UIStep>();
 
         public TabEditor()
         {
@@ -87,6 +88,7 @@ namespace QuickTabs.Controls
             }
             Songwriting.Tab tab = Song.Tab;
             tabUI.Clear();
+            stepDictionary.Clear();
 
             int usableWidth = this.Width - DrawingConstants.MediumMargin - DrawingConstants.LeftMargin;
             if (scrollbarShown)
@@ -126,6 +128,7 @@ namespace QuickTabs.Controls
                     case StepType.Beat:
                         Beat beat = (Beat)step;
                         UIStep uiStep = new UIStep(UIStepType.Beat, beat);
+                        stepDictionary[beat] = uiStep;
                         if (Selection != null && Selection.Contains(stepIndex))
                         {
                             uiStep.Selected = true;
@@ -282,7 +285,7 @@ namespace QuickTabs.Controls
         }
         private UIStep uiStepFromTabStep(Step step)
         {
-            foreach (UIRow row in tabUI)
+            /*foreach (UIRow row in tabUI)
             {
                 foreach (UIStep uiStep in row.Steps)
                 {
@@ -292,7 +295,8 @@ namespace QuickTabs.Controls
                     }
                 }
             }
-            throw new IndexOutOfRangeException();
+            throw new IndexOutOfRangeException();*/
+            return stepDictionary[step];            
         }
         private void scrollSelectionIntoView()
         {
@@ -470,8 +474,11 @@ namespace QuickTabs.Controls
                     currentlyHighlighted.Highlighted = false;
                 }
                 uiStep.Highlighted = true;
-                currentlyHighlighted = uiStep;
-                this.Invalidate();
+                if (currentlyHighlighted != uiStep)
+                {
+                    currentlyHighlighted = uiStep;
+                    this.Invalidate();
+                }
             } else
             {
                 if (currentlyHighlighted != null)
@@ -536,12 +543,14 @@ namespace QuickTabs.Controls
                 if (selection != oldSelection)
                 {
                     History.PushState(Song, selection, false);
+                    SelectionChanged?.Invoke();
                 }
             } else
             {
                 if (selection.SelectionStart != oldSelection.SelectionStart || selection.SelectionLength != oldSelection.SelectionLength)
                 {
                     History.PushState(Song, selection, false);
+                    SelectionChanged?.Invoke();
                 }
             }
             if (selection != null && selection.SelectionLength == 1)
@@ -599,7 +608,7 @@ namespace QuickTabs.Controls
                     }
                 }
                 Selection oldSelection = Selection;
-                Selection = new Selection(earliestStep.AssociatedStep.IndexWithinTab, latestStep.AssociatedStep.IndexWithinTab - earliestStep.AssociatedStep.IndexWithinTab + 1);
+                selection = new Selection(earliestStep.AssociatedStep.IndexWithinTab, latestStep.AssociatedStep.IndexWithinTab - earliestStep.AssociatedStep.IndexWithinTab + 1);
                 if (oldSelection == null)
                 {
                     return true;
@@ -611,7 +620,7 @@ namespace QuickTabs.Controls
                 return true;
             } else
             {
-                Selection = null;
+                selection = null;
                 return !selectionWasNull;
             }
         }
@@ -675,6 +684,8 @@ namespace QuickTabs.Controls
                         g.DrawString(Song.Tab.Tuning[i], boldFont, textBrush, startX - textSize.Width + DrawingConstants.StringOffsetForLetters, y - DrawingConstants.SmallTextYOffset);
                     }
                     // steps
+                    float selectRectStart = -1;
+                    int selectRectLength = 0;
                     for (int i = 0; i < row.Steps.Count; i++)
                     {
                         UIStep uiStep = row.Steps[i];
@@ -745,8 +756,26 @@ namespace QuickTabs.Controls
                         }
                         if (uiStep.Selected)
                         {
-                            g.FillRectangle(selectionBrush, x - DrawingConstants.StepWidth / 2F - 1, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
+                            if (selectRectStart < 0)
+                            {
+                                selectRectStart = x - DrawingConstants.StepWidth / 2F - 1;
+                                selectRectLength = 1;
+                            } else
+                            {
+                                selectRectLength++;
+                            }
+                            //g.FillRectangle(selectionBrush, x - DrawingConstants.StepWidth / 2F - 1, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth, DrawingConstants.RowHeight * stringCount);
+                        } else if (selectRectStart > 0)
+                        {
+                            g.FillRectangle(selectionBrush, selectRectStart, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth * selectRectLength, DrawingConstants.RowHeight * stringCount);
+                            selectRectStart = -1;
                         }
+                    }
+                    if (selectRectStart > 0)
+                    {
+                        g.FillRectangle(selectionBrush, selectRectStart, startY + DrawingConstants.RowHeight / 2F, DrawingConstants.StepWidth * selectRectLength, DrawingConstants.RowHeight * stringCount);
+                        selectRectStart = -1;
+                        selectRectLength = 0;
                     }
                     // spaces
                     int spaceY = startY + DrawingConstants.RowHeight * (stringCount + 1);

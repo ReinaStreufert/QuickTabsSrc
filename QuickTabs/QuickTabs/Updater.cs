@@ -17,8 +17,8 @@ namespace QuickTabs
         public static event Action UpdateStarted;   // ]
         public static event Action UpdateFailed;    // ] both of these events may be invoked outside of the main thread.
 
-        public const int SelfReleaseVersion = 0;
-        public const string SelfReleaseNotes = "First release version";
+        public const int SelfReleaseVersion = 1;
+        public const string SelfReleaseNotes = "v0.1.1\r\n - Fixed bugs in the player\r\n - Significantly improved speed of click and drag selecting";
         public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
         public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
         public const bool DevMode = false;

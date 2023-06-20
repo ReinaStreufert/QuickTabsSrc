@@ -23,13 +23,18 @@ namespace QuickTabs.Synthesization
             {
                 if (bpm != value)
                 {
+                    bool wasPlaying = false;
                     if (IsPlaying)
                     {
-                        playStartBeat = this.Position;
-                        playStartTime = DateTime.Now;
+                        wasPlaying = true;
+                        Stop();
                     }
                     bpm = value;
                     eighthNoteLength = calculateEighthNoteDuration();
+                    if (wasPlaying)
+                    {
+                        Start(true);
+                    }
                 }
             }
         }
@@ -113,30 +118,51 @@ namespace QuickTabs.Synthesization
         private float eighthNoteLength;
         private readonly Note metronomeHighNote = new Note("G5");
         private readonly Note metronomeLowNote = new Note("A4");
+        private EventWaitHandle startStopWaitHandle = null;
 
         public TabPlayer(Tab tab)
         {
             Tab = tab;
         }
 
-        public void Start()
+        public void Start(bool activeResume = false) // activeResumse is used to not play the note that was already played when resuming from a pause for on the fly changes (such as to tempo)
         {
-            AudioEngine.AudioEngineTick initTick;
-            playStartTime = DateTime.Now;
-            playStartTimeUnset = true;
-            lastPosition = -1;
-            IsPlaying = true;
-            AudioEngine.Tick += AudioEngine_Tick;
+            if (!IsPlaying)
+            {
+                playStartTime = DateTime.Now;
+                playStartTimeUnset = true;
+                if (!activeResume)
+                {
+                    lastPosition = -1;
+                }
+                startStopWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                IsPlaying = true;
+                AudioEngine.Tick += AudioEngine_Tick;
+                startStopWaitHandle.WaitOne();
+                startStopWaitHandle.Dispose();
+                startStopWaitHandle = null;
+            }
         }
 
         public void Stop()
         {
-            playStartBeat = Position;
-            IsPlaying = false;
+            if (IsPlaying)
+            {
+                playStartBeat = Position;
+                startStopWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                IsPlaying = false;
+                startStopWaitHandle.WaitOne();
+                startStopWaitHandle.Dispose();
+                startStopWaitHandle = null;
+            }
         }
 
         private void AudioEngine_Tick(DateTime timestamp, float bufferDurationMS)
         {
+            if (startStopWaitHandle != null)
+            {
+                startStopWaitHandle.Set();
+            }
             if (!IsPlaying)
             {
                 AudioEngine.SilenceAll();

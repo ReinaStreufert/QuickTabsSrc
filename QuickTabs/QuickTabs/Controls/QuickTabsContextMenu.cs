@@ -66,11 +66,14 @@ namespace QuickTabs.Controls
         }
         private void updateSections()
         {
+            bool changed = false;
+            bool invalOnlyChange = false;
             if (tabPlayer != null && tabPlayer.IsPlaying)
             {
                 if (Sections.Contains(historySection))
                 {
                     Sections.Remove(historySection);
+                    changed = true;
                 }
                 foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
                 {
@@ -81,6 +84,7 @@ namespace QuickTabs.Controls
                 if (!Sections.Contains(historySection))
                 {
                     Sections.Add(historySection);
+                    changed = true;
                 }
                 foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
                 {
@@ -92,10 +96,12 @@ namespace QuickTabs.Controls
                 if (!Sections.Contains(measureSection))
                 {
                     Sections.Add(measureSection);
+                    changed = true;
                 }
                 if (!Sections.Contains(selectionSection))
                 {
                     Sections.Add(selectionSection);
+                    changed = true;
                 }
                 foreach (ShortcutManager.ShortcutController shortcut in selectionDependentShortcuts)
                 {
@@ -103,17 +109,33 @@ namespace QuickTabs.Controls
                 }
                 if (editor.Selection.SelectionStart - 1 != 0 && Song.Tab[editor.Selection.SelectionStart - 1].Type == Enums.StepType.SectionHead)
                 {
+                    if (!removeSection.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     removeSection.Selected = true;
                 } else
                 {
+                    if (removeSection.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     removeSection.Selected = false;
                 }
                 int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
                 if (countBeatsInSection(editor.Selection.SelectionStart) > beatsPerMeasure)
                 {
+                    if (!removeMeasure.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     removeMeasure.Selected = true;
                 } else
                 {
+                    if (removeMeasure.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     removeMeasure.Selected = false;
                 }
                 int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart, false);
@@ -121,17 +143,33 @@ namespace QuickTabs.Controls
                 {
                     if (Song.Tab[nextMeasure - 1].Type == Enums.StepType.SectionHead)
                     {
+                        if (addSection.Selected)
+                        {
+                            invalOnlyChange = true;
+                        }
                         addSection.Selected = false;
                     } else
                     {
+                        if (!addSection.Selected)
+                        {
+                            invalOnlyChange = true;
+                        }
                         addSection.Selected = true;
                     }
                 }
                 if (clipboard != null)
                 {
+                    if (!paste.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     paste.Selected = true;
                 } else
                 {
+                    if (paste.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
                     paste.Selected = false;
                 }
             } else
@@ -139,18 +177,26 @@ namespace QuickTabs.Controls
                 if (Sections.Contains(measureSection))
                 {
                     Sections.Remove(measureSection);
+                    changed = true;
                 }
                 if (Sections.Contains(selectionSection))
                 {
                     Sections.Remove(selectionSection);
+                    changed = true;
                 }
                 foreach (ShortcutManager.ShortcutController shortcut in selectionDependentShortcuts)
                 {
                     shortcut.Enabled = false;
                 }
             }
-            updateUI();
-            Invalidate();
+            if (changed)
+            {
+                updateUI();
+            }
+            if (invalOnlyChange || changed)
+            {
+                Invalidate();
+            }
         }
     }
 }
