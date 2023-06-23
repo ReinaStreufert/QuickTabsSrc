@@ -1,4 +1,5 @@
 ﻿using QuickTabs.Forms;
+using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,9 @@ namespace QuickTabs.Controls
     internal partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection playbackSection;
-        private Synthesization.TabPlayer tabPlayer = null;
+        private ContextItem playPause;
+        private ContextItem repeat;
+        private ContextItem metronome;
 
         private void setupPlaybackSection()
         {
@@ -43,8 +46,8 @@ namespace QuickTabs.Controls
             playbackSection.ToggleType = ToggleType.Togglable;
             playPause = new ContextItem(DrawingIcons.PlayPause, "Play/pause");
             playPause.Selected = false;
-            playPause.Click += () => { playPauseClick(false); };
-            ShortcutManager.AddShortcut(Keys.None, Keys.Space, () => { playPauseClick(true); });
+            playPause.Click += playPauseClick;
+            ShortcutManager.AddShortcut(Keys.None, Keys.Space, playPauseClick);
             playbackSection.AddItem(playPause);
             repeat = new ContextItem(DrawingIcons.Repeat, "Repeat");
             repeat.Selected = false;
@@ -57,90 +60,34 @@ namespace QuickTabs.Controls
             ShortcutManager.AddShortcut(Keys.None, Keys.X, silencePressed);
         }
 
-        private void playPauseClick(bool fromShortcut) // this whole fromShortcut bullshit is because if you click the button directly, ContextMenu will already toggle it after this gets called. but if this is called from the shortcut, it will not.
+        private void playPauseClick()
         {
-            if (tabPlayer == null || !tabPlayer.IsPlaying)
+            if (SequencePlayer.PlayState == Enums.PlayState.Playing)
             {
-                tabPlayer = new Synthesization.TabPlayer(Song.Tab);
-                tabPlayer.BPM = Song.Tempo;
-                tabPlayer.Loop = repeat.Selected;
-                tabPlayer.MetronomeTimeSignature = Song.TimeSignature;
-                tabPlayer.Metronome = metronome.Selected;
-                if (editor.Selection == null)
+                SequencePlayer.Stop();
+            } else if (SequencePlayer.PlayState == Enums.PlayState.NotPlaying)
+            {
+                MusicalTimespan startPosition = MusicalTimespan.Zero;
+                if (editor.Selection != null)
                 {
-                    tabPlayer.Position = 1;
+                    startPosition = Song.Tab.FindIndexTime(editor.Selection.SelectionStart);
                 }
-                else
-                {
-                    tabPlayer.Position = editor.Selection.SelectionStart;
-                }
+                SequencePlayer.PlayFrom(startPosition);
                 editor.PlayMode = true;
-                tabPlayer.Start();
-                updateSections(); // update measure and selection section availability
-                Timer t = new Timer();
-                t.Interval = 50;
-                t.Tick += (object sender, EventArgs e) =>
-                {
-                    if (tabPlayer.IsPlaying)
-                    {
-                        int playerPosition = tabPlayer.Position;
-                        if (editor.Selection == null || editor.Selection.SelectionStart != playerPosition)
-                        {
-                            editor.PlayCursor = tabPlayer.Position;
-                            editor.Refresh();
-                        }
-                    }
-                    else
-                    {
-                        if (playPause.Selected)
-                        {
-                            playPause.Selected = false;
-                        }
-                        updateSections(); // update measure and selection section availability
-                        if (editor.PlayMode)
-                        {
-                            editor.PlayMode = false;
-                            editor.Invalidate();
-                        }
-                        t.Stop();
-                        t.Dispose();
-                        History.PushState(Song, editor.Selection, false); // pushing an insignificant event because selection will be different once playing stops
-                    }
-                };
-                t.Start();
-                if (fromShortcut && !playPause.Selected)
-                {
-                    playPause.Selected = true;
-                    this.Invalidate();
-                }
             }
-            else
-            {
-                tabPlayer.Stop();
-                if (fromShortcut && playPause.Selected)
-                {
-                    playPause.Selected = false;
-                    this.Invalidate();
-                }
-            }
+            UpdateAvailableContent();
         }
         private void repeatClick()
         {
-            if (tabPlayer != null && tabPlayer.IsPlaying)
-            {
-                tabPlayer.Loop = !tabPlayer.Loop;
-            }
+            SequencePlayer.Loop = !SequencePlayer.Loop;
         }
         private void metronomeClick()
         {
-            if (tabPlayer != null && tabPlayer.IsPlaying)
-            {
-                tabPlayer.Metronome = !tabPlayer.Metronome;
-            }
+            SequencePlayer.MetronomeEnabled = !SequencePlayer.MetronomeEnabled;
         }
         private void silencePressed()
         {
-            if (tabPlayer == null || !tabPlayer.IsPlaying)
+            if (SequencePlayer.PlayState == Enums.PlayState.NotPlaying)
             {
                 AudioEngine.AudioEngineTick eventHandler = null;
                 eventHandler = (DateTime timestamp, float bufferDurationMS) =>

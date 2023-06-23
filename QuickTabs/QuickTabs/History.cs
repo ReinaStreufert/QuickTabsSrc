@@ -193,7 +193,7 @@ namespace QuickTabs
                 destination.Tempo = SongTempo;
                 destination.TimeSignature = SongTimeSignature;
                 destination.Tab.Tuning = SongTuning;
-                destination.Tab.SetLength(Steps.Length);
+                destination.Tab.SetLength(Steps.Length, MusicalTimespan.Zero);
                 for (int i = 0; i < Steps.Length; i++)
                 {
                     Step sourceStep = Steps[i];

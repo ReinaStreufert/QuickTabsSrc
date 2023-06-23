@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Data
 {
-    internal class MidiFormat : FileFormat // note: midi is biiiiiig endian
+    /*internal class MidiFormat : FileFormat // note: midi is biiiiiig endian
     {
         public override string Extension => ".mid";
 
@@ -25,7 +25,7 @@ namespace QuickTabs.Data
                 failed = true;
                 return null;
             }
-            if (midiFile.FileFormat != 0 || /*in case somehow idk*/ midiFile.Tracks > 1)
+            if (midiFile.FileFormat != 0 || midiFile.Tracks > 1)
             {
                 throw new Exception();
                 failed = true;
@@ -69,7 +69,7 @@ namespace QuickTabs.Data
                     Note eventNote = new Note(noteOnEvent.NoteName);
                     int fret = Note.ToSemitones(stringNote, eventNote);
                     currentBeat[new Fret(selectedString, fret)] = true;
-                    currentBeat.NoteLength = noteOnEvent.NoteLength;
+                    currentBeat.SustainTimeEighthNotes = noteOnEvent.NoteLength;
                 } else if (midiEvent.CommandCode == MidiCommandCode.ControlChange)
                 {
                     ControlChangeEvent controlChangeEvent = (ControlChangeEvent)midiEvent;
@@ -213,7 +213,7 @@ namespace QuickTabs.Data
                     {
                         PlayingBeat playingBeat = new PlayingBeat();
                         playingBeat.beat = beat;
-                        playingBeat.timeLeft = beat.NoteLength;
+                        playingBeat.timeLeft = beat.SustainTimeEighthNotes;
                         playingBeats.Add(playingBeat);
                     }
                     absoluteTime++;
@@ -270,5 +270,5 @@ namespace QuickTabs.Data
             public Beat beat;
             public int timeLeft;
         }
-    }
+    }*/
 }

@@ -272,8 +272,23 @@ namespace QuickTabs.Controls
             base.OnMouseDown(e);
             if (hoveredButton != null)
             {
-                hoveredButton.ContextItem.InvokeClick();
+                ContextItem contextItem = hoveredButton.ContextItem;
+                contextItem.InvokeClick();
+                if (selectedSection != null)
+                {
+                    selectedSection = null;
+                    closeDropdown();
+                } else if (contextItem.Submenu != null)
+                {
+                    // is this a hacky way to add this feature? absolutely yes. but its my birthday and god damnit,
+                    // its just the easiest way to do it. sue me.
+                    selectedSection = new CollapsedSection();
+                    selectedSection.Location = hoveredButton.Location;
+                    selectedSection.Section = contextItem.Submenu;
+                    updateDropdown();
+                }
                 this.Invalidate();
+                return;
             }
             if (hoveredSection != null)
             {
@@ -334,6 +349,10 @@ namespace QuickTabs.Controls
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            if (selectedSection != null)
+            {
+                dropdownControl.Invalidate();
+            }
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
@@ -432,6 +451,7 @@ namespace QuickTabs.Controls
         public ToggleType ToggleType { get; set; }
         public event RadioChangeEvent RadioChange;
         private List<ContextItem> items { get; set; } = new List<ContextItem>();
+
         public void AddItem(ContextItem item)
         {
             items.Add(item);
@@ -481,6 +501,7 @@ namespace QuickTabs.Controls
         public MultiColorBitmap Icon { get; set; }
         public bool Selected { get; set; }
         public bool DontCloseDropdown { get; set; } = false;
+        public ContextSection Submenu { get; set; } = null;
         public event Action Click;
 
         public ContextItem(MultiColorBitmap icon, string collapsedText)

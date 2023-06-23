@@ -96,8 +96,9 @@ namespace QuickTabs.Forms
             if (tsChanged)
             {
                 Song.TimeSignature = new Songwriting.TimeSignature((int)ts1Input.Value, (int)ts2Input.Value);
-                int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
-                Song.Tab.SetLength(beatsPerMeasure * 2 + 1);
+                int beatsPerMeasure = Song.TimeSignature.MeasureLength / Song.TimeSignature.DefaultDivision;
+                Song.Tab.SetLength(1, MusicalTimespan.Zero);
+                Song.Tab.SetLength(beatsPerMeasure * 2 + 1, Song.TimeSignature.DefaultDivision);
             }
             if (Song.Tab.Tuning.Count != tuningPicker.Tuning.Count)
             {
@@ -107,7 +108,8 @@ namespace QuickTabs.Forms
                     {
                         Beat srcBeat = (Beat)Song.Tab[i];
                         Beat newBeat = new Beat();
-                        newBeat.NoteLength = srcBeat.NoteLength;
+                        newBeat.BeatDivision = srcBeat.BeatDivision;
+                        newBeat.SustainTime = srcBeat.SustainTime;
                         foreach (Fret fret in srcBeat)
                         {
                             int newString = fret.String + tuningPicker.StringShift;

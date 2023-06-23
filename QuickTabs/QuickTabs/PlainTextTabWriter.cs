@@ -72,8 +72,8 @@ namespace QuickTabs
         {
             sections.Clear();
 
-            int beatsPerMeasure = source.TimeSignature.EighthNotesPerMeasure;
-            int beatCount = 0;
+            MusicalTimespan measureLength = source.TimeSignature.MeasureLength;
+            MusicalTimespan beatCount = MusicalTimespan.Zero;
             int measureCount = 0;
 
             Section currentSection = new Section();
@@ -91,18 +91,19 @@ namespace QuickTabs
                         sections.Add(currentSection);
                         currentSection = new Section();
                         currentSection.Name = sectionHead.Name;
-                        beatCount = 0;
+                        beatCount = MusicalTimespan.Zero;
                         measureCount = 0;
                     }
                 } else if (sourceTab[i].Type == Enums.StepType.Beat)
                 {
-                    currentSection.Beats.Add((Beat)sourceTab[i]);
+                    Beat beat = (Beat)sourceTab[i];
+                    currentSection.Beats.Add(beat);
                     if (MeasureWrap > 0)
                     {
-                        beatCount++;
-                        if (beatCount >= beatsPerMeasure)
+                        beatCount += beat.BeatDivision;
+                        if (beatCount >= measureLength)
                         {
-                            beatCount = 0;
+                            beatCount = MusicalTimespan.Zero;
                             measureCount++;
                             if (measureCount >= MeasureWrap)
                             {
@@ -134,7 +135,6 @@ namespace QuickTabs
     {
         public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
-            int beatsPerMeasure = timeSignature.EighthNotesPerMeasure;
             List<StringBuilder> strings = new List<StringBuilder>();
             for (int i = 0; i < tuning.Count; i++)
             {
@@ -146,11 +146,11 @@ namespace QuickTabs
                 strings[i].Append(tuning[i]);
                 strings[i].Append('|');
             }
-            int beatCount = 0;
-            int[] holds = new int[strings.Count];
+            MusicalTimespan beatCount = MusicalTimespan.Zero;
+            MusicalTimespan[] holds = new MusicalTimespan[strings.Count];
             for (int i = 0; i < holds.Length; i++)
             {
-                holds[i] = 0;
+                holds[i] = MusicalTimespan.Zero;
             }
             foreach (Beat beat in beats)
             {
@@ -172,13 +172,13 @@ namespace QuickTabs
                         }
                     }
                     stringsSet[heldFret.String] = true;
-                    holds[heldFret.String] = beat.NoteLength;
+                    holds[heldFret.String] = beat.SustainTime;
                 }
                 for (int i = 0; i < stringsSet.Length; i++)
                 {
                     if (!stringsSet[i])
                     {
-                        if (holds[i] > 0)
+                        if (holds[i] > MusicalTimespan.Zero)
                         {
                             strings[i].Append('>');
                         }
@@ -197,15 +197,15 @@ namespace QuickTabs
                 }
                 for (int i = 0; i < holds.Length; i++)
                 {
-                    if (holds[i] > 0)
+                    if (holds[i] > MusicalTimespan.Zero)
                     {
-                        holds[i]--;
+                        holds[i] -= beat.BeatDivision;
                     }
                 }
-                beatCount++;
-                if (beatCount >= beatsPerMeasure)
+                beatCount += beat.BeatDivision;
+                if (beatCount >= timeSignature.MeasureLength)
                 {
-                    beatCount = 0;
+                    beatCount = MusicalTimespan.Zero;
                     foreach (StringBuilder stringBuilder in strings)
                     {
                         stringBuilder.Append('|');
@@ -224,7 +224,6 @@ namespace QuickTabs
     {
         public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
-            int beatsPerMeasure = timeSignature.EighthNotesPerMeasure;
             List<StringBuilder> strings = new List<StringBuilder>();
             for (int i = 0; i < tuning.Count; i++)
             {
@@ -236,7 +235,7 @@ namespace QuickTabs
                 strings[i].Append(tuning[i]);
                 strings[i].Append('|');
             }
-            int beatCount = 0;
+            MusicalTimespan beatCount = MusicalTimespan.Zero;
             foreach (Beat beat in beats)
             {
                 bool[] stringsSet = new bool[strings.Count];
@@ -256,10 +255,10 @@ namespace QuickTabs
                         strings[i].Append("--");
                     }
                 }
-                beatCount++;
-                if (beatCount >= beatsPerMeasure)
+                beatCount += beat.BeatDivision;
+                if (beatCount >= timeSignature.MeasureLength)
                 {
-                    beatCount = 0;
+                    beatCount = MusicalTimespan.Zero;
                     foreach (StringBuilder stringBuilder in strings)
                     {
                         stringBuilder.Append('|');

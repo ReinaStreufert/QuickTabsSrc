@@ -34,21 +34,24 @@ namespace QuickTabs.Controls.Tools
         private int viewportStart = 1;
         private int viewportLength = 10;
         private int fretAreaWidth = 0;
-        private int noteLength = 1;
-        private Dictionary<MultiColorBitmap, int> noteLengthButtonsPrototype = new Dictionary<MultiColorBitmap, int>();
-        private Dictionary<int, Button> noteLengthButtons = new Dictionary<int, Button>();
+        private MusicalTimespan noteLength = new MusicalTimespan(1, 8);
+        private Dictionary<MultiColorBitmap, MusicalTimespan> noteLengthButtonsPrototype = new Dictionary<MultiColorBitmap, MusicalTimespan>();
+        private Dictionary<MusicalTimespan, Button> noteLengthButtons = new Dictionary<MusicalTimespan, Button>();
         private List<Fret> starredFrets = new List<Fret>();
+        private int currentDivision = 8;
 
         public Fretboard()
         {
             this.DoubleBuffered = true;
-            noteLengthButtonsPrototype[DrawingIcons.EighthNote] = 1;
-            noteLengthButtonsPrototype[DrawingIcons.QuarterNote] = 2;
-            noteLengthButtonsPrototype[DrawingIcons.DottedQuarterNote] = 3;
-            noteLengthButtonsPrototype[DrawingIcons.HalfNote] = 4;
-            noteLengthButtonsPrototype[DrawingIcons.DottedHalfNote] = 6;
-            noteLengthButtonsPrototype[DrawingIcons.WholeNote] = 8;
-            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = 12;
+            noteLengthButtonsPrototype[DrawingIcons.SixteenthNote] = new MusicalTimespan(1, 16);
+            noteLengthButtonsPrototype[DrawingIcons.EighthNote] = new MusicalTimespan(1, 8);
+            noteLengthButtonsPrototype[DrawingIcons.DottedEighthNote] = new MusicalTimespan(3, 16);
+            noteLengthButtonsPrototype[DrawingIcons.QuarterNote] = new MusicalTimespan(1, 4);
+            noteLengthButtonsPrototype[DrawingIcons.DottedQuarterNote] = new MusicalTimespan(3, 8);
+            noteLengthButtonsPrototype[DrawingIcons.HalfNote] = new MusicalTimespan(1, 2);
+            noteLengthButtonsPrototype[DrawingIcons.DottedHalfNote] = new MusicalTimespan(3, 4);
+            noteLengthButtonsPrototype[DrawingIcons.WholeNote] = new MusicalTimespan(1, 1);
+            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = new MusicalTimespan(3, 2);
         }
 
         private void loadStrings()
@@ -117,9 +120,27 @@ namespace QuickTabs.Controls.Tools
                 this.Invalidate();
             };
             buttons.Add(rightButton);
-            float noteLengthButtonHeight = this.Height / (float)(noteLengthButtonsPrototype.Count);
+            generateNoteLengthButtons(currentDivision);
+        }
+
+        private void generateNoteLengthButtons(int division)
+        {
+            currentDivision = division;
+            foreach (KeyValuePair<MusicalTimespan, Button> existingNoteLengthButton in noteLengthButtons)
+            {
+                buttons.Remove(existingNoteLengthButton.Value);
+            }
+            List<KeyValuePair<MultiColorBitmap, MusicalTimespan>> validPrototypes = new List<KeyValuePair<MultiColorBitmap, MusicalTimespan>>();
+            foreach (KeyValuePair<MultiColorBitmap, MusicalTimespan> buttonPrototype in noteLengthButtonsPrototype)
+            {
+                if (buttonPrototype.Value.IsExpressableInDivision(division))
+                {
+                    validPrototypes.Add(buttonPrototype);
+                }
+            }
+            float noteLengthButtonHeight = this.Height / (float)(validPrototypes.Count);
             int currentNoteLengthButton = 0;
-            foreach (KeyValuePair<MultiColorBitmap, int> buttonPrototype in noteLengthButtonsPrototype)
+            foreach (KeyValuePair<MultiColorBitmap, MusicalTimespan> buttonPrototype in validPrototypes)
             {
                 Button button = new Button();
                 button.Icon = buttonPrototype.Key;
@@ -144,11 +165,16 @@ namespace QuickTabs.Controls.Tools
                 buttons.Add(button);
                 currentNoteLengthButton++;
             }
+            updateNoteLengthButtons();
         }
 
         private void updateNoteLengthButtons()
         {
-            foreach (KeyValuePair<int, Button> noteLengthButton in noteLengthButtons)
+            if (!noteLength.IsExpressableInDivision(currentDivision))
+            {
+                noteLength = new MusicalTimespan(1, currentDivision);
+            }
+            foreach (KeyValuePair<MusicalTimespan, Button> noteLengthButton in noteLengthButtons)
             {
                 if (noteLengthButton.Key == noteLength)
                 {
@@ -188,8 +214,12 @@ namespace QuickTabs.Controls.Tools
                 if (Song.Tab[i].Type == Enums.StepType.Beat)
                 {
                     Beat beat = (Beat)Song.Tab[i];
-                    beat.NoteLength = noteLength;
-                    updateMade = true;
+                    int division = new MusicalTimespan(1, 1) / beat.BeatDivision;
+                    if (beat.SustainTime.IsExpressableInDivision(division))
+                    {
+                        beat.SustainTime = noteLength;
+                        updateMade = true;
+                    }
                 }
             }
             if (updateMade)
@@ -206,6 +236,10 @@ namespace QuickTabs.Controls.Tools
                 foreach (String s in strings)
                 {
                     s.SelectedFret = -1;
+                }
+                if (currentDivision != 8)
+                {
+                    generateNoteLengthButtons(8);
                 }
                 this.Invalidate();
                 return;
@@ -225,9 +259,16 @@ namespace QuickTabs.Controls.Tools
                 }
                 if (!beatEmpty)
                 {
-                    noteLength = beat.NoteLength;
+                    noteLength = beat.SustainTime;
                 }
-                updateNoteLengthButtons();
+                int division = new MusicalTimespan(1, 1) / beat.BeatDivision;
+                if (division != currentDivision)
+                {
+                    generateNoteLengthButtons(division);
+                } else
+                {
+                    updateNoteLengthButtons();
+                }
                 this.Invalidate();
             }
         }

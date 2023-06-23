@@ -3,6 +3,7 @@ using QuickTabs.Controls.Tools;
 using QuickTabs.Data;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
+using QuickTabs.Synthesization;
 using System.Diagnostics;
 using Timer = System.Windows.Forms.Timer;
 
@@ -20,6 +21,7 @@ namespace QuickTabs
         private Controls.TabEditor tabEditor;
         private Controls.ToolMenu toolMenu;
         private Controls.Tools.Fretboard fretboard;
+        private Synthesization.SequencePlayer sequencePlayer;
         private Song song = new Song();
 
         private bool ignoreSizeEvent = false;
@@ -50,9 +52,10 @@ namespace QuickTabs
             Controls.Add(toolMenu);
             this.Width = (int)(1800 * scale);
             this.Height = (int)(1200 * scale);
-            song.Tab.SetLength(17);
+            song.Tab.SetLength(17, new MusicalTimespan(1, 8));
             song.TimeSignature = new TimeSignature(4, 4);
             ((SectionHead)song.Tab[0]).Name = "Untitled Section";
+            sequencePlayer = new Synthesization.SequencePlayer(this, new Tab[] { song.Tab });
             tabEditor.Song = song;
             fretboard.Song = song;
             fretboard.Editor = tabEditor;
@@ -61,12 +64,16 @@ namespace QuickTabs
             contextMenu.Editor = tabEditor;
             contextMenu.Fretboard = fretboard;
             contextMenu.EditorForm = this;
+            contextMenu.SequencePlayer = sequencePlayer;
             tabEditor.Selection = new Selection(1, 1);
             History.PushState(song, tabEditor.Selection, false);
             tabEditor.Refresh();
             FileManager.FileStateChange += FileManager_FileStateChange;
             this.KeyPreview = true;
+            sequencePlayer.PositionUpdate += SequencePlayer_PositionUpdate;
+            sequencePlayer.PlaybackStopped += SequencePlayer_PlaybackStopped;
         }
+
         internal void LoadDocument(Song openedSong, bool loadUnsaved = false)
         {
             contextMenu.Song = openedSong;
@@ -74,6 +81,14 @@ namespace QuickTabs
             this.song = openedSong;
             tabEditor.Song = song;
             fretboard.Song = song;
+            sequencePlayer.Source = new Tab[] { song.Tab };
+            /*Tab[] sequenceSource = new Tab[sequencePlayer.Source.Length + 1];
+            sequenceSource[0] = song.Tab;
+            sequencePlayer.Source.CopyTo(sequenceSource, 1);
+            sequencePlayer.Source = sequenceSource;*/
+            // end bullshit
+            sequencePlayer.Tempo = song.Tempo;
+            sequencePlayer.MetronomeTimeSignature = song.TimeSignature;
             fretboard.Refresh();
             tabEditor.Refresh();
             tabEditor.Selection = new Selection(1, 1);
@@ -204,6 +219,25 @@ namespace QuickTabs
                 t.Start();
             }
             this.Activate();
+        }
+
+        private void SequencePlayer_PositionUpdate()
+        {
+            if (sequencePlayer.PlayState == Enums.PlayState.Playing)
+            {
+                tabEditor.PlayCursor = sequencePlayer.GetTabPositionForTrack(0);
+                tabEditor.Refresh();
+            }
+        }
+        private void SequencePlayer_PlaybackStopped()
+        {
+            contextMenu.UpdateAvailableContent();
+            if (tabEditor.PlayMode)
+            {
+                tabEditor.PlayMode = false;
+                tabEditor.Invalidate();
+            }
+            History.PushState(song, tabEditor.Selection, false);
         }
     }
 }

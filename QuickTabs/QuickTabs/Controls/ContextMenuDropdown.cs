@@ -16,6 +16,7 @@ namespace QuickTabs.Controls
 
             private int hoveredItem = -1;
             private Action closeDropdown;
+            private ContextMenuDropdown subDropdown = null;
 
             public ContextMenuDropdown(Action closeDropdown)
             {
@@ -44,8 +45,39 @@ namespace QuickTabs.Controls
                 if (newHover != hoveredItem)
                 {
                     hoveredItem = newHover;
+                    if (newHover > -1)
+                    {
+                        if (Section[hoveredItem].Submenu != null)
+                        {
+                            updateSubDropdown();
+                        } else if (subDropdown != null)
+                        {
+                            closeSubDropdown();
+                        }
+                    } else if (subDropdown != null)
+                    {
+                        closeSubDropdown();
+                    }
                     this.Invalidate();
                 }
+            }
+            private void closeSubDropdown()
+            {
+                subDropdown.Parent.Controls.Remove(subDropdown);
+                subDropdown.Dispose();
+                subDropdown = null;
+            }
+            private void updateSubDropdown()
+            {
+                if (subDropdown == null)
+                {
+                    subDropdown = new ContextMenuDropdown(closeDropdown);
+                    this.Parent.Controls.Add(subDropdown);
+                    this.Parent.Controls.SetChildIndex(subDropdown, 0);
+                }
+                subDropdown.Location = new Point(this.Location.X + this.Width, this.Location.Y + DrawingConstants.DropdownRowHeight * hoveredItem);
+                subDropdown.Section = Section[hoveredItem].Submenu;
+                subDropdown.Refresh();
             }
             protected override void OnMouseLeave(EventArgs e)
             {
@@ -69,9 +101,24 @@ namespace QuickTabs.Controls
                     }
                 }
             }
+            protected override void OnParentChanged(EventArgs e)
+            {
+                base.OnParentChanged(e);
+                if (Parent == null)
+                {
+                    if (subDropdown != null)
+                    {
+                        closeSubDropdown();
+                    }
+                }
+            }
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
+                if (subDropdown != null)
+                {
+                    subDropdown.Invalidate();
+                }
                 Graphics g = e.Graphics;
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -124,6 +171,9 @@ namespace QuickTabs.Controls
                         if (item.Selected && Section.ToggleType != ToggleType.NotTogglable)
                         {
                             g.DrawImage(DrawingIcons.Check[DrawingConstants.ContrastColor], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                        } else if (item.Selected && item.Submenu != null)
+                        {
+                            g.DrawImage(DrawingIcons.MenuRight[DrawingConstants.ContrastColor], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
                         }
                         i++;
                     }
@@ -133,6 +183,10 @@ namespace QuickTabs.Controls
             public override void Refresh()
             {
                 updateUI();
+                if (subDropdown != null)
+                {
+                    closeSubDropdown();
+                }
                 this.Invalidate();
                 base.Refresh();
             }

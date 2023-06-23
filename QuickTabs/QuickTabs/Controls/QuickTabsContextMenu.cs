@@ -16,6 +16,7 @@ namespace QuickTabs.Controls
         public Song Song { get; set; }
         private TabEditor editor;
         public Editor EditorForm { get; set; }
+        public SequencePlayer SequencePlayer { get; set; }
         public TabEditor Editor
         {
             get
@@ -25,22 +26,10 @@ namespace QuickTabs.Controls
             set
             {
                 editor = value;
-                value.SelectionChanged += updateSections;
+                value.SelectionChanged += UpdateAvailableContent;
             }
         }
         public Fretboard Fretboard { get; set; }
-
-        // these buttons need their own members because their Selected value gets updated
-        private ContextItem removeMeasure;
-        private ContextItem removeSection;
-        private ContextItem addSection;
-        private ContextItem paste;
-        private ContextItem undo;
-        private ContextItem redo;
-        private ContextItem redoAlternate;
-        private ContextItem playPause;
-        private ContextItem repeat;
-        private ContextItem metronome;
 
         // these shortcuts get enabled and disabled
         private List<ShortcutManager.ShortcutController> historyShortcuts = new List<ShortcutManager.ShortcutController>();
@@ -64,12 +53,17 @@ namespace QuickTabs.Controls
 
             updateUI();
         }
-        private void updateSections()
+        public void UpdateAvailableContent()
         {
             bool changed = false;
             bool invalOnlyChange = false;
-            if (tabPlayer != null && tabPlayer.IsPlaying)
+            if (SequencePlayer.PlayState == Enums.PlayState.Playing)
             {
+                if (!playPause.Selected)
+                {
+                    playPause.Selected = true;
+                    invalOnlyChange = true;
+                }
                 if (Sections.Contains(historySection))
                 {
                     Sections.Remove(historySection);
@@ -81,6 +75,11 @@ namespace QuickTabs.Controls
                 }
             } else
             {
+                if (playPause.Selected)
+                {
+                    playPause.Selected = false;
+                    invalOnlyChange = true;
+                }
                 if (!Sections.Contains(historySection))
                 {
                     Sections.Add(historySection);
@@ -91,7 +90,7 @@ namespace QuickTabs.Controls
                     shortcut.Enabled = true;
                 }
             }
-            if (editor.Selection != null && (tabPlayer == null || !tabPlayer.IsPlaying))
+            if (editor.Selection != null && SequencePlayer.PlayState == Enums.PlayState.NotPlaying)
             {
                 if (!Sections.Contains(measureSection))
                 {
@@ -122,8 +121,7 @@ namespace QuickTabs.Controls
                     }
                     removeSection.Selected = false;
                 }
-                int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
-                if (countBeatsInSection(editor.Selection.SelectionStart) > beatsPerMeasure)
+                if (countMeasuresInSection(editor.Selection.SelectionStart) > 1)
                 {
                     if (!removeMeasure.Selected)
                     {
@@ -138,7 +136,13 @@ namespace QuickTabs.Controls
                     }
                     removeMeasure.Selected = false;
                 }
-                int nextMeasure = findNextMeasureAlignedStepIndex(editor.Selection.SelectionStart, false);
+                MusicalTimespan selectedDivision = ((Beat)Song.Tab[editor.Selection.SelectionStart]).BeatDivision;
+                updateDivisionButton(division16, new MusicalTimespan(1, 16), selectedDivision, ref invalOnlyChange);
+                updateDivisionButton(division8, new MusicalTimespan(1, 8), selectedDivision, ref invalOnlyChange);
+                updateDivisionButton(division4, new MusicalTimespan(1, 4), selectedDivision, ref invalOnlyChange);
+                updateDivisionButton(division2, new MusicalTimespan(1, 2), selectedDivision, ref invalOnlyChange);
+                updateDivisionButton(division1, new MusicalTimespan(1, 1), selectedDivision, ref invalOnlyChange);
+                int nextMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, true);
                 if (nextMeasure - 1 < Song.Tab.Count)
                 {
                     if (Song.Tab[nextMeasure - 1].Type == Enums.StepType.SectionHead)
@@ -196,6 +200,25 @@ namespace QuickTabs.Controls
             if (invalOnlyChange || changed)
             {
                 Invalidate();
+            }
+        }
+        private void updateDivisionButton(ContextItem divButton, MusicalTimespan buttonValue, MusicalTimespan selectionValue, ref bool invalOnlyChange)
+        {
+            if (selectionValue == buttonValue)
+            {
+                if (!divButton.Selected)
+                {
+                    divButton.Selected = true;
+                    invalOnlyChange = true;
+                }
+            }
+            else
+            {
+                if (divButton.Selected)
+                {
+                    divButton.Selected = false;
+                    invalOnlyChange = true;
+                }
             }
         }
     }

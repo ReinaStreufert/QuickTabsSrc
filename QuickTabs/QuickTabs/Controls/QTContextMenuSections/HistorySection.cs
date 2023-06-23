@@ -9,6 +9,9 @@ namespace QuickTabs.Controls
     internal partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection historySection;
+        private ContextItem undo;
+        private ContextItem redo;
+        private ContextItem redoAlternate;
 
         private void setupHistorySection()
         {
@@ -92,11 +95,6 @@ namespace QuickTabs.Controls
             Fretboard.Refresh();
             editor.Refresh();
             editor.Selection = newSelection;
-            if (tabPlayer != null && tabPlayer.IsPlaying)
-            {
-                tabPlayer.BPM = Song.Tempo;
-                //tabPlayer.MetronomeTimeSignature = Song.TimeSignature;
-            }
         }
     }
 }

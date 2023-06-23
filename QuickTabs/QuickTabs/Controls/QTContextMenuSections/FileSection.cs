@@ -108,10 +108,10 @@ namespace QuickTabs.Controls
                 return;
             }
             History.ClearHistory();
-            if (tabPlayer != null && tabPlayer.IsPlaying)
+            if (SequencePlayer.PlayState == Enums.PlayState.Playing)
             {
-                tabPlayer.Stop();
-                editor.PlayMode = false; // this gets done by the play cursor update timer, but theres a delay and we need to set the selection right after this
+                SequencePlayer.Stop();
+                editor.PlayMode = false; // this might not be necessary with the rewrite
             }
             EditorForm.LoadDocument(openedSong);
         }
@@ -131,21 +131,18 @@ namespace QuickTabs.Controls
             }
             FileManager.New();
             History.ClearHistory();
-            if (tabPlayer != null && tabPlayer.IsPlaying)
+            if (SequencePlayer.PlayState == Enums.PlayState.Playing)
             {
-                tabPlayer.Stop();
+                SequencePlayer.Stop();
                 editor.PlayMode = false;
             }
             Song.Name = "Untitled tab";
             Song.Tempo = 120;
             Song.TimeSignature = new TimeSignature(4, 4);
             Song.Tab.Tuning = Tuning.StandardGuitar;
-            Song.Tab.SetLength(17);
+            Song.Tab.SetLength(1, new MusicalTimespan(1, 8));
+            Song.Tab.SetLength(17, new MusicalTimespan(1, 8));
             ((SectionHead)Song.Tab[0]).Name = "Untitled Section";
-            for (int i = 1; i < 17; i++)
-            {
-                Song.Tab[i] = new Beat();
-            }
             editor.Selection = new Selection(1, 1);
             editor.Refresh();
             Fretboard.Refresh();
@@ -171,6 +168,7 @@ namespace QuickTabs.Controls
         {
             bool changed;
             TimeSignature oldTs = Song.TimeSignature;
+            int oldTempo = Song.Tempo;
             using (DocumentProperties dp = new DocumentProperties())
             {
                 dp.Song = Song;
@@ -179,20 +177,20 @@ namespace QuickTabs.Controls
             }
             if (changed)
             {
-                if (tabPlayer != null && editor.PlayMode)
+                if (Song.TimeSignature != oldTs)
                 {
-                    if (Song.TimeSignature != oldTs)
+                    if (SequencePlayer.PlayState == Enums.PlayState.Playing)
                     {
-                        if (tabPlayer.IsPlaying)
-                        {
-                            tabPlayer.Stop();
-                        }
+                        SequencePlayer.Stop();
                         editor.PlayMode = false;
-                    } else
-                    {
-                        tabPlayer.BPM = Song.Tempo;
                     }
+                    SequencePlayer.MetronomeTimeSignature = Song.TimeSignature;
                 }
+                if (Song.Tempo != oldTempo)
+                {
+                    SequencePlayer.Tempo = Song.Tempo;
+                }
+
                 if (editor.Selection != null && editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.Tab.Count)
                 {
                     editor.Selection = new Selection(1, 1);

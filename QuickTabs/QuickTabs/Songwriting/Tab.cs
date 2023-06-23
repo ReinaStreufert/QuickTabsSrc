@@ -37,11 +37,15 @@ namespace QuickTabs.Songwriting
                 value.IndexWithinTab = i;
             }
         }
-        public void InsertBeats(int index, int count)
+        public void InsertBeats(int index, int count, MusicalTimespan? division)
         {
             for (int i = 0; i < count; i++)
             {
                 Beat beat = new Beat();
+                if (division.HasValue)
+                {
+                    beat.BeatDivision = division.Value;
+                }
                 steps.Insert(index, beat);
             }
             for (int i = index; i < steps.Count; i++)
@@ -60,7 +64,7 @@ namespace QuickTabs.Songwriting
                 steps[i].IndexWithinTab = i;
             }
         }
-        public void SetLength(int length)
+        public void SetLength(int length, MusicalTimespan? division)
         {
             if (steps.Count == 0 && length > 0)
             {
@@ -72,6 +76,10 @@ namespace QuickTabs.Songwriting
             {
                 Beat beat = new Beat();
                 beat.IndexWithinTab = steps.Count;
+                if (division.HasValue)
+                {
+                    beat.BeatDivision = division.Value;
+                }
                 steps.Add(beat);
             }
             if (steps.Count > length)
@@ -79,6 +87,39 @@ namespace QuickTabs.Songwriting
                 int remove = steps.Count - length;
                 steps.RemoveRange(steps.Count - remove, remove);
             }
+        }
+        public int FindClosestBeatIndexToTime(MusicalTimespan position, out MusicalTimespan resultPosition)
+        {
+            MusicalTimespan counter = MusicalTimespan.Zero;
+            int stepIndex = 0;
+            for (; ; stepIndex++)
+            {
+                if (this[stepIndex].Type == Enums.StepType.Beat)
+                {
+                    Beat beat = (Beat)this[stepIndex];
+                    counter += beat.BeatDivision;
+                    if (counter > position)
+                    {
+                        counter -= beat.BeatDivision;
+                        break;
+                    }
+                }
+            }
+            resultPosition = counter;
+            return stepIndex;
+        }
+        public MusicalTimespan FindIndexTime(int index)
+        {
+            MusicalTimespan result = MusicalTimespan.Zero;
+            for (int i = 0; i < index; i++)
+            {
+                if (this[i].Type == Enums.StepType.Beat)
+                {
+                    Beat beat = (Beat)this[i];
+                    result += beat.BeatDivision;
+                }
+            }
+            return result;
         }
 
         public IEnumerator<Step> GetEnumerator()

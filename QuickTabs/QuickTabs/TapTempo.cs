@@ -15,7 +15,7 @@ namespace QuickTabs
         {
             set
             {
-                maxTap = value.EighthNotesPerMeasure / 2;
+                maxTap = value.MeasureLength / new MusicalTimespan(1, 4);
             }
         }
         public event SetTempo OnSetTempo;

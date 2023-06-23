@@ -97,7 +97,7 @@ namespace QuickTabs.Data
             }
             if (songJson.ContainsKey("steps") && songJson["steps"].Type == JTokenType.Array)
             {
-                song.Tab.SetLength(((JArray)songJson["steps"]).Count);
+                song.Tab.SetLength(((JArray)songJson["steps"]).Count, MusicalTimespan.Zero);
                 int stepIndex = 0;
                 foreach (JToken token in songJson["steps"])
                 {
@@ -127,9 +127,17 @@ namespace QuickTabs.Data
                                 break;
                             case "b":
                                 Beat beat = new Beat();
-                                if (stepJson.ContainsKey("length") && stepJson["length"].Type == JTokenType.Integer)
+                                if (stepJson.ContainsKey("div") && stepJson["div"].Type == JTokenType.Integer)
                                 {
-                                    beat.NoteLength = (int)stepJson["length"];
+                                    beat.BeatDivision = new MusicalTimespan(1, (int)stepJson["div"]);
+                                }
+                                else
+                                {
+                                    beat.BeatDivision = new MusicalTimespan(1, 8); // backwards compatibility moment
+                                }
+                                if (stepJson.ContainsKey("length") && (stepJson["length"].Type == JTokenType.Float || stepJson["length"].Type == JTokenType.Integer))
+                                {
+                                    beat.SustainTime = new MusicalTimespan(stepJson["length"].Value<float>(), 8);
                                 }
                                 else
                                 {

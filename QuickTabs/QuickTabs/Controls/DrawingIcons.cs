@@ -15,7 +15,9 @@ namespace QuickTabs.Controls
     {
         public static MultiColorBitmap QuickTabsLogo { get; private set; } = null;
 
+        public static MultiColorBitmap SixteenthNote { get; private set; } = null; // DEPS
         public static MultiColorBitmap EighthNote { get; private set; } = null;
+        public static MultiColorBitmap DottedEighthNote { get; private set; } = null; // DEPS
         public static MultiColorBitmap QuarterNote { get; private set; } = null;
         public static MultiColorBitmap DottedQuarterNote { get; private set; } = null;
         public static MultiColorBitmap HalfNote { get; private set; } = null;
@@ -43,6 +45,7 @@ namespace QuickTabs.Controls
 
         public static MultiColorBitmap AddMeasure { get; private set; } = null;
         public static MultiColorBitmap RemoveMeasure { get; private set; } = null;
+        public static MultiColorBitmap Division { get; private set; } = null; // DEPS
         public static MultiColorBitmap AddSection { get; private set; } = null;
         public static MultiColorBitmap RemoveSection { get; private set; } = null;
         public static MultiColorBitmap Rename { get; private set; } = null;
@@ -67,13 +70,16 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap Download { get; private set; } = null;
 
         public static MultiColorBitmap Check { get; private set; } = null;
+        public static MultiColorBitmap MenuRight { get; private set; } = null;
 
         public static void LoadAll()
         {
             QuickTabsLogo = loadIcon("logo", Color.White, Color.Black, DrawingConstants.DarkModeLogoPatternColor, DrawingConstants.LightModeLogoPatternColor);
 
             Color lightModeFadedGray = Color.FromArgb(0xAA, 0xAA, 0xAA); // this is dumb im sorry for this. LoadAll is always called before theme is loaded so DrawingConstants always returns dark mode values here.
+            SixteenthNote = loadIcon("music-note-sixteenth", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray); // DEPS
             EighthNote = loadIcon("music-note-eighth", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            DottedEighthNote = loadIcon("music-note-eighth-dotted", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray); // DEPS
             QuarterNote = loadIcon("music-note-quarter", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             DottedQuarterNote = loadIcon("music-note-quarter-dotted", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             HalfNote = loadIcon("music-note-half", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
@@ -101,6 +107,7 @@ namespace QuickTabs.Controls
 
             AddMeasure = loadIcon("plus-box-outline", Color.Black, Color.White);
             RemoveMeasure = loadIcon("minus-box-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
+            Division = loadIcon("division", Color.Black, Color.White); // DEPS
             AddSection = loadIcon("plus-box-multiple-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
             RemoveSection = loadIcon("minus-box-multiple-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
             Rename = loadIcon("rename-outline", Color.Black, Color.White);
@@ -125,6 +132,7 @@ namespace QuickTabs.Controls
             Download = loadIcon("download-box", Color.White, Color.Black);
 
             Check = loadIcon("check", Color.White, Color.Black);
+            MenuRight = loadIcon("menu-right", Color.White, Color.Black);
 
             FieldInfo[] allFields = typeof(DrawingIcons).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             bool fail = false;

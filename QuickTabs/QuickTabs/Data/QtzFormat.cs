@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Data
 {
-    internal class QtzFormat : FileFormat
+    /*internal class QtzFormat : FileFormat
     {
         public override string Extension => ".qtz";
         public override string Name => "QuickTabs Bytecode File (*.qtz)";
@@ -137,7 +137,7 @@ namespace QuickTabs.Data
                             Beat beat = (Beat)step;
                             int noteLengthCode = bitmask.ReadBitsAsNumber(bitmaskI, 3);
                             bitmaskI += 3;
-                            beat.NoteLength = getNoteLength(noteLengthCode);
+                            beat.SustainTimeEighthNotes = getNoteLength(noteLengthCode);
                             for (int stringI = 0; stringI < tuningCount; stringI++)
                             {
                                 if (bitmask[bitmaskI])
@@ -237,7 +237,7 @@ namespace QuickTabs.Data
                     if (step.Type == Enums.StepType.Beat)
                     {
                         Beat beat = (Beat)step;
-                        bitmask.WriteNumberAsBits(bitmaskI, 3, getNoteLengthCode(beat.NoteLength));
+                        bitmask.WriteNumberAsBits(bitmaskI, 3, getNoteLengthCode(beat.SustainTimeEighthNotes));
                         bitmaskI += 3;
                         for (int i = 0; i < strings.Length; i++)
                         {
@@ -301,5 +301,5 @@ namespace QuickTabs.Data
         {
             return noteLengthCodes[code];
         }
-    }
+    }*/
 }

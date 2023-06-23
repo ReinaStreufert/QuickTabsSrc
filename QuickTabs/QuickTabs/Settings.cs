@@ -16,8 +16,6 @@ namespace QuickTabs
         protected abstract Dictionary<string, JTokenType> Prototype { get; }
         protected abstract object[] Defaults { get; }
 
-        private string prefsPath;
-
         public static string QuickTabsDataDir
         {
             get
@@ -40,10 +38,10 @@ namespace QuickTabs
             }
 
             string qtData = QuickTabsDataDir;
-            prefsPath = Path.Combine(qtData, "prefs.json");
+            string prefsPath = Path.Combine(qtData, "prefs.json");
             if (File.Exists(prefsPath))
             {
-                loadPrefs();
+                loadPrefs(prefsPath);
             } else
             {
                 Save(); // save default
@@ -73,6 +71,9 @@ namespace QuickTabs
                 i++;
             }
 
+            string qtData = QuickTabsDataDir;
+            string prefsPath = Path.Combine(qtData, "prefs.json");
+
             if (File.Exists(prefsPath))
             {
                 File.Delete(prefsPath);
@@ -80,7 +81,7 @@ namespace QuickTabs
             File.WriteAllText(prefsPath, prefsJson.ToString());
         }
         protected void Migrate(JObject prefsJson) { }
-        private void loadPrefs()
+        private void loadPrefs(string prefsPath)
         {
             string prefs = File.ReadAllText(prefsPath);
 
@@ -157,11 +158,12 @@ namespace QuickTabs
                     prototype["ViewCompactCtxMenu"] = JTokenType.Boolean;
                     prototype["ViewLargeFretboard"] = JTokenType.Boolean;
                     prototype["ViewDarkMode"] = JTokenType.Boolean;
+                    prototype["ScaleAskAboutLoss"] = JTokenType.Boolean;
                 }
                 return prototype;
             }
         }
-        private object[] defaults = new object[5] { true, true, false, false, true };
+        private object[] defaults = new object[6] { true, true, false, false, true, true };
         protected override object[] Defaults => defaults;
 
         public bool ViewFretCounter
@@ -225,6 +227,19 @@ namespace QuickTabs
             {
                 Initialize();
                 Values[4] = value;
+            }
+        }
+        public bool ScaleAskAboutLoss
+        {
+            get
+            {
+                Initialize();
+                return (bool)Values[5];
+            }
+            set
+            {
+                Initialize();
+                Values[5] = value;
             }
         }
     }

@@ -33,17 +33,9 @@ namespace QuickTabs.Synthesization
             foreach (Fret fret in Beat)
             {
                 Songwriting.Note note = Songwriting.Note.FromSemitones(Tuning.GetMusicalNote(fret.String), fret.Space);
-                AudioEngine.PlayNote(note, calculateEighthNoteDuration() * Beat.NoteLength, 0.25F);
+                AudioEngine.PlayNote(note, (int)Beat.SustainTime.ToTimespan(BPM).TotalMilliseconds, 0.25F);
             }
             AudioEngine.Tick -= AudioEngine_Tick;
-        }
-
-        private int calculateEighthNoteDuration()
-        {
-            float beatsPerSecond = BPM / 60F;
-            float beatDurationMs = 1000 / beatsPerSecond;
-            float eighthNoteDurationMs = beatDurationMs / 2;
-            return (int)eighthNoteDurationMs;
         }
     }
 }

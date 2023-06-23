@@ -12,7 +12,7 @@ namespace QuickTabs
 {
     internal static class FileManager
     {
-        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat(), new QtzFormat(), new MidiFormat() };
+        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat()/*, new QtzFormat(), new MidiFormat()*/ };
 
         private static bool isSaved = true;
         public static bool IsSaved

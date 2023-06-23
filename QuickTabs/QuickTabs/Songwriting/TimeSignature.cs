@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,31 +16,30 @@ namespace QuickTabs.Songwriting
             T1 = t1;
             T2 = t2;
         }
-        public int EighthNotesPerMeasure
+        public MusicalTimespan MeasureLength
         {
             get
             {
-                if (T2 == 1)
-                {
-                    return T1 * 8;
-                }else if (T2 == 2)
-                {
-                    return T1 * 4;
-                } else if (T2 == 4)
-                {
-                    return T1 * 2;
-                } else if (T2 == 8)
-                {
-                    return T1;
-                } else if (T2 == 16)
-                {
-                    return T1 / 2;
-                } else
-                {
-                    return T1 / 4;
-                }
+                return new MusicalTimespan(T1, T2);
             }
         }
+        public MusicalTimespan DefaultDivision
+        {
+            get
+            {
+                int division = 8;
+                MusicalTimespan measureLength = MeasureLength;
+                MusicalTimespan result = new MusicalTimespan(1, division);
+                while (!measureLength.IsDivisibleBy(result))
+                {
+                    division *= 2;
+                    result = new MusicalTimespan(1, division);
+                }
+                return result;
+            }
+        }
+
+
         public static bool operator ==(TimeSignature left, TimeSignature right)
         {
             return (left.T1 == right.T1 && left.T2 == right.T2);

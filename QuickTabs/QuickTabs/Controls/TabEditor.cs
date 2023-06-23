@@ -96,10 +96,10 @@ namespace QuickTabs.Controls
                 usableWidth -= SystemInformation.VerticalScrollBarWidth;
             }
             int rowsPerStaff = tab.Tuning.Count;
-            int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
+            MusicalTimespan measureLength = Song.TimeSignature.MeasureLength;
 
             UIRow currentRow = new UIRow();
-            int sinceLastMeasureBar = 0;
+            MusicalTimespan sinceLastMeasureBar = MusicalTimespan.Zero;
             int stepIndex = 0;
             foreach (Step step in tab)
             {
@@ -123,7 +123,7 @@ namespace QuickTabs.Controls
                             currentRow.Head = sectionHead.Name;
                         }
                         currentRow.Steps.Add(new UIStep(UIStepType.MeasureBar, null));
-                        sinceLastMeasureBar = 0;
+                        sinceLastMeasureBar = MusicalTimespan.Zero;
                         break;
                     case StepType.Beat:
                         Beat beat = (Beat)step;
@@ -134,6 +134,7 @@ namespace QuickTabs.Controls
                             uiStep.Selected = true;
                         }
                         currentRow.Steps.Add(uiStep);
+                        sinceLastMeasureBar += beat.BeatDivision;
                         break;
                     case StepType.Comment:
                         Comment comment = (Comment)step;
@@ -150,13 +151,12 @@ namespace QuickTabs.Controls
                     stepIndex++;
                     continue;
                 }
-                sinceLastMeasureBar++;
-                if (sinceLastMeasureBar >= beatsPerMeasure)
+                if (sinceLastMeasureBar >= measureLength)
                 {
                     if ((currentRow.Steps.Count + 2) * DrawingConstants.StepWidth < usableWidth)
                     {
                         currentRow.Steps.Add(new UIStep(UIStepType.MeasureBar, null));
-                        sinceLastMeasureBar = 0;
+                        sinceLastMeasureBar = MusicalTimespan.Zero;
                     } else
                     {
                         if (stepIndex + 1 < tab.Count && tab[stepIndex + 1].Type == StepType.SectionHead)
@@ -172,7 +172,7 @@ namespace QuickTabs.Controls
                         tabUI.Add(currentRow);
                         currentRow = new UIRow();
                         currentRow.Steps.Add(new UIStep(UIStepType.MeasureBar, null));
-                        sinceLastMeasureBar = 0;
+                        sinceLastMeasureBar = MusicalTimespan.Zero;
                     }
                 }
 
@@ -525,6 +525,10 @@ namespace QuickTabs.Controls
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
+            if (!mouseDown)
+            {
+                return;
+            }
             mouseDown = false;
             if (PlayMode)
             {
@@ -662,7 +666,7 @@ namespace QuickTabs.Controls
                 int startX = DrawingConstants.MediumMargin;
                 int startY = DrawingConstants.MediumMargin;
 
-                Dictionary<int[], int> currentlyHeldStrings = new Dictionary<int[], int>();
+                Dictionary<int[], MusicalTimespan> currentlyHeldStrings = new Dictionary<int[], MusicalTimespan>();
                 foreach (UIRow row in tabUI)
                 {
                     int rowWidth = DrawingConstants.LeftMargin + (row.Steps.Count * DrawingConstants.StepWidth);
@@ -694,24 +698,24 @@ namespace QuickTabs.Controls
                         {
                             case UIStepType.Beat:
                                 Beat beat = (Beat)uiStep.AssociatedStep;
-                                KeyValuePair<int[], int>[] pairs = currentlyHeldStrings.ToArray();
-                                foreach (KeyValuePair<int[], int> hold in pairs)
+                                KeyValuePair<int[], MusicalTimespan>[] pairs = currentlyHeldStrings.ToArray();
+                                foreach (KeyValuePair<int[], MusicalTimespan> hold in pairs)
                                 {
-                                    if (hold.Value > 0)
+                                    if (hold.Value >= beat.BeatDivision)
                                     {
                                         foreach (int heldString in hold.Key)
                                         {
                                             int y = startY + (heldString * DrawingConstants.RowHeight) + DrawingConstants.RowHeight;
                                             g.DrawLine(forePen, x - DrawingConstants.StepWidth / 2F, y, x + DrawingConstants.StepWidth / 2F, y);
                                         }
-                                        currentlyHeldStrings[hold.Key]--;
-                                        if (currentlyHeldStrings[hold.Key] <= 0)
+                                        currentlyHeldStrings[hold.Key] -= beat.BeatDivision;
+                                        if (currentlyHeldStrings[hold.Key] <= MusicalTimespan.Zero)
                                         {
                                             currentlyHeldStrings.Remove(hold.Key);
                                         }
                                     }
                                 }
-                                if (beat.NoteLength > 1 && beat.HeldCount > 0)
+                                if (beat.SustainTime > beat.BeatDivision && beat.HeldCount > 0)
                                 {
                                     int[] newHold = new int[beat.HeldCount];
                                     int ii = 0;
@@ -720,7 +724,7 @@ namespace QuickTabs.Controls
                                         newHold[ii] = fret.String;
                                         ii++;
                                     }
-                                    currentlyHeldStrings[newHold] = beat.NoteLength - 1;
+                                    currentlyHeldStrings[newHold] = beat.SustainTime - beat.BeatDivision;
                                 }
                                 foreach (Fret heldFret in beat)
                                 {

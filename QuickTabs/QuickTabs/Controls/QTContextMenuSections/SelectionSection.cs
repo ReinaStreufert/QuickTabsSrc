@@ -10,6 +10,7 @@ namespace QuickTabs.Controls
     internal partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection selectionSection;
+        private ContextItem paste;
 
         private void setupSelectionSection()
         {
@@ -88,7 +89,7 @@ namespace QuickTabs.Controls
                 Invalidate();
             }
         }
-        private int copyBeats(List<Beat> source, Selection destination) // return value: end index 
+        private int copyBeats(List<Beat> source, Selection destination, bool preserveDestDivision = true) // return value: end index 
         {
             int indexInSource = 0;
             int copied = 0;
@@ -111,7 +112,12 @@ namespace QuickTabs.Controls
                 }
                 if (Song.Tab[i].Type == Enums.StepType.Beat)
                 {
-                    Song.Tab[i] = source[indexInSource].Copy();
+                    Beat copy = source[indexInSource].Copy();
+                    if (preserveDestDivision)
+                    {
+                        copy.BeatDivision = ((Beat)Song.Tab[i]).BeatDivision;
+                    }
+                    Song.Tab[i] = copy;
                     indexInSource++;
                     copied++;
                     if (indexInSource >= source.Count)
@@ -155,6 +161,12 @@ namespace QuickTabs.Controls
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection);
         }
+        private void clearBeat(int index)
+        {
+            Beat emptyBeat = new Beat();
+            emptyBeat.BeatDivision = ((Beat)Song.Tab[index]).BeatDivision;
+            Song.Tab[index] = emptyBeat;
+        }
         private void clearClick()
         {
             Selection selection = editor.Selection;
@@ -162,7 +174,7 @@ namespace QuickTabs.Controls
             {
                 if (Song.Tab[i].Type == Enums.StepType.Beat)
                 {
-                    Song.Tab[i] = new Beat();
+                    clearBeat(i);
                 }
             }
             editor.Refresh();
@@ -190,7 +202,7 @@ namespace QuickTabs.Controls
             {
                 endIndex++;
             }
-            Song.Tab[endIndex] = new Beat();
+            clearBeat(endIndex);
             int newSelectionStart = selection.SelectionStart - additive;
             if (newSelectionStart < 1)
             {
@@ -225,7 +237,7 @@ namespace QuickTabs.Controls
                 additive = 2;
             }
             int endIndex = copyBeats(selectionBeats, new Selection(selection.SelectionStart + additive, selectionBeats.Count));
-            Song.Tab[selection.SelectionStart] = new Beat();
+            clearBeat(selection.SelectionStart);
             int newSelectionStart = selection.SelectionStart + additive;
             if (newSelectionStart >= Song.Tab.Count)
             {
@@ -248,7 +260,8 @@ namespace QuickTabs.Controls
                 {
                     Beat srcBeat = (Beat)(Song.Tab[i]);
                     Beat newBeat = new Beat();
-                    newBeat.NoteLength = srcBeat.NoteLength;
+                    newBeat.BeatDivision = srcBeat.BeatDivision;
+                    newBeat.SustainTime = srcBeat.SustainTime;
                     foreach (Fret fret in srcBeat)
                     {
                         int newString = fret.String + additive;
@@ -273,7 +286,8 @@ namespace QuickTabs.Controls
                 {
                     Beat srcBeat = (Beat)(Song.Tab[i]);
                     Beat newBeat = new Beat();
-                    newBeat.NoteLength = srcBeat.NoteLength;
+                    newBeat.BeatDivision = srcBeat.BeatDivision;
+                    newBeat.SustainTime = srcBeat.SustainTime;
                     foreach (Fret fret in srcBeat)
                     {
                         int newSpace = fret.Space + additive;
