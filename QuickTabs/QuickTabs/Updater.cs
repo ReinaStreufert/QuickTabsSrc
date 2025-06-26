@@ -21,7 +21,7 @@ namespace QuickTabs
         public const string SelfReleaseNotes = "- fixed bug with add track";
         public const string VersionStatusUrl = "http://reinastreufert.github.io/QuickTabs/updater/status.json";
         public const string DevStatusUrl = "http://192.168.1.146:8080/updater/status.json";
-        public const bool DevMode = true;
+        public const bool DevMode = false;
 
         public static bool WasJustUpdated { get; private set; } = false;
 
