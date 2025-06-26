@@ -1,4 +1,5 @@
-﻿using QuickTabs.Enums;
+﻿using QuickTabs.Configuration;
+using QuickTabs.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Text;
@@ -9,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal static class DrawingConstants // yeah this name makes no sense now that theres literally only a single constant in this class lolz
+    public static class DrawingConstants // yeah this name makes no sense now that theres literally only a single constant in this class lolz
     {
         public static Theme CurrentTheme { get; private set; } = Theme.DarkMode;
         public static float CurrentScale { get; private set; } = 1.0F;
         public static FontFamily Montserrat { get; private set; }
+        public static event Action ThemeChanged;
 
         private static PrivateFontCollection fonts = new PrivateFontCollection();
 
@@ -67,6 +69,10 @@ namespace QuickTabs.Controls
         private static readonly Color darkModeTabEditorBackColor = Color.FromArgb(0x22, 0x22, 0x22);
         public static Color TabEditorBackColor { get; private set; } = darkModeTabEditorBackColor;
 
+        private static readonly Color lightModeTrackViewBackColor = Color.FromArgb(0xDD, 0xDD, 0xDD);
+        private static readonly Color darkModeTrackViewBackColor = Color.FromArgb(0x11, 0x11, 0x11);
+        public static Color TrackViewBackColor { get; private set; } = darkModeTrackViewBackColor;
+
         private static readonly Color lightModeEmptySpaceBackColor = Color.FromArgb(0xEE, 0xEE, 0xEE);
         private static readonly Color darkModeEmptySpaceBackColor = Color.FromArgb(0x33, 0x33, 0x33);
         public static Color EmptySpaceBackColor { get; private set; } = darkModeEmptySpaceBackColor;
@@ -83,8 +89,12 @@ namespace QuickTabs.Controls
         private static readonly Color darkModeContrastColor = Color.White;
         public static Color ContrastColor { get; private set; } = darkModeContrastColor;
 
+        private static readonly Color lightModeThemeKeyColor = Color.White;
+        private static readonly Color darkModeThemeKeyColor = Color.Black;
+        public static Color ThemeKeyColor { get; private set; } = darkModeThemeKeyColor;
+
         public static int FretboardButtonOutlineWidth { get; private set; } = 3;
-        public static int FretboardButtonAreaWidth { get; private set; } = 150;
+        public static int FretboardButtonAreaWidth { get; private set; } = 100;
         public static float TargetFretWidth { get; private set; } = 125F;
         public static int FretCountAreaHeight { get; private set; } = 50;
         public static int FretZeroAreaWidth { get; private set; } = 25;
@@ -108,6 +118,29 @@ namespace QuickTabs.Controls
         public static int ScrollbarLargeChange { get; private set; } = 100;
         public static int ScrollbarSmallChange { get; private set; } = 20;
         public static int PrintPreviewOutlineWidth { get; private set; } = 5;
+        public static int SmallFretboardHeight { get; private set; } = 440;
+        public static int LargeFretboardHeight { get; private set; } = 530;
+        public static int SmallContextMenuHeight { get; private set; } = 80;
+        public static int LargeContextMenuHeight { get; private set; } = 160;
+        public static int PreferencesContentWidth { get; private set; } = 800;
+        public static int PreferencesControlLeftMargin { get; private set; } = 10;
+        public static int PreferencesPinButtonSize { get; private set; } = 35;
+        public static int PreferencesCatSpacing { get; private set; } = 20;
+        public static int SafeButtonHeight { get; private set; } = 56;
+        public static int PrefsLogoHeight { get; private set; } = 100;
+        public static int ButtonListBorderWidth { get; private set; } = 2;
+        public static int TrackViewWidth { get; private set; } = 350;
+        public static float SliderHandleRadius { get; private set; } = 10;
+        public static float SliderLineWidth { get; private set; } = 8;
+        //public static int TrackDivideOffset { get; private set; } = -20;
+
+        public static void InitializeTheme()
+        {
+            if (!QTPersistence.Current.ViewDarkMode)
+            {
+                SetTheme(Theme.LightMode);
+            }
+        }
         public static void Scale(float scale)
         {
             CurrentScale *= scale;
@@ -142,10 +175,12 @@ namespace QuickTabs.Controls
                 EditModeSelectionColor = lightModeEditModeSelectionColor;
                 PlayModeSelectionColor = lightModePlayModeSelectionColor;
                 TabEditorBackColor = lightModeTabEditorBackColor;
+                TrackViewBackColor = lightModeTrackViewBackColor;
                 EmptySpaceBackColor = lightModeEmptySpaceBackColor;
                 UIAreaBackColor = lightModeUIAreaBackColor;
                 UIControlBackColor = lightModeUIControlBackColor;
                 ContrastColor = lightModeContrastColor;
+                ThemeKeyColor = lightModeThemeKeyColor;
             } else if (theme == Theme.DarkMode)
             {
                 FadedGray = darkModeFadedGray;
@@ -154,12 +189,15 @@ namespace QuickTabs.Controls
                 EditModeSelectionColor = darkModeEditModeSelectionColor;
                 PlayModeSelectionColor = darkModePlayModeSelectionColor;
                 TabEditorBackColor = darkModeTabEditorBackColor;
+                TrackViewBackColor = darkModeTrackViewBackColor;
                 EmptySpaceBackColor = darkModeEmptySpaceBackColor;
                 UIAreaBackColor = darkModeUIAreaBackColor;
                 UIControlBackColor = darkModeUIControlBackColor;
                 ContrastColor = darkModeContrastColor;
+                ThemeKeyColor = darkModeThemeKeyColor;
             }
             CurrentTheme = theme;
+            ThemeChanged?.Invoke();
         }
         public static void LoadFonts()
         {
@@ -179,7 +217,6 @@ namespace QuickTabs.Controls
             {
                 Type type = control.GetType();
                 Font font = new Font(Montserrat, control.Font.Size, control.Font.Style, control.Font.Unit);
-                //control.Font.Dispose();
                 control.Font = font;
                 if (type == typeof(Label) || type == typeof(CheckBox) || type == typeof(LinkLabel))
                 {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal class SectionHead : Step
+    public class SectionHead : Step
     {
         public override StepType Type => StepType.SectionHead;
 

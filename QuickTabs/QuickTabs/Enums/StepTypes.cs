@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Enums
 {
-    internal enum StepType
+    public enum StepType
     {
         Beat,
-        Comment,
+        Annotation,
         SectionHead
     }
 }

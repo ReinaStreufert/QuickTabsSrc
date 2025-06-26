@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Synthesization
 {
-    internal static class AsioDownloader
+    public static class AsioDownloader
     {
         public static event Action DownloadFailed;  // this event may be invoked outside of the main thread
 

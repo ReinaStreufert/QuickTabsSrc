@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal class Selection
+    public class Selection
     {
         public Selection(int Beat, int SelectionLength)
         {

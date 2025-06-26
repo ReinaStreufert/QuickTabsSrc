@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs
 {
-    internal static class History
+    public static class History
     {
         public static event Action StateChange;
         public static event Action SubstantialChange;
@@ -143,6 +143,70 @@ namespace QuickTabs
             StateChange?.Invoke();
         }
 
+        private class TrackState
+        {
+            public string Name { get; private set; }
+            public bool NamedByUser { get; private set; }
+            public Tuning TrackTuning { get; private set; }
+            public Step[] Steps { get; private set; }
+            public bool Mute { get; private set; }
+            public bool Solo { get; private set; }
+            public float Volume { get; private set; }
+
+            public TrackState(Track source)
+            {
+                TrackTuning = source.Tab.Tuning;
+                Name = source.Name;
+                NamedByUser = source.NamedByUser;
+                Steps = new Step[source.Tab.Count];
+                for (int i = 0; i < Steps.Length; i++)
+                {
+                    Step sourceStep = source.Tab[i];
+                    if (sourceStep.Type == Enums.StepType.Beat)
+                    {
+                        Beat sourceBeat = (Beat)sourceStep;
+                        Steps[i] = sourceBeat.Copy();
+                    }
+                    else if (sourceStep.Type == Enums.StepType.SectionHead)
+                    {
+                        SectionHead sourceSectionHead = (SectionHead)sourceStep;
+                        SectionHead newSectionHead = new SectionHead();
+                        newSectionHead.Name = sourceSectionHead.Name;
+                        Steps[i] = newSectionHead;
+                    }
+                }
+                Mute = source.Mute;
+                Solo = source.Solo;
+                Volume = source.Volume;
+            }
+
+            public void CopyTo(Track track)
+            {
+                track.Name = Name;
+                track.NamedByUser = NamedByUser;
+                track.Tab.Tuning = TrackTuning;
+                track.Tab.SetLength(Steps.Length, MusicalTimespan.Zero);
+                for (int i = 0; i < Steps.Length; i++)
+                {
+                    Step sourceStep = Steps[i];
+                    if (sourceStep.Type == Enums.StepType.Beat)
+                    {
+                        Beat sourceBeat = (Beat)sourceStep;
+                        track.Tab[i] = sourceBeat.Copy();
+                    }
+                    else if (sourceStep.Type == Enums.StepType.SectionHead)
+                    {
+                        SectionHead sourceSectionHead = (SectionHead)sourceStep;
+                        SectionHead newSectionHead = new SectionHead();
+                        newSectionHead.Name = sourceSectionHead.Name;
+                        track.Tab[i] = newSectionHead;
+                    }
+                }
+                track.Mute = Mute;
+                track.Solo = Solo;
+                track.Volume = Volume;
+            }
+        }
         private class HistoryState
         {
             public HistoryState NextState { get; set; } = null;
@@ -153,8 +217,8 @@ namespace QuickTabs
             public string SongName { get; private set; }
             public int SongTempo { get; private set; }
             public TimeSignature SongTimeSignature { get; private set; }
-            public Tuning SongTuning { get; private set; }
-            public Step[] Steps { get; private set; }
+            public TrackState[] Tracks { get; private set; }
+            public int FocusedTrack { get; private set; }
             public Selection Selection { get; private set; }
 
             public HistoryState(Song source, Selection selectionSource)
@@ -162,23 +226,14 @@ namespace QuickTabs
                 SongName = source.Name;
                 SongTempo = source.Tempo;
                 SongTimeSignature = source.TimeSignature;
-                SongTuning = source.Tab.Tuning;
-                Steps = new Step[source.Tab.Count];
-                for (int i = 0; i < Steps.Length; i++)
+                Tracks = new TrackState[source.Tracks.Count];
+                int trackI = 0;
+                foreach (Track sourceTrack in source.Tracks)
                 {
-                    Step sourceStep = source.Tab[i];
-                    if (sourceStep.Type == Enums.StepType.Beat)
-                    {
-                        Beat sourceBeat = (Beat)sourceStep;
-                        Steps[i] = sourceBeat.Copy();
-                    } else if (sourceStep.Type == Enums.StepType.SectionHead)
-                    {
-                        SectionHead sourceSectionHead = (SectionHead)sourceStep;
-                        SectionHead newSectionHead = new SectionHead();
-                        newSectionHead.Name = sourceSectionHead.Name;
-                        Steps[i] = newSectionHead;
-                    }
+                    Tracks[trackI] = new TrackState(sourceTrack);
+                    trackI++;
                 }
+                FocusedTrack = source.FocusedTrackIndex;
                 if (selectionSource == null)
                 {
                     Selection = null;
@@ -192,24 +247,14 @@ namespace QuickTabs
                 destination.Name = SongName;
                 destination.Tempo = SongTempo;
                 destination.TimeSignature = SongTimeSignature;
-                destination.Tab.Tuning = SongTuning;
-                destination.Tab.SetLength(Steps.Length, MusicalTimespan.Zero);
-                for (int i = 0; i < Steps.Length; i++)
+                destination.Tracks = new List<Track>();
+                foreach (TrackState trackState in Tracks)
                 {
-                    Step sourceStep = Steps[i];
-                    if (sourceStep.Type == Enums.StepType.Beat)
-                    {
-                        Beat sourceBeat = (Beat)sourceStep;
-                        destination.Tab[i] = sourceBeat.Copy();
-                    }
-                    else if (sourceStep.Type == Enums.StepType.SectionHead)
-                    {
-                        SectionHead sourceSectionHead = (SectionHead)sourceStep;
-                        SectionHead newSectionHead = new SectionHead();
-                        newSectionHead.Name = sourceSectionHead.Name;
-                        destination.Tab[i] = newSectionHead;
-                    }
+                    Track track = new Track();
+                    trackState.CopyTo(track);
+                    destination.Tracks.Add(track);
                 }
+                destination.FocusedTrackIndex = FocusedTrack;
             }
         }
     }

@@ -10,11 +10,11 @@ namespace QuickTabs.Synthesization
 {
     // this is the new version of TabPlayer which I decided to completely rewrite in order to most cleanly
     // support varying beat divisions as well as parallel track support for the future when that happens.
-    internal class SequencePlayer
+    public class SequencePlayer
     {
         public PlayState PlayState { get; private set; } = PlayState.NotPlaying;
-        private Tab[] source;
-        public Tab[] Source // SequencePlayer expects all source tabs to be the same MusicalTimespan length
+        private List<Track> source;
+        public List<Track> Source // SequencePlayer expects all source tabs to be the same MusicalTimespan length
         {
             get
             {
@@ -109,11 +109,12 @@ namespace QuickTabs.Synthesization
         private Editor editor;
         private bool metTickCounterUnset = true;
         private MusicalTimespan metronomeTickCounter = MusicalTimespan.Zero;
+        private bool soloMode = false;
 
         private readonly Note metronomeHighNote = new Note("G5");
         private readonly Note metronomeLowNote = new Note("A4");
 
-        public SequencePlayer(Editor editor, Tab[] source)
+        public SequencePlayer(Editor editor, List<Track> source)
         {
             Source = source;
             this.editor = editor;
@@ -126,8 +127,18 @@ namespace QuickTabs.Synthesization
                 Position = time;
                 metTickCounterUnset = true;
                 PlayState = PlayState.WaitingToPlay;
+                soloMode = false;
+                foreach (Track track in source)
+                {
+                    if (track.Solo)
+                    {
+                        soloMode = true;
+                    }
+                }
                 AudioEngine.Tick += AudioEngine_Tick;
-                queueHandle.WaitOne();
+                queueHandle.WaitOne(1000); // if an exception happens to occur on the audio thread before it sets the wait handle,
+                                           // the main thread will block forever withot a timeout causing crash handling (which cannot be
+                                           // done on the audio thread) to not occur. The timeout breaks this.
             } else
             {
                 throw new InvalidOperationException("Cannot play from this state");
@@ -138,7 +149,7 @@ namespace QuickTabs.Synthesization
             if (PlayState == PlayState.Playing)
             {
                 PlayState = PlayState.WaitingToStop;
-                queueHandle.WaitOne();
+                queueHandle.WaitOne(1000);
             } else
             {
                 throw new InvalidOperationException("Cannot stop from this state");
@@ -214,12 +225,14 @@ namespace QuickTabs.Synthesization
         }
         private void initializePlayback(DateTime timestamp)
         {
-            trackInfo = new TrackPlayerInfo[source.Length];
+            trackInfo = new TrackPlayerInfo[source.Count];
             MusicalTimespan smallestNextStep = MusicalTimespan.Zero;
             for (int i = 0; i < trackInfo.Length; i++)
             {
                 TrackPlayerInfo track = new TrackPlayerInfo();
-                track.Steps = Source[i];
+                track.TrackRef = Source[i];
+                track.VolumeProvider = new TrackVolumeProvider(track.TrackRef);
+                track.Steps = track.TrackRef.Tab;
                 MusicalTimespan closestStepPosition;
                 track.CurrentStepPosition = track.Steps.FindClosestBeatIndexToTime(Position, out closestStepPosition);
                 MusicalTimespan overflow = Position - closestStepPosition;
@@ -228,7 +241,19 @@ namespace QuickTabs.Synthesization
                 {
                     smallestNextStep = track.UntilNextStep;
                 }
-                playTrack(track, overflow);
+                if (!track.TrackRef.Mute)
+                {
+                    if (soloMode)
+                    {
+                        if (track.TrackRef.Solo)
+                        {
+                            playTrack(track, overflow);
+                        }
+                    } else
+                    {
+                        playTrack(track, overflow);
+                    }
+                }
                 trackInfo[i] = track;
             }
             if (metronomeEnabled && metronomeInterval < smallestNextStep)
@@ -242,9 +267,14 @@ namespace QuickTabs.Synthesization
         {
             MusicalTimespan smallestNextStep = MusicalTimespan.Zero;
             bool reset = false;
+            bool newSoloVal = false;
             for (int i = 0; i < trackInfo.Length; i++)
             {
                 TrackPlayerInfo track = trackInfo[i];
+                if (track.TrackRef.Solo)
+                {
+                    newSoloVal = true;
+                }
                 if (trackUpdateWaitTime >= track.UntilNextStep)
                 {
                     track.CurrentStepPosition++;
@@ -269,7 +299,20 @@ namespace QuickTabs.Synthesization
                     {
                         smallestNextStep = track.UntilNextStep;
                     }
-                    playTrack(track);
+                    if (!track.TrackRef.Mute)
+                    {
+                        if (soloMode)
+                        {
+                            if (track.TrackRef.Solo)
+                            {
+                                playTrack(track);
+                            }
+                        }
+                        else
+                        {
+                            playTrack(track);
+                        }
+                    }
                 } else
                 {
                     track.UntilNextStep -= trackUpdateWaitTime;
@@ -279,6 +322,7 @@ namespace QuickTabs.Synthesization
                     }
                 }
             }
+            soloMode = newSoloVal;
             if (reset)
             {
                 Position = MusicalTimespan.Zero;
@@ -312,7 +356,7 @@ namespace QuickTabs.Synthesization
                 }
             }
             trackUpdateWaitTime = smallestNextStep;
-            nextTrackUpdateTime = timestamp + smallestNextStep.ToTimespan(Tempo);
+            nextTrackUpdateTime = nextTrackUpdateTime + smallestNextStep.ToTimespan(Tempo);
         }
         private void playTrack(TrackPlayerInfo track)
         {
@@ -321,10 +365,10 @@ namespace QuickTabs.Synthesization
         private void playTrack(TrackPlayerInfo track, MusicalTimespan startPointInSustain)
         {
             Beat beat = (Beat)track.Steps[track.CurrentStepPosition];
-            foreach (Fret fret in beat)
+            foreach (KeyValuePair<Fret,MusicalTimespan> fret in beat)
             {
-                Songwriting.Note note = Songwriting.Note.FromSemitones(track.Steps.Tuning.GetMusicalNote(fret.String), fret.Space);
-                AudioEngine.PlayNote(note, (int)((beat.SustainTime - startPointInSustain).ToTimespan(tempo).TotalMilliseconds), 0.25F);
+                Songwriting.Note note = Songwriting.Note.FromSemitones(track.Steps.Tuning.GetMusicalNote(fret.Key.String), fret.Key.Space);
+                AudioEngine.PlayNote(note, (int)((fret.Value - startPointInSustain).ToTimespan(tempo).TotalMilliseconds), track.VolumeProvider);
             }
         }
         private void playMetronome()
@@ -347,6 +391,8 @@ namespace QuickTabs.Synthesization
 
         private class TrackPlayerInfo
         {
+            public Track TrackRef;
+            public TrackVolumeProvider VolumeProvider;
             public Tab Steps;
             public int CurrentStepPosition;
             public MusicalTimespan UntilNextStep;

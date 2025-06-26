@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs
 {
-    internal static class ShortcutManager
+    public static class ShortcutManager
     {
         private static List<Shortcut> shortcuts = new List<Shortcut>();
         public static ShortcutController AddShortcut(Keys Modifiers, Keys Key, Action Handler)

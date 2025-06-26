@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.Controls.Tools
+namespace QuickTabs.Synthesization
 {
-    internal class Player
+    public interface IVolumeProvider
     {
+        public float Volume { get; }
     }
 }

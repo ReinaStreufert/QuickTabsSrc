@@ -1,4 +1,5 @@
 ﻿using QuickTabs.Properties;
+using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -11,10 +12,11 @@ using System.Xml;
 
 namespace QuickTabs.Controls
 {
-    internal static class DrawingIcons
+    public static class DrawingIcons
     {
         public static MultiColorBitmap QuickTabsLogo { get; private set; } = null;
 
+        public static MultiColorBitmap ThirtySecondNote { get; private set; } = null; // DEPS
         public static MultiColorBitmap SixteenthNote { get; private set; } = null; // DEPS
         public static MultiColorBitmap EighthNote { get; private set; } = null;
         public static MultiColorBitmap DottedEighthNote { get; private set; } = null; // DEPS
@@ -35,13 +37,9 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap Reload { get; private set; } = null;
         public static MultiColorBitmap EditDocumentProperties { get; private set; } = null;
         public static MultiColorBitmap Export { get; private set; } = null;
-        public static MultiColorBitmap Settings { get; private set; } = null;
 
-        public static MultiColorBitmap Dots { get; private set; } = null;
-        public static MultiColorBitmap Counter { get; private set; } = null;
-        public static MultiColorBitmap CompactContextMenu { get; private set; } = null;
-        public static MultiColorBitmap LargeFretboard { get; private set; } = null;
-        public static MultiColorBitmap DarkMode { get; private set; } = null;
+        public static MultiColorBitmap Preferences { get; private set; } = null;
+        public static MultiColorBitmap Pin { get; private set; } = null; // DEPS
 
         public static MultiColorBitmap AddMeasure { get; private set; } = null;
         public static MultiColorBitmap RemoveMeasure { get; private set; } = null;
@@ -70,16 +68,33 @@ namespace QuickTabs.Controls
         public static MultiColorBitmap Download { get; private set; } = null;
 
         public static MultiColorBitmap Check { get; private set; } = null;
-        public static MultiColorBitmap MenuRight { get; private set; } = null;
+        public static MultiColorBitmap MenuRight { get; private set; } = null; // DEPS
+
+        public static MultiColorBitmap Dots { get; private set; } = null;
+        public static MultiColorBitmap Counter { get; private set; } = null;
+        public static MultiColorBitmap CompactContextMenu { get; private set; } = null;
+        public static MultiColorBitmap LargeFretboard { get; private set; } = null;
+        public static MultiColorBitmap DarkMode { get; private set; } = null;
+        public static MultiColorBitmap MidLines { get; private set; } = null; // DEPS
+        public static MultiColorBitmap Downscaling { get; private set; } = null; // DEPS
+        public static MultiColorBitmap OutputDevice { get; private set; } = null; // DEPS
+        public static MultiColorBitmap AsioControlPanel { get; private set; } = null; // DEPS
+        public static MultiColorBitmap PreviewPlay { get; private set; } = null; // DEPS
+
+        public static MultiColorBitmap Mute { get; private set; } = null; // DEPS
+        public static MultiColorBitmap Solo { get; private set; } = null; // DEPS
+
+        public static NoteLengthTableRow[] NoteLengthValueTable { get; private set; } = null;
 
         public static void LoadAll()
         {
             QuickTabsLogo = loadIcon("logo", Color.White, Color.Black, DrawingConstants.DarkModeLogoPatternColor, DrawingConstants.LightModeLogoPatternColor);
 
             Color lightModeFadedGray = Color.FromArgb(0xAA, 0xAA, 0xAA); // this is dumb im sorry for this. LoadAll is always called before theme is loaded so DrawingConstants always returns dark mode values here.
-            SixteenthNote = loadIcon("music-note-sixteenth", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray); // DEPS
+            ThirtySecondNote = loadIcon("music-note-thirty-second", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            SixteenthNote = loadIcon("music-note-sixteenth", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             EighthNote = loadIcon("music-note-eighth", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
-            DottedEighthNote = loadIcon("music-note-eighth-dotted", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray); // DEPS
+            DottedEighthNote = loadIcon("music-note-eighth-dotted", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             QuarterNote = loadIcon("music-note-quarter", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             DottedQuarterNote = loadIcon("music-note-quarter-dotted", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             HalfNote = loadIcon("music-note-half", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
@@ -95,20 +110,16 @@ namespace QuickTabs.Controls
             SaveFileAs = loadIcon("content-save-plus-outline", Color.White, Color.Black);
             Print = loadIcon("printer-outline", Color.White, Color.Black);
             Reload = loadIcon("reload", Color.White, Color.Black);
-            EditDocumentProperties = loadIcon("pencil-outline", Color.White, Color.Black);
+            EditDocumentProperties = loadIcon("pencil-outline", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
             Export = loadIcon("export", Color.White, Color.Black);
-            Settings = loadIcon("cog", Color.White, Color.Black);
 
-            Dots = loadIcon("circle-small", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
-            Counter = loadIcon("numeric", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
-            CompactContextMenu = loadIcon("arrow-expand-up", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
-            LargeFretboard = loadIcon("arrow-expand-vertical", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
-            DarkMode = loadIcon("weather-night", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            Preferences = loadIcon("cog", Color.White, Color.Black);
+            Pin = loadIcon("pin", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
 
             AddMeasure = loadIcon("plus-box-outline", Color.Black, Color.White);
             RemoveMeasure = loadIcon("minus-box-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
-            Division = loadIcon("division", Color.Black, Color.White); // DEPS
-            AddSection = loadIcon("plus-box-multiple-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
+            Division = loadIcon("division", Color.Black, Color.White);
+            AddSection = loadIcon("plus-box-multiple-outline", Color.Black, Color.White);
             RemoveSection = loadIcon("minus-box-multiple-outline", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
             Rename = loadIcon("rename-outline", Color.Black, Color.White);
 
@@ -133,6 +144,34 @@ namespace QuickTabs.Controls
 
             Check = loadIcon("check", Color.White, Color.Black);
             MenuRight = loadIcon("menu-right", Color.White, Color.Black);
+
+            Dots = loadIcon("circle-small", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            Counter = loadIcon("numeric", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            CompactContextMenu = loadIcon("arrow-expand-up", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
+            LargeFretboard = loadIcon("arrow-expand-vertical", Color.Black, Color.White, DrawingConstants.FadedGray, lightModeFadedGray);
+            DarkMode = loadIcon("weather-night", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            MidLines = loadIcon("tally-mark-4", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            Downscaling = loadIcon("merge", Color.White, Color.Black);
+            OutputDevice = loadIcon("speaker", Color.White, Color.Black);
+            AsioControlPanel = loadIcon("cog-play", Color.White, Color.Black);
+            PreviewPlay = loadIcon("amplifier", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+
+            Mute = loadIcon("volume-mute", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+            Solo = loadIcon("microphone-variant", Color.White, Color.Black, DrawingConstants.FadedGray, lightModeFadedGray);
+
+            NoteLengthValueTable = new NoteLengthTableRow[]
+            {
+                new NoteLengthTableRow(ThirtySecondNote, new MusicalTimespan(1, 32), "Thirty-second note"),
+                new NoteLengthTableRow(SixteenthNote, new MusicalTimespan(1, 16), "Sixteenth note"),
+                new NoteLengthTableRow(EighthNote, new MusicalTimespan(1, 8), "Eighth note"),
+                new NoteLengthTableRow(DottedEighthNote, new MusicalTimespan(3, 16), "Dotted eighth note"),
+                new NoteLengthTableRow(QuarterNote, new MusicalTimespan(1, 4), "Quarter note"),
+                new NoteLengthTableRow(DottedQuarterNote, new MusicalTimespan(3, 8), "Dotted quarter note"),
+                new NoteLengthTableRow(HalfNote, new MusicalTimespan(1, 2), "Half note"),
+                new NoteLengthTableRow(DottedHalfNote, new MusicalTimespan(3, 4), "Dotted half note"),
+                new NoteLengthTableRow(WholeNote, new MusicalTimespan(1, 1), "Whole note"),
+                new NoteLengthTableRow(DottedWholeNote, new MusicalTimespan(3, 2), "Dotted whole note")
+            };
 
             FieldInfo[] allFields = typeof(DrawingIcons).GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             bool fail = false;
@@ -187,7 +226,7 @@ namespace QuickTabs.Controls
             return result;
         }
     }
-    internal class MultiColorBitmap
+    public class MultiColorBitmap
     {
         private Bitmap originalBitmap;
         private Dictionary<Color, Bitmap> variations = new Dictionary<Color, Bitmap>();
@@ -233,6 +272,18 @@ namespace QuickTabs.Controls
             }
             variation.UnlockBits(bmpData);
             variations[color] = variation;
+        }
+    }
+    public class NoteLengthTableRow
+    {
+        public MultiColorBitmap NoteLengthIcon { get; set; }
+        public MusicalTimespan Timespan { get; set; }
+        public string FullName { get; set; }
+        public NoteLengthTableRow(MultiColorBitmap noteLengthIcon, MusicalTimespan timespan, string fullName)
+        {
+            NoteLengthIcon = noteLengthIcon;
+            Timespan = timespan;
+            FullName = fullName;
         }
     }
 }

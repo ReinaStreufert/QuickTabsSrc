@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickTabs.Controls;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal class Tab : IEnumerable<Step>
+    public class Tab : IEnumerable<Step>
     {
         private List<Step> steps = new List<Step>();
         public Tuning Tuning { get; set; } = Tuning.StandardGuitar;
@@ -88,12 +89,38 @@ namespace QuickTabs.Songwriting
                 steps.RemoveRange(steps.Count - remove, remove);
             }
         }
+        public void AlterTuning(Tuning newTuning, int stringShift = 0)
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].Type == Enums.StepType.Beat)
+                {
+                    Beat srcBeat = (Beat)this[i];
+                    Beat newBeat = new Beat();
+                    newBeat.BeatDivision = srcBeat.BeatDivision;
+                    foreach (KeyValuePair<Fret, MusicalTimespan> fret in srcBeat)
+                    {
+                        int newString = fret.Key.String + stringShift; ;
+                        if (newString >= 0 && newString < newTuning.Count)
+                        {
+                            newBeat[new Fret(newString, fret.Key.Space)] = fret.Value;
+                        }
+                    }
+                    this[i] = newBeat;
+                }
+            }
+            this.Tuning = newTuning;
+        }
         public int FindClosestBeatIndexToTime(MusicalTimespan position, out MusicalTimespan resultPosition)
         {
             MusicalTimespan counter = MusicalTimespan.Zero;
             int stepIndex = 0;
             for (; ; stepIndex++)
             {
+                if (stepIndex >= this.Count)
+                {
+                    break;
+                }
                 if (this[stepIndex].Type == Enums.StepType.Beat)
                 {
                     Beat beat = (Beat)this[stepIndex];
@@ -120,6 +147,50 @@ namespace QuickTabs.Songwriting
                 }
             }
             return result;
+        }
+        public MusicalTimespan FindBeatTime(Beat beat, int offset = 0) // set offset to keep counting a certain amount of beats after the matching beat
+        {
+            MusicalTimespan result = MusicalTimespan.Zero;
+            bool matched = false;
+            foreach (Step step in this)
+            {
+                if (step.Type == Enums.StepType.Beat)
+                {
+                    if (matched)
+                    {
+                        if (offset <= 0)
+                        {
+                            return result;
+                        }
+                    }
+                    Beat enumBeat = (Beat)step;
+                    if (beat == enumBeat)
+                    {
+                        if (offset > 0)
+                        {
+                            matched = true;
+                            result += enumBeat.BeatDivision;
+                            offset--;
+                            continue;
+                        } else
+                        {
+                            return result;
+                        }
+                    } else
+                    {
+                        result += enumBeat.BeatDivision;
+                        if (matched)
+                        {
+                            offset--;
+                        }
+                    }
+                }
+            }
+            if (matched && offset <= 0)
+            {
+                return result;
+            }
+            throw new IndexOutOfRangeException("The specified beat was not found in the tab");
         }
 
         public IEnumerator<Step> GetEnumerator()

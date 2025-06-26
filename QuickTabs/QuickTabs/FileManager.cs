@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace QuickTabs
 {
-    internal static class FileManager
+    public static class FileManager
     {
-        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat()/*, new QtzFormat(), new MidiFormat()*/ };
+        private static readonly FileFormat[] supportedFormats = new FileFormat[] { new QtJsonFormat(), new QtzFormat()/*, new MidiFormat()*/ };
 
         private static bool isSaved = true;
         public static bool IsSaved
@@ -178,7 +178,7 @@ namespace QuickTabs
             }
         }
     }
-    internal abstract class FileFormat
+    public abstract class FileFormat
     {
         public abstract string Extension { get; }
         public abstract string Name { get; }

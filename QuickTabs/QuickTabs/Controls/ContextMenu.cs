@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal partial class ContextMenu : Control
+    public partial class ContextMenu : Control
     {
         public ContextMenuStyle Style { get; set; } = ContextMenuStyle.Responsive;
         protected List<ContextSection> Sections { get; set; } = new List<ContextSection>();
@@ -62,7 +62,7 @@ namespace QuickTabs.Controls
             int startY = DrawingConstants.LargeMargin;
             int x = DrawingConstants.MediumMargin;
             int usableHeight = this.Height - DrawingConstants.LargeMargin * 2;
-            if (Logo != null)
+            if (Style != ContextMenuStyle.Collapsed && Logo != null)
             {
                 Image image = new Image();
                 image.Bitmap = Logo;
@@ -76,7 +76,7 @@ namespace QuickTabs.Controls
                 bool first = true;
                 foreach (ContextSection section in Sections)
                 {
-                    if (!first || Logo != null)
+                    if (!first || (Logo != null && Style != ContextMenuStyle.Collapsed))
                     {
                         Seperator seperator = new Seperator();
                         seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
@@ -90,6 +90,8 @@ namespace QuickTabs.Controls
                     Label label = new Label();
                     label.Text = section.SectionName;
                     label.Location = new Rectangle(x, startY, 0, 0);
+                    Size sectionNameSize = TextRenderer.MeasureText(section.SectionName, new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel));
+                    int minEndX = x + sectionNameSize.Width;
                     ui.Add(label);
                     foreach (ContextItem item in section)
                     {
@@ -106,10 +108,14 @@ namespace QuickTabs.Controls
                         }
                         ui.Add(button);
                     }
+                    if (x < minEndX)
+                    {
+                        x = minEndX;
+                    }
                 }
             } else if (absoluteStyle == ContextMenuStyle.Collapsed)
             {
-                if (Logo != null)
+                if (Logo != null && Style != ContextMenuStyle.Collapsed)
                 {
                     Seperator seperator = new Seperator();
                     seperator.Location = new Rectangle(x, startY, DrawingConstants.SectionSpacing, usableHeight);
@@ -443,7 +449,7 @@ namespace QuickTabs.Controls
             public bool Hovered { get; set; } = false;
         }
     }
-    internal class ContextSection : IEnumerable<ContextItem>
+    public class ContextSection : IEnumerable<ContextItem>
     {
         public delegate void RadioChangeEvent(ContextItem selectedItem);
 
@@ -455,22 +461,28 @@ namespace QuickTabs.Controls
         public void AddItem(ContextItem item)
         {
             items.Add(item);
-            if (ToggleType == ToggleType.Togglable)
+            if (ToggleType == ToggleType.Togglable && !item.ExcludeFromToggle)
             {
-                item.Click += () =>
+                item.Click += (ContextItem sender, ContextItem.ContextItemClickEventArgs e) =>
                 {
-                    item.Selected = !item.Selected;
-                };
-            } else if (ToggleType == ToggleType.Radio)
-            {
-                item.Click += () =>
-                {
-                    foreach (ContextItem itemToClear in items)
+                    if (!e.Cancel)
                     {
-                        itemToClear.Selected = false;
+                        item.Selected = !item.Selected;
                     }
-                    item.Selected = true;
-                    RadioChange?.Invoke(item);
+                };
+            } else if (ToggleType == ToggleType.Radio && !item.ExcludeFromToggle)
+            {
+                item.Click += (ContextItem sender, ContextItem.ContextItemClickEventArgs e) =>
+                {
+                    if (!e.Cancel)
+                    {
+                        foreach (ContextItem itemToClear in items)
+                        {
+                            itemToClear.Selected = false;
+                        }
+                        item.Selected = true;
+                        RadioChange?.Invoke(item);
+                    }
                 };
             }
         }
@@ -495,14 +507,18 @@ namespace QuickTabs.Controls
             return items.GetEnumerator();
         }
     }
-    internal class ContextItem
+    public class ContextItem
     {
+        public class ContextItemClickEventArgs { public bool Cancel { get; set; } = false; }
+        public delegate void ContextItemClick(ContextItem sender, ContextItemClickEventArgs e);
+
         public string CollapsedText { get; set; }
         public MultiColorBitmap Icon { get; set; }
         public bool Selected { get; set; }
         public bool DontCloseDropdown { get; set; } = false;
+        public bool ExcludeFromToggle { get; set; } = false;
         public ContextSection Submenu { get; set; } = null;
-        public event Action Click;
+        public event ContextItemClick Click;
 
         public ContextItem(MultiColorBitmap icon, string collapsedText)
         {
@@ -512,10 +528,10 @@ namespace QuickTabs.Controls
 
         public void InvokeClick()
         {
-            Click?.Invoke();
+            Click?.Invoke(this, new ContextItemClickEventArgs());
         }
     }
-    enum ToggleType
+    public enum ToggleType
     {
         NotTogglable,
         Togglable,

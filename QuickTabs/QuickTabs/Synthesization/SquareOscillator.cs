@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Synthesization
 {
-    internal class SquareOscillator : NAudio.Wave.IWaveProvider
+    public class SquareOscillator : NAudio.Wave.IWaveProvider
     {
         public WaveFormat WaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
 
@@ -18,25 +18,27 @@ namespace QuickTabs.Synthesization
         private List<FrequencyTracker> frequencies = new List<FrequencyTracker>();
         private float[] floatBuffer;
 
-        public PlayingFrequency AddFrequency(float frequency, float volume)
+        public PlayingFrequency AddFrequency(float frequency, float level, IVolumeProvider volume)
         {
             FrequencyTracker frequencyTracker = new FrequencyTracker();
             frequencyTracker.Frequency = frequency;
             frequencyTracker.SamplesPerOscillation = (int)Math.Round(WaveFormat.SampleRate / frequency / 2);
+            frequencyTracker.Level = level;
             frequencyTracker.Volume = volume;
             frequencies.Add(frequencyTracker);
             return frequencyTracker;
         }
-        public PlayingFrequency AddFrequency(float startFrequency, float endFrequency, float pitchEnvelopeDuration, float startVolume, float endVolume, float volumeEnvelopeDuration)
+        public PlayingFrequency AddFrequency(float startFrequency, float endFrequency, float pitchEnvelopeDuration, float startLevel, float endLevel, float levelEnvelopeDuration, IVolumeProvider volume)
         {
             FrequencyTracker frequencyTracker = new FrequencyTracker();
             frequencyTracker.Enveloped = true;
             frequencyTracker.Frequency = startFrequency;
             frequencyTracker.FrequencyEnd = endFrequency;
-            frequencyTracker.Volume = startVolume;
-            frequencyTracker.VolumeEnd = endVolume;
+            frequencyTracker.Level = startLevel;
+            frequencyTracker.LevelEnd = endLevel;
             frequencyTracker.FrequencyEnvelopeSampleDuration = (int)(WaveFormat.SampleRate * (pitchEnvelopeDuration / 1000F));
-            frequencyTracker.VolumeEnvelopeSampleDuration = (int)(WaveFormat.SampleRate * (volumeEnvelopeDuration / 1000F));
+            frequencyTracker.LevelEnvelopeSampleDuration = (int)(WaveFormat.SampleRate * (levelEnvelopeDuration / 1000F));
+            frequencyTracker.Volume = volume;
             frequencies.Add(frequencyTracker);
             return frequencyTracker;
         }
@@ -101,13 +103,13 @@ namespace QuickTabs.Synthesization
             {
                 if (frequencyTracker.Enveloped)
                 {
-                    float volume;
-                    if (frequencyTracker.EnvelopeSamplesWritten >= frequencyTracker.VolumeEnvelopeSampleDuration)
+                    float level;
+                    if (frequencyTracker.EnvelopeSamplesWritten >= frequencyTracker.LevelEnvelopeSampleDuration)
                     {
-                        volume = frequencyTracker.VolumeEnd;
+                        level = frequencyTracker.LevelEnd;
                     } else
                     {
-                        volume = interpolate(frequencyTracker.Volume, frequencyTracker.VolumeEnd, (float)frequencyTracker.EnvelopeSamplesWritten / frequencyTracker.VolumeEnvelopeSampleDuration);
+                        level = interpolate(frequencyTracker.Level, frequencyTracker.LevelEnd, (float)frequencyTracker.EnvelopeSamplesWritten / frequencyTracker.LevelEnvelopeSampleDuration);
                     }
                     float pitch;
                     if (frequencyTracker.EnvelopeSamplesWritten >= frequencyTracker.FrequencyEnvelopeSampleDuration)
@@ -122,7 +124,7 @@ namespace QuickTabs.Synthesization
                     frequencyTracker.EnvelopeSamplesWritten++;
                     if (frequencyTracker.CurrentlyOutputting)
                     {
-                        sample += volume;
+                        sample += level * frequencyTracker.Volume.Volume;
                     }
                     frequencyTracker.OutputtedSinceLastSwitch++;
                     if (frequencyTracker.OutputtedSinceLastSwitch >= samplesPerOscillation)
@@ -134,7 +136,7 @@ namespace QuickTabs.Synthesization
                 {
                     if (frequencyTracker.CurrentlyOutputting)
                     {
-                        sample += frequencyTracker.Volume;
+                        sample += frequencyTracker.Level * frequencyTracker.Volume.Volume;
                     }
                     frequencyTracker.OutputtedSinceLastSwitch++;
                     if (frequencyTracker.OutputtedSinceLastSwitch >= frequencyTracker.SamplesPerOscillation)
@@ -158,12 +160,13 @@ namespace QuickTabs.Synthesization
         private class FrequencyTracker : PlayingFrequency
         {
             public float Frequency = 0;
-            public float Volume = 0F;
+            public float Level = 0F;
             public bool Enveloped = false;
             public float FrequencyEnd;
-            public float VolumeEnd;
+            public float LevelEnd;
+            public IVolumeProvider Volume;
             public int FrequencyEnvelopeSampleDuration;
-            public int VolumeEnvelopeSampleDuration;
+            public int LevelEnvelopeSampleDuration;
             public int EnvelopeSamplesWritten = 0;
             public int SamplesPerOscillation = 0;
             public int OutputtedSinceLastSwitch = 0;

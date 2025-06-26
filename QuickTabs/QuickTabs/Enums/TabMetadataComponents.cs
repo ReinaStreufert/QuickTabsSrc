@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace QuickTabs.Enums
 {
     [Flags]
-    internal enum TabMetadataComponents : byte
+    public enum TabMetadataComponents : byte
     {
         None = 0,
         Name = 1,

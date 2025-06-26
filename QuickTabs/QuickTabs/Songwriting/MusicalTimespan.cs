@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal struct MusicalTimespan
+    public struct MusicalTimespan
     {
-        // changes the resolution at which MusicalTimespan internally stores time values
+        // changes the resolution at which MusicalTimespan publicly stores time values
         // designed to be super easy to change the smallest division supported in the future if desired
-        private const int smallestDivision = 16;
+        private const int smallestDivision = 64;
 
         private int absoluteValue = 0;
 
@@ -23,6 +23,10 @@ namespace QuickTabs.Songwriting
         public MusicalTimespan(float value, int beatDivision)
         {
             absoluteValue = (int)Math.Round(value * (smallestDivision / beatDivision));
+        }
+        public static MusicalTimespan DeserializeInt32(int value)
+        {
+            return new MusicalTimespan(value, smallestDivision);
         }
 
         public int GetValueForBeatDivision(int beatDivision)
@@ -56,6 +60,10 @@ namespace QuickTabs.Songwriting
             TimeSpan qNoteDuration = calculateQuarterNoteDuration(BPM);
             float quarterNotes = DivideByF(new MusicalTimespan(1, 4));
             return qNoteDuration * quarterNotes;
+        }
+        public int SerializeToInt32()
+        {
+            return absoluteValue;
         }
         private TimeSpan calculateQuarterNoteDuration(int BPM)
         {
@@ -98,6 +106,12 @@ namespace QuickTabs.Songwriting
         {
             MusicalTimespan rem;
             return a.DivideBy(b, out rem);
+        }
+        public static MusicalTimespan operator /(MusicalTimespan a, int b)
+        {
+            MusicalTimespan result = new MusicalTimespan();
+            result.absoluteValue = a.absoluteValue / b;
+            return result;
         }
         public static bool operator >(MusicalTimespan a, MusicalTimespan b)
         {

@@ -1,0 +1,53 @@
+QTZ Format ver 1 shitty docs
+Byte order: little endian
+
+# 4 byte header
+UTF8 "QT"
+SHORT 1 (format version)
+
+# uncompressed metadata
+
+BYTE length of song name
+UTF8 song name
+SHORT tempo
+BYTE time signature N
+BYTE time signature D
+BYTE track count
+foreach (track) {
+  BYTE length of track name
+  UTF8 track name
+  FLOAT track volume 0.0-1.0
+  BYTE tuning string count
+  foreach (tuningnote) {  # tuning is internally stored furthest string to closest string instead of the traditional way. it is also this way when saving as QTZ. (Ex: Standard tuning is stored in the order E4 B3 G3 D3 A2 E2)
+    BYTE length of note name
+    UTF8 note name
+  }
+  BYTE track flags {
+    # i0 = least significant bit
+    i0: Mute
+    i1: Solo
+    i2: Named by user
+    i3-7: unused
+  }
+}
+BYTE section count
+foreach (section) {
+  BYTE length of section name
+  UTF8 section name
+  foreach (track) {
+    INT number of beats in this section on this track
+  }
+}
+
+# compressed beat data
+
+ZLIB {
+  foreach (track) {
+    foreach (section) {
+      BEATDATA beat data for the current section on the current track
+      # BEATDATA is encoded as follows:
+      # - before the first beat of every measure (including the first) a byte is encoded specifying the division of the following beats in 64th notes. the division byte also tells you how many beats until the next division byte (must be calculated with the time signature)
+      # - beats are encoded as 2 bytes per tuning string. The first byte is which fret the string should be played on, the second byte is the sustain time of the note in 64th notes. If the second byte is zero (in which case the first byte is usually also zero but may be anything), it indicates this string is note played. Fret 0 indicates open as usual.
+    }
+  }
+}

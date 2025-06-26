@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Synthesization
 {
-    internal class BeatPlayer
+    public class BeatPlayer
     {
         public Beat Beat { get; private set; }
         public int BPM { get; set; }
@@ -17,10 +17,12 @@ namespace QuickTabs.Synthesization
 
         private DateTime playStartTime;
         private int lastElapsed = 0;
+        private IVolumeProvider volume;
 
-        public BeatPlayer(Beat beat)
+        public BeatPlayer(Beat beat, Track track)
         {
             this.Beat = beat;
+            volume = new TrackVolumeProvider(track);
         }
 
         public void Start()
@@ -30,10 +32,10 @@ namespace QuickTabs.Synthesization
 
         private void AudioEngine_Tick(DateTime timestamp, float bufferDurationMS)
         {
-            foreach (Fret fret in Beat)
+            foreach (KeyValuePair<Fret,MusicalTimespan> fret in Beat)
             {
-                Songwriting.Note note = Songwriting.Note.FromSemitones(Tuning.GetMusicalNote(fret.String), fret.Space);
-                AudioEngine.PlayNote(note, (int)Beat.SustainTime.ToTimespan(BPM).TotalMilliseconds, 0.25F);
+                Songwriting.Note note = Songwriting.Note.FromSemitones(Tuning.GetMusicalNote(fret.Key.String), fret.Key.Space);
+                AudioEngine.PlayNote(note, (int)fret.Value.ToTimespan(BPM).TotalMilliseconds, volume);
             }
             AudioEngine.Tick -= AudioEngine_Tick;
         }

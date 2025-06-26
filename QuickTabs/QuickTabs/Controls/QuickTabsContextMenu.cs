@@ -1,5 +1,4 @@
-﻿using QuickTabs.Controls.Tools;
-using QuickTabs.Forms;
+﻿using QuickTabs.Forms;
 using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
 using System;
@@ -11,7 +10,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs.Controls
 {
-    internal partial class QuickTabsContextMenu : ContextMenu
+    public partial class QuickTabsContextMenu : ContextMenu
     {
         public Song Song { get; set; }
         private TabEditor editor;
@@ -45,9 +44,10 @@ namespace QuickTabs.Controls
             Logo = DrawingIcons.QuickTabsLogo;
 
             setupFileSection();
-            setupViewSection();
+            setupConfigSection();
             setupPlaybackSection();
             setupHistorySection();
+            setupTrackSection();
             setupMeasureSection();
             setupSelectionSection();
 
@@ -69,13 +69,18 @@ namespace QuickTabs.Controls
                     Sections.Remove(historySection);
                     changed = true;
                 }
+                if (Sections.Contains(trackSection))
+                {
+                    Sections.Remove(trackSection);
+                    changed = true;
+                }
                 foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
                 {
                     shortcut.Enabled = false;
                 }
             } else
             {
-                if (playPause.Selected)
+                if (AudioEngine.Enabled && playPause.Selected)
                 {
                     playPause.Selected = false;
                     invalOnlyChange = true;
@@ -83,6 +88,11 @@ namespace QuickTabs.Controls
                 if (!Sections.Contains(historySection))
                 {
                     Sections.Add(historySection);
+                    changed = true;
+                }
+                if (!Sections.Contains(trackSection))
+                {
+                    Sections.Add(trackSection);
                     changed = true;
                 }
                 foreach (ShortcutManager.ShortcutController shortcut in historyShortcuts)
@@ -106,7 +116,7 @@ namespace QuickTabs.Controls
                 {
                     shortcut.Enabled = true;
                 }
-                if (editor.Selection.SelectionStart - 1 != 0 && Song.Tab[editor.Selection.SelectionStart - 1].Type == Enums.StepType.SectionHead)
+                if (findSectionHead(editor.Selection.SelectionStart) > 0)
                 {
                     if (!removeSection.Selected)
                     {
@@ -121,7 +131,27 @@ namespace QuickTabs.Controls
                     }
                     removeSection.Selected = false;
                 }
-                if (countMeasuresInSection(editor.Selection.SelectionStart) > 1)
+                if (Song.Tracks.Count > 1)
+                {
+                    if (!removeTrack.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
+                    removeTrack.Selected = true;
+                } else
+                {
+                    if (removeTrack.Selected)
+                    {
+                        invalOnlyChange = true;
+                    }
+                    removeTrack.Selected = false;
+                }
+                if (!trackProperties.Selected)
+                {
+                    invalOnlyChange = true;
+                }
+                trackProperties.Selected = true;
+                if (checkMultipleSections() || countMeasuresInSection(editor.Selection.SelectionStart) > 1)
                 {
                     if (!removeMeasure.Selected)
                     {
@@ -136,31 +166,12 @@ namespace QuickTabs.Controls
                     }
                     removeMeasure.Selected = false;
                 }
-                MusicalTimespan selectedDivision = ((Beat)Song.Tab[editor.Selection.SelectionStart]).BeatDivision;
-                updateDivisionButton(division16, new MusicalTimespan(1, 16), selectedDivision, ref invalOnlyChange);
-                updateDivisionButton(division8, new MusicalTimespan(1, 8), selectedDivision, ref invalOnlyChange);
-                updateDivisionButton(division4, new MusicalTimespan(1, 4), selectedDivision, ref invalOnlyChange);
-                updateDivisionButton(division2, new MusicalTimespan(1, 2), selectedDivision, ref invalOnlyChange);
-                updateDivisionButton(division1, new MusicalTimespan(1, 1), selectedDivision, ref invalOnlyChange);
-                int nextMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, true);
-                if (nextMeasure - 1 < Song.Tab.Count)
+
+                if (refreshDivisionButtons())
                 {
-                    if (Song.Tab[nextMeasure - 1].Type == Enums.StepType.SectionHead)
-                    {
-                        if (addSection.Selected)
-                        {
-                            invalOnlyChange = true;
-                        }
-                        addSection.Selected = false;
-                    } else
-                    {
-                        if (!addSection.Selected)
-                        {
-                            invalOnlyChange = true;
-                        }
-                        addSection.Selected = true;
-                    }
+                    invalOnlyChange = true;
                 }
+                
                 if (clipboard != null)
                 {
                     if (!paste.Selected)
@@ -188,6 +199,16 @@ namespace QuickTabs.Controls
                     Sections.Remove(selectionSection);
                     changed = true;
                 }
+                if (removeTrack.Selected)
+                {
+                    removeTrack.Selected = false;
+                    invalOnlyChange = true;
+                }
+                if (trackProperties.Selected)
+                {
+                    trackProperties.Selected = false;
+                    invalOnlyChange = true;
+                }
                 foreach (ShortcutManager.ShortcutController shortcut in selectionDependentShortcuts)
                 {
                     shortcut.Enabled = false;
@@ -200,25 +221,6 @@ namespace QuickTabs.Controls
             if (invalOnlyChange || changed)
             {
                 Invalidate();
-            }
-        }
-        private void updateDivisionButton(ContextItem divButton, MusicalTimespan buttonValue, MusicalTimespan selectionValue, ref bool invalOnlyChange)
-        {
-            if (selectionValue == buttonValue)
-            {
-                if (!divButton.Selected)
-                {
-                    divButton.Selected = true;
-                    invalOnlyChange = true;
-                }
-            }
-            else
-            {
-                if (divButton.Selected)
-                {
-                    divButton.Selected = false;
-                    invalOnlyChange = true;
-                }
             }
         }
     }

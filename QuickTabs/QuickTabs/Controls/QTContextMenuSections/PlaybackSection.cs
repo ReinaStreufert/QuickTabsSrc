@@ -10,7 +10,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs.Controls
 {
-    internal partial class QuickTabsContextMenu : ContextMenu
+    public partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection playbackSection;
         private ContextItem playPause;
@@ -60,6 +60,7 @@ namespace QuickTabs.Controls
             ShortcutManager.AddShortcut(Keys.None, Keys.X, silencePressed);
         }
 
+        private void playPauseClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => playPauseClick();
         private void playPauseClick()
         {
             if (SequencePlayer.PlayState == Enums.PlayState.Playing)
@@ -70,17 +71,20 @@ namespace QuickTabs.Controls
                 MusicalTimespan startPosition = MusicalTimespan.Zero;
                 if (editor.Selection != null)
                 {
-                    startPosition = Song.Tab.FindIndexTime(editor.Selection.SelectionStart);
+                    startPosition = Song.FocusedTab.FindIndexTime(editor.Selection.SelectionStart);
                 }
+                SequencePlayer.Source = Song.Tracks;
                 SequencePlayer.PlayFrom(startPosition);
                 editor.PlayMode = true;
             }
             UpdateAvailableContent();
         }
+        private void repeatClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => repeatClick();
         private void repeatClick()
         {
             SequencePlayer.Loop = !SequencePlayer.Loop;
         }
+        private void metronomeClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => metronomeClick();
         private void metronomeClick()
         {
             SequencePlayer.MetronomeEnabled = !SequencePlayer.MetronomeEnabled;
@@ -99,10 +103,12 @@ namespace QuickTabs.Controls
                 // because threads
             }
         }
+        private void downloadAsioClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => downloadAsioClick();
         private void downloadAsioClick()
         {
             AsioDownloader.DownloadAndInstall();
         }
+        private void recheckAsioClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => recheckAsioClick();
         private void recheckAsioClick()
         {
             this.Cursor = Cursors.WaitCursor;

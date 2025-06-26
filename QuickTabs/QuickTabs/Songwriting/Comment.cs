@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal class Comment : Step
+    public class Comment : Step
     {
-        public override StepType Type => StepType.Comment;
+        public override StepType Type => StepType.Annotation;
 
         public override JObject SaveAsJObject(Song Song)
         {

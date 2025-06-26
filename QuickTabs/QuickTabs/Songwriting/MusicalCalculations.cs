@@ -357,8 +357,8 @@ namespace QuickTabs.Songwriting // previously CSharpMinor
         }
         public struct XTh
         {
-            internal int number;
-            internal ThType thType;
+            public int number;
+            public ThType thType;
             public XTh(int Number, ThType ThType)
             {
                 thType = ThType;
@@ -371,7 +371,7 @@ namespace QuickTabs.Songwriting // previously CSharpMinor
                     throw new FormatException("XTh number must be 6 or an odd number 7 or larger.");
                 }
             }
-            internal static XTh Unset = new XTh() { number = -1, thType = ThType.Dominant };
+            public static XTh Unset = new XTh() { number = -1, thType = ThType.Dominant };
         }
     }
     public struct Note

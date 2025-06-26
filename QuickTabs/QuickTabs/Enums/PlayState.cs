@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Enums
 {
-    internal enum PlayState
+    public enum PlayState
     {
         NotPlaying,
         WaitingToPlay,

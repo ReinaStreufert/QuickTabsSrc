@@ -1,9 +1,9 @@
 using QuickTabs.Controls;
-using QuickTabs.Controls.Tools;
 using QuickTabs.Data;
 using QuickTabs.Forms;
 using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
+using QuickTabs.Configuration;
 using System.Diagnostics;
 using Timer = System.Windows.Forms.Timer;
 
@@ -13,14 +13,38 @@ namespace QuickTabs
     {
         public override Color BackColor { get => DrawingConstants.EmptySpaceBackColor; set => base.BackColor = value; }
 
-        public int ContextMenuHeight { get; set; } = 160;
-        public int FretboardHeight { get; set; } = 440;
+        public int ContextMenuHeight
+        {
+            get
+            {
+                if (QTPersistence.Current.ViewCompactCtxMenu)
+                {
+                    return DrawingConstants.SmallContextMenuHeight;
+                } else
+                {
+                    return DrawingConstants.LargeContextMenuHeight;
+                }
+            }
+        }
+        public int FretboardHeight
+        {
+            get
+            {
+                if (QTPersistence.Current.ViewLargeFretboard)
+                {
+                    return DrawingConstants.LargeFretboardHeight;
+                } else
+                {
+                    return DrawingConstants.SmallFretboardHeight;
+                }
+            }
+        }
 
         private QuickTabsContextMenu contextMenu;
         private LogoPanel tabEditorPanel;
         private Controls.TabEditor tabEditor;
         private Controls.ToolMenu toolMenu;
-        private Controls.Tools.Fretboard fretboard;
+        private Fretboard fretboard;
         private Synthesization.SequencePlayer sequencePlayer;
         private Song song = new Song();
 
@@ -28,20 +52,19 @@ namespace QuickTabs
         private FormWindowState lastWindowState = FormWindowState.Normal;
         private float scale;
 
-        internal Editor()
+        public Editor()
         {
-            Debug.WriteLine("test");
-
             InitializeComponent();
             //DrawingIcons.LoadAll();
             this.AutoScaleMode = AutoScaleMode.Dpi;
             scale = this.DeviceDpi / 192.0F; // scale from 192 not 96 because i designed quicktabs on a 200% scale laptop like some kind of idiot.
             DrawingConstants.Scale(scale);
+            DrawingConstants.InitializeTheme();
 
             FileManager.Initialize();
             tabEditor = new TabEditor();
             toolMenu = new ToolMenu();
-            fretboard = new Controls.Tools.Fretboard();
+            fretboard = new Fretboard();
             tabEditorPanel = new LogoPanel();
             contextMenu = new QuickTabsContextMenu(this, tabEditor, fretboard);
             Controls.Add(contextMenu);
@@ -52,10 +75,11 @@ namespace QuickTabs
             Controls.Add(toolMenu);
             this.Width = (int)(1800 * scale);
             this.Height = (int)(1200 * scale);
-            song.Tab.SetLength(17, new MusicalTimespan(1, 8));
+            song.FocusedTrack.UpdateAutoName();
+            song.FocusedTab.SetLength(17, new MusicalTimespan(1, 8));
             song.TimeSignature = new TimeSignature(4, 4);
-            ((SectionHead)song.Tab[0]).Name = "Untitled Section";
-            sequencePlayer = new Synthesization.SequencePlayer(this, new Tab[] { song.Tab });
+            ((SectionHead)song.FocusedTab[0]).Name = "Untitled Section";
+            sequencePlayer = new Synthesization.SequencePlayer(this, song.Tracks);
             tabEditor.Song = song;
             fretboard.Song = song;
             fretboard.Editor = tabEditor;
@@ -65,6 +89,13 @@ namespace QuickTabs
             contextMenu.Fretboard = fretboard;
             contextMenu.EditorForm = this;
             contextMenu.SequencePlayer = sequencePlayer;
+            if (QTPersistence.Current.ViewCompactCtxMenu)
+            {
+                contextMenu.Style = Enums.ContextMenuStyle.Collapsed;
+            } else
+            {
+                contextMenu.Style = Enums.ContextMenuStyle.Responsive;
+            }
             tabEditor.Selection = new Selection(1, 1);
             History.PushState(song, tabEditor.Selection, false);
             tabEditor.Refresh();
@@ -74,25 +105,44 @@ namespace QuickTabs
             sequencePlayer.PlaybackStopped += SequencePlayer_PlaybackStopped;
         }
 
-        internal void LoadDocument(Song openedSong, bool loadUnsaved = false)
+        public void LoadDocument(Song openedSong, bool loadUnsaved = false)
         {
+            if (sequencePlayer.PlayState == Enums.PlayState.Playing)
+            {
+                sequencePlayer.Stop();
+                tabEditor.PlayMode = false;
+            }
             contextMenu.Song = openedSong;
             tabEditor.QuietlySelect(new Selection(1, 1));
             this.song = openedSong;
             tabEditor.Song = song;
             fretboard.Song = song;
-            sequencePlayer.Source = new Tab[] { song.Tab };
-            /*Tab[] sequenceSource = new Tab[sequencePlayer.Source.Length + 1];
-            sequenceSource[0] = song.Tab;
-            sequencePlayer.Source.CopyTo(sequenceSource, 1);
-            sequencePlayer.Source = sequenceSource;*/
-            // end bullshit
             sequencePlayer.Tempo = song.Tempo;
             sequencePlayer.MetronomeTimeSignature = song.TimeSignature;
             fretboard.Refresh();
             tabEditor.Refresh();
+            tabEditor.RefreshTrackView();
             tabEditor.Selection = new Selection(1, 1);
             History.PushState(song, tabEditor.Selection, loadUnsaved);
+        }
+        public void LoadRecoveredDocument(CrashManager.CrashReport report)
+        {
+            QtJsonFormat qtjsonParser = new QtJsonFormat();
+            bool failed;
+            Song openedSong = qtjsonParser.Open(report.RecoveredSong, out failed);
+            if (failed)
+            {
+                using (GenericMessage message = new GenericMessage())
+                {
+                    message.Text = "Unsaved data recovery";
+                    message.Message = "Failed to recover. Song was saved in an invalid format in the crash log.";
+                    message.ShowDialog();
+                }
+            }
+            else
+            {
+                LoadDocument(openedSong, true);
+            }
         }
         public void RefreshLayout()
         {
@@ -124,9 +174,9 @@ namespace QuickTabs
                 return;
             }
             contextMenu.Location = new Point(0, 0);
-            contextMenu.Size = new Size(this.ClientSize.Width, (int)(ContextMenuHeight * scale));
-            tabEditorPanel.Location = new Point(0, (int)(ContextMenuHeight * scale));
-            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - (int)(ContextMenuHeight * scale) - (int)(FretboardHeight * scale));
+            contextMenu.Size = new Size(this.ClientSize.Width, ContextMenuHeight);
+            tabEditorPanel.Location = new Point(0, ContextMenuHeight);
+            tabEditorPanel.Size = new Size(this.ClientSize.Width, this.Height - ContextMenuHeight - FretboardHeight);
             tabEditor.MaxHeight = tabEditorPanel.Height;
             if (tabEditor.Width == this.ClientSize.Width)
             {
@@ -135,7 +185,7 @@ namespace QuickTabs
             {
                 tabEditor.Size = new Size(this.ClientSize.Width, tabEditor.Height);
             }
-            toolMenu.Location = new Point(0, this.Height - (int)(FretboardHeight * scale));
+            toolMenu.Location = new Point(0, this.Height - FretboardHeight);
             toolMenu.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - toolMenu.Location.Y);
             fretboard.Location = toolMenu.Location;
             fretboard.Size = toolMenu.Size;
@@ -188,21 +238,7 @@ namespace QuickTabs
                             crashRecovery.ShowDialog();
                             if (crashRecovery.AttemptRecover)
                             {
-                                QtJsonFormat qtjsonParser = new QtJsonFormat();
-                                bool failed;
-                                Song openedSong = qtjsonParser.Open(CrashManager.LastCrashReport.RecoveredSong, out failed);
-                                if (failed)
-                                {
-                                    using (GenericMessage message = new GenericMessage())
-                                    {
-                                        message.Text = "Unsaved data recovery";
-                                        message.Message = "Failed to recover. Song was saved in an invalid format in the crash log.";
-                                        message.ShowDialog();
-                                    }
-                                } else
-                                {
-                                    LoadDocument(openedSong, true);
-                                }
+                                LoadRecoveredDocument(CrashManager.LastCrashReport);
                             }
                         }
                         CrashManager.FlushReport();
@@ -225,7 +261,7 @@ namespace QuickTabs
         {
             if (sequencePlayer.PlayState == Enums.PlayState.Playing)
             {
-                tabEditor.PlayCursor = sequencePlayer.GetTabPositionForTrack(0);
+                tabEditor.PlayCursor = sequencePlayer.Position;
                 tabEditor.Refresh();
             }
         }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal class LogoPanel : Panel
+    public class LogoPanel : Panel
     {
         public override Color BackColor { get => DrawingConstants.EmptySpaceBackColor; set => base.BackColor = value; }
 

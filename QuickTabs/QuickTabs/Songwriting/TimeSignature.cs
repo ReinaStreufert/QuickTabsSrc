@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal struct TimeSignature
+    public struct TimeSignature
     {
         public int T1 { get; set; }
         public int T2 { get; set; }

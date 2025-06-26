@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal abstract class Step : IJsonSaveable
+    public abstract class Step : IJsonSaveable
     {
         public int IndexWithinTab;
         public abstract StepType Type { get; }

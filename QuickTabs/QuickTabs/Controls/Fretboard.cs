@@ -1,4 +1,5 @@
-﻿using QuickTabs.Songwriting;
+﻿using QuickTabs.Configuration;
+using QuickTabs.Songwriting;
 using QuickTabs.Synthesization;
 using System;
 using System.Collections.Generic;
@@ -6,15 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickTabs.Controls.Tools
+namespace QuickTabs.Controls
 {
-    internal class Fretboard : Control
+    public class Fretboard : Control
     {
         public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
 
         public Song Song { get; set; } = null;
-        public bool ViewFretCounter { get; set; } = true;
-        public bool ViewDots { get; set; } = true;
         private TabEditor editor;
         public TabEditor Editor
         {
@@ -34,45 +33,32 @@ namespace QuickTabs.Controls.Tools
         private int viewportStart = 1;
         private int viewportLength = 10;
         private int fretAreaWidth = 0;
-        private MusicalTimespan noteLength = new MusicalTimespan(1, 8);
-        private Dictionary<MultiColorBitmap, MusicalTimespan> noteLengthButtonsPrototype = new Dictionary<MultiColorBitmap, MusicalTimespan>();
-        private Dictionary<MusicalTimespan, Button> noteLengthButtons = new Dictionary<MusicalTimespan, Button>();
         private List<Fret> starredFrets = new List<Fret>();
-        private int currentDivision = 8;
 
         public Fretboard()
         {
-            this.DoubleBuffered = true;
-            noteLengthButtonsPrototype[DrawingIcons.SixteenthNote] = new MusicalTimespan(1, 16);
-            noteLengthButtonsPrototype[DrawingIcons.EighthNote] = new MusicalTimespan(1, 8);
-            noteLengthButtonsPrototype[DrawingIcons.DottedEighthNote] = new MusicalTimespan(3, 16);
-            noteLengthButtonsPrototype[DrawingIcons.QuarterNote] = new MusicalTimespan(1, 4);
-            noteLengthButtonsPrototype[DrawingIcons.DottedQuarterNote] = new MusicalTimespan(3, 8);
-            noteLengthButtonsPrototype[DrawingIcons.HalfNote] = new MusicalTimespan(1, 2);
-            noteLengthButtonsPrototype[DrawingIcons.DottedHalfNote] = new MusicalTimespan(3, 4);
-            noteLengthButtonsPrototype[DrawingIcons.WholeNote] = new MusicalTimespan(1, 1);
-            noteLengthButtonsPrototype[DrawingIcons.DottedWholeNote] = new MusicalTimespan(3, 2);
+            DoubleBuffered = true;
         }
 
         private void loadStrings()
         {
             if (Song == null) { return; }
-            if (strings.Count != Song.Tab.Tuning.Count)
+            if (strings.Count != Song.FocusedTab.Tuning.Count)
             {
-                starredFrets.Clear();
+                starredFrets.Clear(); // TODO: figure out something to make this better in parallel tracks
             }
             strings = new List<String>();
             if (Song == null)
             {
                 return;
             }
-            for (int i = 0; i < Song.Tab.Tuning.Count; i++)
+            for (int i = 0; i < Song.FocusedTab.Tuning.Count; i++)
             {
                 strings.Add(new String() { Index = i });
             }
-            fretAreaWidth = this.Width - DrawingConstants.FretboardButtonAreaWidth;
+            fretAreaWidth = Width - DrawingConstants.FretboardButtonAreaWidth;
             float targetFretWidth = DrawingConstants.TargetFretWidth;
-            if (QTSettings.Current.ViewLargeFretboard)
+            if (QTPersistence.Current.ViewLargeFretboard)
             {
                 targetFretWidth = targetFretWidth * 1.5F;
             }
@@ -82,8 +68,8 @@ namespace QuickTabs.Controls.Tools
 
             Button leftButton = new Button();
             leftButton.Icon = DrawingIcons.LeftArrow;
-            leftButton.Location = new Rectangle(fretAreaWidth, 0, DrawingConstants.FretboardButtonAreaWidth / 2, this.Height / 2);
-            leftButton.Highlighted = (viewportStart != 1);
+            leftButton.Location = new Rectangle(fretAreaWidth, 0, DrawingConstants.FretboardButtonAreaWidth, Height / 2);
+            leftButton.Highlighted = viewportStart != 1;
             leftButton.Large = true;
             leftButton.OnClick += () =>
             {
@@ -94,16 +80,17 @@ namespace QuickTabs.Controls.Tools
                 if (viewportStart == 1)
                 {
                     leftButton.Highlighted = false;
-                } else
+                }
+                else
                 {
                     leftButton.Highlighted = true;
                 }
-                this.Invalidate();
+                Invalidate();
             };
             buttons.Add(leftButton);
             Button rightButton = new Button();
             rightButton.Icon = DrawingIcons.RightArrow;
-            rightButton.Location = new Rectangle(fretAreaWidth, this.Height / 2, DrawingConstants.FretboardButtonAreaWidth / 2, this.Height / 2);
+            rightButton.Location = new Rectangle(fretAreaWidth, Height / 2, DrawingConstants.FretboardButtonAreaWidth, Height / 2);
             rightButton.Highlighted = true;
             rightButton.Large = true;
             rightButton.OnClick += () =>
@@ -117,110 +104,32 @@ namespace QuickTabs.Controls.Tools
                 {
                     leftButton.Highlighted = true;
                 }
-                this.Invalidate();
+                Invalidate();
             };
             buttons.Add(rightButton);
-            generateNoteLengthButtons(currentDivision);
-        }
-
-        private void generateNoteLengthButtons(int division)
-        {
-            currentDivision = division;
-            foreach (KeyValuePair<MusicalTimespan, Button> existingNoteLengthButton in noteLengthButtons)
-            {
-                buttons.Remove(existingNoteLengthButton.Value);
-            }
-            List<KeyValuePair<MultiColorBitmap, MusicalTimespan>> validPrototypes = new List<KeyValuePair<MultiColorBitmap, MusicalTimespan>>();
-            foreach (KeyValuePair<MultiColorBitmap, MusicalTimespan> buttonPrototype in noteLengthButtonsPrototype)
-            {
-                if (buttonPrototype.Value.IsExpressableInDivision(division))
-                {
-                    validPrototypes.Add(buttonPrototype);
-                }
-            }
-            float noteLengthButtonHeight = this.Height / (float)(validPrototypes.Count);
-            int currentNoteLengthButton = 0;
-            foreach (KeyValuePair<MultiColorBitmap, MusicalTimespan> buttonPrototype in validPrototypes)
-            {
-                Button button = new Button();
-                button.Icon = buttonPrototype.Key;
-                button.Highlighted = false;
-                button.Large = false;
-                button.Location = new Rectangle(fretAreaWidth + DrawingConstants.FretboardButtonAreaWidth / 2, (int)(currentNoteLengthButton * noteLengthButtonHeight), DrawingConstants.FretboardButtonAreaWidth / 2, (int)noteLengthButtonHeight);
-                button.OnClick += () =>
-                {
-                    noteLength = buttonPrototype.Value;
-                    updateSelectedBeat();
-                    updateNoteLengthButtons();
-                    if (editor.Selection.SelectionLength == 1)
-                    {
-                        BeatPlayer beatPlayer = new BeatPlayer((Beat)(Song.Tab[editor.Selection.SelectionStart]));
-                        beatPlayer.BPM = Song.Tempo;
-                        beatPlayer.Tuning = Song.Tab.Tuning;
-                        beatPlayer.Start();
-                    }
-                    this.Invalidate();
-                };
-                noteLengthButtons[buttonPrototype.Value] = button;
-                buttons.Add(button);
-                currentNoteLengthButton++;
-            }
-            updateNoteLengthButtons();
-        }
-
-        private void updateNoteLengthButtons()
-        {
-            if (!noteLength.IsExpressableInDivision(currentDivision))
-            {
-                noteLength = new MusicalTimespan(1, currentDivision);
-            }
-            foreach (KeyValuePair<MusicalTimespan, Button> noteLengthButton in noteLengthButtons)
-            {
-                if (noteLengthButton.Key == noteLength)
-                {
-                    noteLengthButton.Value.Highlighted = true;
-                } else
-                {
-                    noteLengthButton.Value.Highlighted = false;
-                }
-            }
         }
 
         private void updateSelectedBeat()
         {
             bool updateMade = false;
             // update first beat in selection with current fret inputs
-            if (Song.Tab[Editor.Selection.SelectionStart].Type == Enums.StepType.Beat)
+            if (Song.FocusedTab[Editor.Selection.SelectionStart].Type == Enums.StepType.Beat)
             {
-                Beat beat = (Beat)Song.Tab[Editor.Selection.SelectionStart];
+                Beat beat = (Beat)Song.FocusedTab[Editor.Selection.SelectionStart];
                 //beat.NoteLength = noteLength;
-                Fret[] selectedFrets = beat.ToArray();
-                foreach (Fret fret in selectedFrets)
+                KeyValuePair<Fret, MusicalTimespan>[] selectedFrets = beat.ToArray();
+                foreach (KeyValuePair<Fret, MusicalTimespan> fret in selectedFrets)
                 {
-                    beat[fret] = false;
+                    beat[fret.Key] = MusicalTimespan.Zero;
                 }
                 foreach (String s in strings)
                 {
                     if (s.SelectedFret > -1)
                     {
-                        beat[new Fret(s.Index, s.SelectedFret)] = true;
+                        beat[new Fret(s.Index, s.SelectedFret)] = s.SustainTime;
                     }
                 }
                 updateMade = true;
-            }
-            // update entire selection with correct note length values
-            for (int i = Editor.Selection.SelectionStart; i < Editor.Selection.SelectionStart + Editor.Selection.SelectionLength; i++)
-            {
-                if (Song.Tab[i].Type == Enums.StepType.Beat)
-                {
-                    Beat beat = (Beat)Song.Tab[i];
-                    int division = new MusicalTimespan(1, 1) / beat.BeatDivision;
-                    if (beat.SustainTime.IsExpressableInDivision(division))
-                    {
-                        beat.SustainTime = noteLength;
-                        updateMade = true;
-                    }
-                }
             }
             if (updateMade)
             {
@@ -237,57 +146,47 @@ namespace QuickTabs.Controls.Tools
                 {
                     s.SelectedFret = -1;
                 }
-                if (currentDivision != 8)
-                {
-                    generateNoteLengthButtons(8);
-                }
-                this.Invalidate();
+                Invalidate();
                 return;
             }
-            if (Song.Tab[Editor.Selection.SelectionStart].Type == Enums.StepType.Beat)
+            if (Song.FocusedTab[Editor.Selection.SelectionStart].Type == Enums.StepType.Beat)
             {
-                Beat beat = (Beat)Song.Tab[Editor.Selection.SelectionStart];
+                if (Song.FocusedTab.Tuning.Count != strings.Count)
+                {
+                    loadStrings();
+                }
+                Beat beat = (Beat)Song.FocusedTab[Editor.Selection.SelectionStart];
                 foreach (String s in strings)
                 {
                     s.SelectedFret = -1;
+                    s.SustainTime = beat.BeatDivision;
                 }
-                bool beatEmpty = true;
-                foreach (Fret fret in beat)
+                foreach (KeyValuePair<Fret, MusicalTimespan> fret in beat)
                 {
-                    beatEmpty = false;
-                    strings[fret.String].SelectedFret = fret.Space;
+                    String s = strings[fret.Key.String];
+                    s.SelectedFret = fret.Key.Space;
+                    s.SustainTime = fret.Value;
                 }
-                if (!beatEmpty)
-                {
-                    noteLength = beat.SustainTime;
-                }
-                int division = new MusicalTimespan(1, 1) / beat.BeatDivision;
-                if (division != currentDivision)
-                {
-                    generateNoteLengthButtons(division);
-                } else
-                {
-                    updateNoteLengthButtons();
-                }
-                this.Invalidate();
+                Invalidate();
             }
         }
 
         private int getFretFromPoint(Point point, out int stringIndex)
         {
-            int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
-            if (!ViewFretCounter)
+            int fretAreaHeight = Height - DrawingConstants.FretCountAreaHeight;
+            if (!QTPersistence.Current.ViewFretCounter)
             {
-                fretAreaHeight = this.Height;
+                fretAreaHeight = Height;
             }
             float fretWidth = fretAreaWidth / (float)viewportLength;
-            float stringHeight = fretAreaHeight / ((float)strings.Count);
+            float stringHeight = fretAreaHeight / (float)strings.Count;
             int viewportFret = (int)Math.Floor(point.X / fretWidth);
             stringIndex = (int)Math.Floor(point.Y / stringHeight);
             if (viewportStart == 1 && point.X < DrawingConstants.FretZeroAreaWidth)
             {
                 return 0;
-            } else
+            }
+            else
             {
                 return viewportFret + viewportStart;
             }
@@ -301,7 +200,7 @@ namespace QuickTabs.Controls.Tools
             }
             float fretWidth = fretAreaWidth / (float)viewportLength;
             int onScreenFret = fret - viewportStart;
-            return (onScreenFret * fretWidth) + fretWidth / 2;
+            return onScreenFret * fretWidth + fretWidth / 2;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -315,10 +214,10 @@ namespace QuickTabs.Controls.Tools
             {
                 s.HoveredFret = -1;
             }
-            int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
-            if (!ViewFretCounter)
+            int fretAreaHeight = Height - DrawingConstants.FretCountAreaHeight;
+            if (!QTPersistence.Current.ViewFretCounter)
             {
-                fretAreaHeight = this.Height;
+                fretAreaHeight = Height;
             }
             if (e.X < fretAreaWidth && e.Y < fretAreaHeight && e.X > 0 && e.Y > 0)
             {
@@ -329,7 +228,8 @@ namespace QuickTabs.Controls.Tools
                 {
                     button.Hovered = false;
                 }
-            } else
+            }
+            else
             {
                 foreach (Button button in buttons)
                 {
@@ -343,7 +243,7 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
             }
-            this.Invalidate();
+            Invalidate();
         }
         protected override void OnMouseLeave(EventArgs e)
         {
@@ -355,20 +255,20 @@ namespace QuickTabs.Controls.Tools
             {
                 button.Hovered = false;
             }
-            this.Invalidate();
+            Invalidate();
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            this.Focus();
+            Focus();
             if (editor.Selection == null)
             {
                 return;
             }
-            int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
-            if (!ViewFretCounter)
+            int fretAreaHeight = Height - DrawingConstants.FretCountAreaHeight;
+            if (!QTPersistence.Current.ViewFretCounter)
             {
-                fretAreaHeight = this.Height;
+                fretAreaHeight = Height;
             }
             if (e.X < fretAreaWidth && e.Y < fretAreaHeight)
             {
@@ -383,13 +283,13 @@ namespace QuickTabs.Controls.Tools
                     else
                     {
                         strings[stringIndex].SelectedFret = fretIndex;
-                        if (AudioEngine.Enabled)
+                        if (AudioEngine.Enabled && QTPersistence.Current.EnablePreviewPlay)
                         {
                             AudioEngine.AudioEngineTick action = null;
-                            action = (DateTime timestamp, float bufferDurationMS) =>
+                            action = (timestamp, bufferDurationMS) =>
                             {
                                 //AudioEngine.PlayKick(new Note("C4"), 100, 0.25F);
-                                AudioEngine.PlayNote(Note.FromSemitones(Song.Tab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, 0.25F);
+                                AudioEngine.PlayNote(Note.FromSemitones(Song.FocusedTab.Tuning.GetMusicalNote(stringIndex), fretIndex), 100, new ConstantVolume(1.0F));
                                 AudioEngine.Tick -= action;
                             };
                             // why not just call playnote directly? threading errors!!! thats why.
@@ -397,18 +297,21 @@ namespace QuickTabs.Controls.Tools
                         }
                     }
                     updateSelectedBeat();
-                } else if (e.Button == MouseButtons.Right)
+                }
+                else if (e.Button == MouseButtons.Right)
                 {
                     Fret fret = new Fret(stringIndex, fretIndex);
                     if (starredFrets.Contains(fret))
                     {
                         starredFrets.Remove(fret);
-                    } else
+                    }
+                    else
                     {
                         starredFrets.Add(fret);
                     }
                 }
-            } else
+            }
+            else
             {
                 foreach (Button button in buttons)
                 {
@@ -418,7 +321,7 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
             }
-            this.Invalidate();
+            Invalidate();
         }
         public override void Refresh()
         {
@@ -447,12 +350,12 @@ namespace QuickTabs.Controls.Tools
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
             float fretWidth = fretAreaWidth / (float)viewportLength;
-            int fretAreaHeight = this.Height - DrawingConstants.FretCountAreaHeight;
-            if (!ViewFretCounter)
+            int fretAreaHeight = Height - DrawingConstants.FretCountAreaHeight;
+            if (!QTPersistence.Current.ViewFretCounter)
             {
-                fretAreaHeight = this.Height;
+                fretAreaHeight = Height;
             }
-            float stringHeight = fretAreaHeight / (strings.Count);
+            float stringHeight = fretAreaHeight / strings.Count;
 
             using (SolidBrush fretAreaBrush = new SolidBrush(DrawingConstants.FretAreaColor))
             using (SolidBrush hoverBrush = new SolidBrush(DrawingConstants.HighlightColor))
@@ -472,7 +375,7 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
                 // draw fret numbers
-                if (ViewFretCounter)
+                if (QTPersistence.Current.ViewFretCounter)
                 {
                     using (SolidBrush textBrush = new SolidBrush(DrawingConstants.ContrastColor))
                     using (Font boldFont = new Font(DrawingConstants.Montserrat, DrawingConstants.SmallTextSizePx, FontStyle.Bold, GraphicsUnit.Pixel))
@@ -481,12 +384,12 @@ namespace QuickTabs.Controls.Tools
                         {
                             float x = getFretX(i);
                             SizeF textSize = g.MeasureString(i.ToString(), boldFont);
-                            g.DrawString(i.ToString(), boldFont, textBrush, x - textSize.Width / 2, fretAreaHeight + (DrawingConstants.FretCountAreaHeight / 2) - (textSize.Height / 2));
+                            g.DrawString(i.ToString(), boldFont, textBrush, x - textSize.Width / 2, fretAreaHeight + DrawingConstants.FretCountAreaHeight / 2 - textSize.Height / 2);
                         }
                     }
                 }
                 // draw dots
-                if (ViewDots)
+                if (QTPersistence.Current.ViewNavDots)
                 {
                     using (SolidBrush dotBrush = new SolidBrush(Color.White))
                     {
@@ -530,7 +433,7 @@ namespace QuickTabs.Controls.Tools
                     for (int i = 0; i < strings.Count; i++)
                     {
                         String s = strings[i];
-                        float y = (i * stringHeight) + stringHeight / 2;
+                        float y = i * stringHeight + stringHeight / 2;
                         g.DrawLine(unselectedStringPen, 0, y, fretAreaWidth, y);
                         if (s.SelectedFret > -1)
                         {
@@ -554,7 +457,7 @@ namespace QuickTabs.Controls.Tools
                     {
                         if (fret.Space >= viewportStart && fret.Space < viewportStart + viewportLength)
                         {
-                            float y = (fret.String * stringHeight) + stringHeight / 2;
+                            float y = fret.String * stringHeight + stringHeight / 2;
                             float x = getFretX(fret.Space);
                             g.FillEllipse(fretAreaBrush, x - DrawingConstants.FretMarkerRadius, y - DrawingConstants.FretMarkerRadius, DrawingConstants.FretMarkerRadius * 2, DrawingConstants.FretMarkerRadius * 2);
                             g.DrawEllipse(starPen, x - DrawingConstants.FretMarkerRadius, y - DrawingConstants.FretMarkerRadius, DrawingConstants.FretMarkerRadius * 2, DrawingConstants.FretMarkerRadius * 2);
@@ -565,7 +468,7 @@ namespace QuickTabs.Controls.Tools
                 for (int i = 0; i < strings.Count; i++)
                 {
                     String s = strings[i];
-                    float y = (i * stringHeight) + stringHeight / 2;
+                    float y = i * stringHeight + stringHeight / 2;
                     if (s.HoveredFret > -1)
                     {
                         float x = getFretX(s.HoveredFret);
@@ -588,10 +491,11 @@ namespace QuickTabs.Controls.Tools
                         Rectangle iconRect;
                         if (button.Large)
                         {
-                            iconRect = new Rectangle((button.Location.X + button.Location.Width / 2) - DrawingConstants.MediumIconSize / 2, (button.Location.Y + button.Location.Height / 2) - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
-                        } else
+                            iconRect = new Rectangle(button.Location.X + button.Location.Width / 2 - DrawingConstants.MediumIconSize / 2, button.Location.Y + button.Location.Height / 2 - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
+                        }
+                        else
                         {
-                            iconRect = new Rectangle((button.Location.X + button.Location.Width / 2) - DrawingConstants.SmallIconSize / 2, (button.Location.Y + button.Location.Height / 2) - DrawingConstants.SmallIconSize / 2, DrawingConstants.SmallIconSize, DrawingConstants.SmallIconSize);
+                            iconRect = new Rectangle(button.Location.X + button.Location.Width / 2 - DrawingConstants.SmallIconSize / 2, button.Location.Y + button.Location.Height / 2 - DrawingConstants.SmallIconSize / 2, DrawingConstants.SmallIconSize, DrawingConstants.SmallIconSize);
                         }
                         if (button.Highlighted)
                         {
@@ -604,13 +508,14 @@ namespace QuickTabs.Controls.Tools
                     }
                 }
             }
-            
+
         }
 
         private class String
         {
             public int SelectedFret = -1;
             public int HoveredFret = -1;
+            public MusicalTimespan SustainTime = MusicalTimespan.Zero;
             public int Index = 0;
         }
 

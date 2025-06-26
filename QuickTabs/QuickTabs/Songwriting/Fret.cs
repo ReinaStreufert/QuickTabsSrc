@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal struct Fret
+    public struct Fret
     {
         public int String { get; set; }
         public int Space { get; set; }
@@ -33,6 +33,11 @@ namespace QuickTabs.Songwriting
         public static bool operator !=(Fret c1, Fret c2)
         {
             return !c1.Equals(c2);
+        }
+
+        public override int GetHashCode()
+        {
+            return (String + Space) * (String + Space + 1) / 2 + String;
         }
     }
 }

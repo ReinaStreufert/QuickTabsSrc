@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal class Beat : Step, IEnumerable<Fret>
+    public class Beat : Step, IEnumerable<KeyValuePair<Fret,MusicalTimespan>>
     {
-        private List<Fret> heldFrets = new List<Fret>();
+        private Dictionary<Fret, MusicalTimespan> heldFrets = new Dictionary<Fret, MusicalTimespan>();
 
         public override StepType Type => StepType.Beat;
 
@@ -26,45 +26,28 @@ namespace QuickTabs.Songwriting
             set
             {
                 beatDivision = value;
-                if (sustainTime < beatDivision)
-                {
-                    sustainTime = beatDivision;
-                }
             }
         }
-        private MusicalTimespan sustainTime = new MusicalTimespan(1, 8);
-        public MusicalTimespan SustainTime
+        public MusicalTimespan this[Fret fret]
         {
             get
             {
-                return sustainTime;
-            }
-            set
-            {
-                if (value < beatDivision)
+                if (heldFrets.ContainsKey(fret))
                 {
-                    throw new InvalidOperationException("sustain time must be >= beat division");
+                    return heldFrets[fret];
                 } else
                 {
-                    sustainTime = value;
+                    return MusicalTimespan.Zero;
                 }
-            }
-        }
-        public bool this[Fret fret]
-        {
-            get
-            {
-                return (heldFrets.Contains(fret));
             }
             set
             {
-                if (value && !heldFrets.Contains(fret))
-                {
-                    heldFrets.Add(fret);
-                }
-                if (!value && heldFrets.Contains(fret))
+                if (value == MusicalTimespan.Zero)
                 {
                     heldFrets.Remove(fret);
+                } else
+                {
+                    heldFrets[fret] = value;
                 }
             }
         }
@@ -80,12 +63,11 @@ namespace QuickTabs.Songwriting
         public Beat Copy()
         {
             Beat copy = new Beat();
-            foreach (Fret fret in heldFrets)
+            foreach (KeyValuePair<Fret, MusicalTimespan> fret in heldFrets)
             {
-                copy.heldFrets.Add(fret);
+                copy[fret.Key] = fret.Value;
             }
             copy.BeatDivision = BeatDivision;
-            copy.SustainTime = SustainTime;
             return copy;
         }
 
@@ -93,22 +75,21 @@ namespace QuickTabs.Songwriting
         {
             JObject beatJson = new JObject();
             beatJson.Add("type", "b");
-            beatJson.Add("length", SustainTime.GetValueForBeatDivisionF(8)); // stored this way for backwards compatible opening reasons, and flexibility for future further divisions
-            beatJson.Add("div", (new MusicalTimespan(1, 1) / BeatDivision));
+            beatJson.Add("div", BeatDivision.SerializeToInt32());
             JArray states = new JArray();
-            for (int i = 0; i < Song.Tab.Tuning.Count; i++)
+            for (int i = 0; i < Song.FocusedTab.Tuning.Count; i++)
             {
                 states.Add(null);
             }
-            foreach (Fret fret in heldFrets)
+            foreach (KeyValuePair<Fret,MusicalTimespan> fret in heldFrets)
             {
-                states[fret.String] = fret.Space;
+                states[fret.Key.String] = new JArray() { fret.Key.Space, fret.Value.SerializeToInt32() };
             }
             beatJson.Add("states", states);
             return beatJson;
         }
 
-        public IEnumerator<Fret> GetEnumerator()
+        public IEnumerator<KeyValuePair<Fret,MusicalTimespan>> GetEnumerator()
         {
             return heldFrets.GetEnumerator();
         }

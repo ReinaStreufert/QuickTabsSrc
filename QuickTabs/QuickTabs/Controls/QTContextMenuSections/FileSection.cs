@@ -9,7 +9,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs.Controls
 {
-    internal partial class QuickTabsContextMenu : ContextMenu
+    public partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection fileSection;
 
@@ -38,28 +38,25 @@ namespace QuickTabs.Controls
             saveAs.Click += saveAsClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.S, saveAsClick);
             fileSection.AddItem(saveAs);
-            ContextItem print = new ContextItem(DrawingIcons.Print, "Print...");
+            ContextItem print = new ContextItem(DrawingIcons.Print, "Print song...");
             print.Selected = true;
-            print.Click += printClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.P, printClick);
+            print.Click += printSongClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.P, printSongClick);
             fileSection.AddItem(print);
-            ContextItem export = new ContextItem(DrawingIcons.Export, "Export plain text...");
+            ContextItem export = new ContextItem(DrawingIcons.Export, "Export song plain text...");
             export.Selected = true;
-            export.Click += exportClick;
-            ShortcutManager.AddShortcut(Keys.Control, Keys.E, exportClick);
+            export.Click += exportSongClick;
+            ShortcutManager.AddShortcut(Keys.Control, Keys.E, exportSongClick);
             fileSection.AddItem(export);
             ContextItem documentProperties = new ContextItem(DrawingIcons.EditDocumentProperties, "Document properties...");
             documentProperties.Selected = true;
             documentProperties.Click += documentPropertiesClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.D, documentPropertiesClick);
             fileSection.AddItem(documentProperties);
-            /*ContextItem crash = new ContextItem(DrawingIcons.Clear, "Test crash");
-            crash.Selected = true;
-            crash.Click += crashClick;
-            fileSection.AddItem(crash);*/
             Sections.Add(fileSection);
         }
 
+        private void saveClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => saveClick();
         private void saveClick()
         {
             FileManager.Save(Song);
@@ -74,10 +71,12 @@ namespace QuickTabs.Controls
             };
             t.Start();
         }
+        private void saveAsClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => saveAsClick();
         private void saveAsClick()
         {
             FileManager.SaveAs(Song);
         }
+        private void openClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => openClick();
         private void openClick()
         {
             if (!FileManager.IsSaved)
@@ -108,13 +107,9 @@ namespace QuickTabs.Controls
                 return;
             }
             History.ClearHistory();
-            if (SequencePlayer.PlayState == Enums.PlayState.Playing)
-            {
-                SequencePlayer.Stop();
-                editor.PlayMode = false; // this might not be necessary with the rewrite
-            }
             EditorForm.LoadDocument(openedSong);
         }
+        private void newClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => newClick();
         private void newClick()
         {
             if (!FileManager.IsSaved)
@@ -139,31 +134,40 @@ namespace QuickTabs.Controls
             Song.Name = "Untitled tab";
             Song.Tempo = 120;
             Song.TimeSignature = new TimeSignature(4, 4);
-            Song.Tab.Tuning = Tuning.StandardGuitar;
-            Song.Tab.SetLength(1, new MusicalTimespan(1, 8));
-            Song.Tab.SetLength(17, new MusicalTimespan(1, 8));
-            ((SectionHead)Song.Tab[0]).Name = "Untitled Section";
+            Song.FocusedTrackIndex = 0;
+            Song.Tracks = new List<Track>() { new Track() };
+            Song.FocusedTab.Tuning = Tuning.StandardGuitar;
+            Song.FocusedTrack.NamedByUser = false;
+            Song.FocusedTrack.UpdateAutoName();
+            Song.FocusedTab.SetLength(1, new MusicalTimespan(1, 8));
+            Song.FocusedTab.SetLength(17, new MusicalTimespan(1, 8));
+            ((SectionHead)Song.FocusedTab[0]).Name = "Untitled Section";
             editor.Selection = new Selection(1, 1);
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection, false);
         }
-        private void printClick()
+        private void printSongClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => printSongClick();
+        private void printSongClick()
         {
             using (PrintTab printTab = new PrintTab())
             {
                 printTab.Song = Song;
+                printTab.FocusedTrackOnly = false;
                 printTab.ShowDialog();
             }
         }
-        private void exportClick()
+        private void exportSongClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => exportSongClick();
+        private void exportSongClick()
         {
             using (ExportPlainText exportPlainText = new ExportPlainText())
             {
                 exportPlainText.Song = Song;
+                exportPlainText.FocusedTrackOnly = false;
                 exportPlainText.ShowDialog();
             }
         }
+        private void documentPropertiesClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => documentPropertiesClick();
         private void documentPropertiesClick()
         {
             bool changed;
@@ -191,18 +195,17 @@ namespace QuickTabs.Controls
                     SequencePlayer.Tempo = Song.Tempo;
                 }
 
-                if (editor.Selection != null && editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.Tab.Count)
+                if (editor.Selection != null && editor.Selection.SelectionStart + editor.Selection.SelectionLength >= Song.FocusedTab.Count)
                 {
                     editor.Selection = new Selection(1, 1);
+                } else
+                {
+                    editor.Selection = editor.Selection;
                 }
                 editor.Refresh();
                 Fretboard.Refresh();
                 History.PushState(Song, editor.Selection);
             }
-        }
-        private void crashClick()
-        {
-            throw new Exception();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Enums
 {
-    internal enum ContextMenuStyle
+    public enum ContextMenuStyle
     {
         ShowAllItems,
         Collapsed,

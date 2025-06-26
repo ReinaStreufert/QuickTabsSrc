@@ -8,7 +8,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace QuickTabs.Controls
 {
-    internal class TuningPicker : Control
+    public class TuningPicker : Control
     {
         public override Color BackColor { get => DrawingConstants.UIAreaBackColor; set => base.BackColor = value; }
 

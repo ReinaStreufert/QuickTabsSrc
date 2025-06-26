@@ -1,4 +1,5 @@
-﻿using QuickTabs.Forms;
+﻿using QuickTabs.Configuration;
+using QuickTabs.Forms;
 using QuickTabs.Songwriting;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,15 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal partial class QuickTabsContextMenu : ContextMenu
+    public partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection measureSection;
+        private ContextSection divisionSubsection;
         private ContextItem removeMeasure;
         private ContextItem removeSection;
         private ContextItem addSection;
-        private ContextItem division16;
-        private ContextItem division8;
-        private ContextItem division4;
-        private ContextItem division2;
-        private ContextItem division1;
+        private TimeSignature currentDivisionTimeSignature = new TimeSignature(0, 0);
+        private MusicalTimespan currentSelectedDivisionButton;
 
         private void setupMeasureSection()
         {
@@ -40,32 +39,10 @@ namespace QuickTabs.Controls
             ContextItem beatDivision = new ContextItem(DrawingIcons.Division, "Beat division");
             beatDivision.Selected = true;
             beatDivision.DontCloseDropdown = true;
-            {
-                ContextSection divisionSubsection = new ContextSection();
-                divisionSubsection.SectionName = "";
-                divisionSubsection.ToggleType = ToggleType.Radio;
-                division16 = new ContextItem(DrawingIcons.SixteenthNote, "Sixteenth note");
-                division16.Selected = false;
-                division16.Click += () => setMeasureDivision(new MusicalTimespan(1, 16));
-                divisionSubsection.AddItem(division16);
-                division8 = new ContextItem(DrawingIcons.EighthNote, "Eighth note");
-                division8.Selected = true;
-                division8.Click += () => setMeasureDivision(new MusicalTimespan(1, 8));
-                divisionSubsection.AddItem(division8);
-                division4 = new ContextItem(DrawingIcons.QuarterNote, "Quarter note");
-                division4.Selected = false;
-                division4.Click += () => setMeasureDivision(new MusicalTimespan(1, 4));
-                divisionSubsection.AddItem(division4);
-                division2 = new ContextItem(DrawingIcons.HalfNote, "Half note");
-                division2.Selected = false;
-                division2.Click += () => setMeasureDivision(new MusicalTimespan(1, 2));
-                divisionSubsection.AddItem(division2);
-                division1 = new ContextItem(DrawingIcons.WholeNote, "Whole note");
-                division1.Selected = false;
-                division1.Click += () => setMeasureDivision(new MusicalTimespan(1, 1));
-                divisionSubsection.AddItem(division1);
-                beatDivision.Submenu = divisionSubsection;
-            }
+            divisionSubsection = new ContextSection();
+            divisionSubsection.SectionName = "";
+            divisionSubsection.ToggleType = ToggleType.Radio;
+            beatDivision.Submenu = divisionSubsection;
             measureSection.AddItem(beatDivision);
             addSection = new ContextItem(DrawingIcons.AddSection, "Add or split section");
             addSection.Selected = true;
@@ -82,12 +59,48 @@ namespace QuickTabs.Controls
             renameSection.Click += renameSectionClick;
             measureSection.AddItem(renameSection);
         }
-        private int findSectionHead(int stepIndex)
+        private bool refreshDivisionButtons()
         {
+            bool updateRequired = false;
+            MusicalTimespan selectionDivision = ((Beat)Song.FocusedTab[editor.Selection.SelectionStart]).BeatDivision;
+            if (currentDivisionTimeSignature != Song.TimeSignature || currentSelectedDivisionButton != selectionDivision)
+            {
+                updateRequired = true;
+            }
+            if (updateRequired)
+            {
+                divisionSubsection.ClearItems();
+                foreach (NoteLengthTableRow noteLengthInfo in DrawingIcons.NoteLengthValueTable)
+                {
+                    if (Song.TimeSignature.MeasureLength.IsDivisibleBy(noteLengthInfo.Timespan))
+                    {
+                        ContextItem item = new ContextItem(noteLengthInfo.NoteLengthIcon, noteLengthInfo.FullName);
+                        item.Selected = (noteLengthInfo.Timespan == selectionDivision);
+                        item.Click += (ContextItem sender, ContextItem.ContextItemClickEventArgs e) =>
+                        {
+                            e.Cancel = true;//!setMeasureDivision(noteLengthInfo.Timespan);
+                            setMeasureDivision(noteLengthInfo.Timespan);
+                            // setMeasureDivision will set the selection ultimately triggering
+                            // refreshDivisionButtons again and THEN the click event handler will run
+                            // and try to clear selection on all new correct context items and set a now non-added item to be
+                            // selected. this was in fact fucking impossible to debug but i figured it out finally.
+                        };
+                        divisionSubsection.AddItem(item);
+                    }
+                }
+            }
+            return updateRequired;
+        }
+        private int findSectionHead(int stepIndex, Tab tab = null)
+        {
+            if (tab == null)
+            {
+                tab = Song.FocusedTab;
+            }
             int sectionHead = 0;
             for (int i = stepIndex; i >= 0; i--)
             {
-                if (Song.Tab[i].Type == Enums.StepType.SectionHead)
+                if (tab[i].Type == Enums.StepType.SectionHead)
                 {
                     sectionHead = i;
                     break;
@@ -95,66 +108,68 @@ namespace QuickTabs.Controls
             }
             return sectionHead;
         }
-        /*private int countBeatsInSection(int stepIndex)
+        private bool checkMultipleSections()
         {
-            int sectionHead = findSectionHead(stepIndex);
-            int beatCount = 0;
-            for (int i = sectionHead + 1; i < Song.Tab.Count; i++)
+            for (int i = 1; i < Song.FocusedTab.Count; i++)
             {
-                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                if (Song.FocusedTab[i].Type == Enums.StepType.SectionHead)
                 {
-                    beatCount++;
-                }
-                else if (Song.Tab[i].Type == Enums.StepType.SectionHead)
-                {
-                    return beatCount;
+                    return true;
                 }
             }
-            return beatCount;
-        }*/
+            return false;
+        }
         private int countMeasuresInSection(int stepIndex)
         {
             MusicalTimespan measureLength = Song.TimeSignature.MeasureLength;
             MusicalTimespan beatCounter = MusicalTimespan.Zero;
             int sectionHead = findSectionHead(stepIndex);
             int measureCount = 0;
-            for (int i = sectionHead + 1; i < Song.Tab.Count; i++)
+            for (int i = sectionHead + 1; i < Song.FocusedTab.Count; i++)
             {
-                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                if (Song.FocusedTab[i].Type == Enums.StepType.Beat)
                 {
-                    Beat beat = (Beat)Song.Tab[i];
+                    Beat beat = (Beat)Song.FocusedTab[i];
                     beatCounter += beat.BeatDivision;
                     if (beatCounter >= measureLength)
                     {
                         measureCount++;
                         beatCounter = MusicalTimespan.Zero;
                     }
-                } else if (Song.Tab[i].Type == Enums.StepType.SectionHead)
+                } else if (Song.FocusedTab[i].Type == Enums.StepType.SectionHead)
                 {
                     return measureCount;
                 }
             }
             return measureCount;
         }
-        private int findFirstBeatInMeasure(int startPoint, bool roundForward)
+        private int findRelativeMeasure(int startPoint, RelativeMeasureMode mode)
         {
             MusicalTimespan measureLength = Song.TimeSignature.MeasureLength;
             MusicalTimespan beatCounter = MusicalTimespan.Zero;
             int lastMeasureStart = -1;
+            bool roundForward;
+            if (mode == RelativeMeasureMode.ReturnFirstMeasureAfterStartPoint || mode == RelativeMeasureMode.ReturnSectionHeadOrFirstMeasureAfterStartPoint)
+            {
+                roundForward = true;
+            } else
+            {
+                roundForward = false;
+            }
             if (roundForward)
             {
                 startPoint++;
             }
 
-            for (int i = 0; i < Song.Tab.Count; i++)
+            for (int i = 0; i < Song.FocusedTab.Count; i++)
             {
-                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                if (Song.FocusedTab[i].Type == Enums.StepType.Beat)
                 {
                     if (lastMeasureStart == -1)
                     {
                         lastMeasureStart = i;
                     }
-                    Beat beat = (Beat)Song.Tab[i];
+                    Beat beat = (Beat)Song.FocusedTab[i];
                     if (beatCounter >= measureLength)
                     {
                         beatCounter = MusicalTimespan.Zero;
@@ -169,161 +184,223 @@ namespace QuickTabs.Controls
                         return lastMeasureStart;
                     }
                     beatCounter += beat.BeatDivision;
+                } else if (Song.FocusedTab[i].Type == Enums.StepType.SectionHead)
+                {
+                    if (mode == RelativeMeasureMode.ReturnSectionHeadOrFirstMeasureAfterStartPoint)
+                    {
+                        if (beatCounter >= measureLength && i >= startPoint)
+                        {
+                            return i;
+                        }
+                    } else if (mode == RelativeMeasureMode.ReturnLastMeasureBeforeStartPoint)
+                    {
+                        if (i == startPoint)
+                        {
+                            return lastMeasureStart;
+                        }
+                    }
                 }
             }
-            return Song.Tab.Count;
+            if (roundForward)
+            {
+                return Song.FocusedTab.Count;
+            } else
+            {
+                return lastMeasureStart;
+            }
         }
-        /*private int findNextMeasureAlignedStepIndex(int stepIndex, bool ignoreLastSectionHead)
+        private enum RelativeMeasureMode
         {
-            if (stepIndex < 0)
+            ReturnLastMeasureBeforeStartPoint,
+            ReturnFirstMeasureAfterStartPoint,
+            ReturnSectionHeadOrFirstMeasureAfterStartPoint
+        }
+        private delegate void MirrorCallback(Tab tab, params int[] positions);
+        private void mirrorModification(MirrorCallback callback, params int[] positions)
+        {
+            MusicalTimespan[] timePositions = new MusicalTimespan[positions.Length];
+            bool[] shiftToSectionHead = new bool[positions.Length];
+            for (int i = 0; i < timePositions.Length; i++)
             {
-                for (int i = 0; i < Song.Tab.Count; i++)
+                int val = positions[i];
+                timePositions[i] = Song.FocusedTab.FindIndexTime(val);
+                if (val < Song.FocusedTab.Count)
                 {
-                    if (Song.Tab[i].Type == Enums.StepType.Beat)
-                    {
-                        return i;
-                    }
+                    shiftToSectionHead[i] = (Song.FocusedTab[val].Type == Enums.StepType.SectionHead);
+                } else
+                {
+                    shiftToSectionHead[i] = false;
                 }
             }
-            //int beatsPerMeasure = Song.TimeSignature.EighthNotesPerMeasure;
-            MusicalTimespan measureLength = Song.TimeSignature.MeasureLength;
-            MusicalTimespan beatCounter = MusicalTimespan.Zero;
-            for (int i = 0; i < stepIndex; i++)
+            MusicalTimespan throwaway;
+            foreach (Track track in Song.Tracks)
             {
-                if (Song.Tab[i].Type == Enums.StepType.Beat)
+                Tab tab = track.Tab;
+                for (int i = 0; i < positions.Length; i++)
                 {
-                    Beat beat = (Beat)Song.Tab[i];
-                    beatCounter += beat.BeatDivision;
-                    if (beatCounter >= measureLength)
+                    positions[i] = tab.FindClosestBeatIndexToTime(timePositions[i], out throwaway);
+                    if (shiftToSectionHead[i])
                     {
-                        beatCounter = MusicalTimespan.Zero;
+                        positions[i]--; // FindIndexTime -> FindClosestBeatIndexToTime will always come back a beat even if the original index was a section head.
                     }
                 }
-            }
-            MusicalTimespan beatsFromStepIndex = (measureLength - beatCounter);
-            MusicalTimespan lastDivision = ((Beat)Song.Tab[stepIndex]).BeatDivision;
-            int result = stepIndex;
-            while (beatsFromStepIndex > MusicalTimespan.Zero)
-            {
-                result++;
-                if (result >= Song.Tab.Count)
+                if (track == Song.FocusedTrack)
                 {
-                    beatsFromStepIndex -= lastDivision;
+                    callback(tab, positions);
+                } else
+                {
+                    callback(tab, positions);
+                }
+            }
+        }
+        private void addMeasureClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => addMeasureClick();
+        private void addMeasureClick()
+        {
+            int nextMeasureVal = findRelativeMeasure(editor.Selection.SelectionStart, RelativeMeasureMode.ReturnSectionHeadOrFirstMeasureAfterStartPoint);
+            int currentMeasureVal = findRelativeMeasure(editor.Selection.SelectionStart, RelativeMeasureMode.ReturnLastMeasureBeforeStartPoint);
+            mirrorModification((Tab tab, int[] args) =>
+            {
+                int nextMeasure = args[0];
+                int currentMeasure = args[1];
+                MusicalTimespan division = ((Beat)tab[currentMeasure]).BeatDivision;
+                int beatsPerMeasure = Song.TimeSignature.MeasureLength / division;
+
+                if (nextMeasure >= tab.Count)
+                {
+                    tab.SetLength(tab.Count + beatsPerMeasure, division);
                 }
                 else
                 {
-                    if (Song.Tab[result].Type == Enums.StepType.Beat)
-                    {
-                        lastDivision = ((Beat)Song.Tab[result]).BeatDivision;
-                        beatsFromStepIndex -= lastDivision;
-                    }
-                    else if (beatsFromStepIndex == lastDivision && ignoreLastSectionHead)
-                    {
-                        beatsFromStepIndex -= lastDivision;
-                    }
+                    tab.InsertBeats(nextMeasure, beatsPerMeasure, division);
                 }
-            }
-            return result;
-        }*/
-        private void addMeasureClick()
-        {
-            int currentMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, false);
-            MusicalTimespan division = ((Beat)Song.Tab[currentMeasure]).BeatDivision;
-            int beatsPerMeasure = Song.TimeSignature.MeasureLength / division;
-            int nextMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, true);
-            if (nextMeasure >= Song.Tab.Count)
-            {
-                Song.Tab.SetLength(Song.Tab.Count + beatsPerMeasure, division);
-            }
-            else
-            {
-                Song.Tab.InsertBeats(nextMeasure, beatsPerMeasure, division);
-            }
-            editor.Selection = new Selection(nextMeasure, 1);
+            }, nextMeasureVal, currentMeasureVal);
+            editor.Selection = new Selection(nextMeasureVal, 1);
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection);
         }
+        private void removeMeasureClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => removeMeasureClick();
         private void removeMeasureClick()
         {
-            if (countMeasuresInSection(editor.Selection.SelectionStart) > 1)
+            int measuresInSection = countMeasuresInSection(editor.Selection.SelectionStart);
+            if (checkMultipleSections() || measuresInSection > 1)
             {
-                int currentMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, false);
-                MusicalTimespan division = ((Beat)Song.Tab[currentMeasure]).BeatDivision;
-                int beatsPerMeasure = Song.TimeSignature.MeasureLength / division;
-                Song.Tab.RemoveBeats(currentMeasure, beatsPerMeasure);
-                if (currentMeasure - 1 < 1)
+                int currentMeasureVal = findRelativeMeasure(editor.Selection.SelectionStart, RelativeMeasureMode.ReturnLastMeasureBeforeStartPoint);
+                mirrorModification((Tab tab, int[] args) =>
                 {
-                    editor.Selection = new Selection(currentMeasure, 1);
+                    int currentMeasure = args[0];
+                    MusicalTimespan division = ((Beat)tab[currentMeasure]).BeatDivision;
+                    int beatsPerMeasure = Song.TimeSignature.MeasureLength / division;
+                    if (measuresInSection > 1)
+                    {
+                        tab.RemoveBeats(currentMeasure, beatsPerMeasure);
+                    }
+                    else
+                    {
+                        tab.RemoveBeats(currentMeasure - 1, beatsPerMeasure + 1);
+                    }
+                }, currentMeasureVal);
+                if (currentMeasureVal - 1 < 1)
+                {
+                    editor.Selection = new Selection(currentMeasureVal, 1);
                 }
                 else
                 {
-                    editor.Selection = new Selection(findFirstBeatInMeasure(currentMeasure - 1, false), 1);
+                    int selectionStart = findRelativeMeasure(currentMeasureVal - 1, RelativeMeasureMode.ReturnLastMeasureBeforeStartPoint);
+                    editor.Selection = new Selection(selectionStart, 1);
                 }
                 editor.Refresh();
                 Fretboard.Refresh();
             }
             History.PushState(Song, editor.Selection);
         }
+        private void addSectionClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => addSectionClick();
         private void addSectionClick()
         {
-            int nextMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, true);
+            int nextMeasureVal = findRelativeMeasure(editor.Selection.SelectionStart, RelativeMeasureMode.ReturnSectionHeadOrFirstMeasureAfterStartPoint);
             int beatsPerMeasure = Song.TimeSignature.MeasureLength / Song.TimeSignature.DefaultDivision;
-            if (nextMeasure >= Song.Tab.Count)
+            mirrorModification((Tab tab, int[] args) =>
             {
-                Song.Tab.SetLength(Song.Tab.Count + beatsPerMeasure + 1, Song.TimeSignature.DefaultDivision);
-            }
-            else
-            {
-                if (Song.Tab[nextMeasure - 1].Type == Enums.StepType.SectionHead)
+                int nextMeasure = args[0];
+                if (nextMeasure >= tab.Count)
                 {
-                    return;
+                    tab.SetLength(tab.Count + beatsPerMeasure + 1, Song.TimeSignature.DefaultDivision);
                 }
-                Song.Tab.InsertBeats(nextMeasure, 1, Song.TimeSignature.DefaultDivision);
-            }
-            SectionHead sectionHead = new SectionHead();
-            sectionHead.Name = "Untitled Section";
-            sectionHead.IndexWithinTab = nextMeasure;
-            Song.Tab[nextMeasure] = sectionHead;
-            editor.Selection = new Selection(nextMeasure + 1, 1);
+                else
+                {
+                    if (tab[nextMeasure].Type == Enums.StepType.SectionHead)
+                    {
+                        tab.InsertBeats(nextMeasure, beatsPerMeasure + 1, Song.TimeSignature.DefaultDivision);
+                    }
+                    else
+                    {
+                        tab.InsertBeats(nextMeasure, 1, Song.TimeSignature.DefaultDivision);
+                    }
+                }
+                SectionHead sectionHead = new SectionHead();
+                sectionHead.Name = "Untitled Section";
+                sectionHead.IndexWithinTab = nextMeasure;
+                tab[nextMeasure] = sectionHead;
+            }, nextMeasureVal);
+            editor.Selection = new Selection(nextMeasureVal + 1, 1);
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection);
         }
+        private void removeSectionClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => removeSectionClick();
         private void removeSectionClick()
         {
-            if (editor.Selection.SelectionStart - 1 == 0)
+            int sectionHeadVal = findSectionHead(editor.Selection.SelectionStart);
+            if (sectionHeadVal > 0)
             {
-                return;
-            }
-            if (Song.Tab[editor.Selection.SelectionStart - 1].Type == Enums.StepType.SectionHead)
-            {
-                Song.Tab.RemoveBeats(editor.Selection.SelectionStart - 1, 1);
-                editor.Selection = new Selection(editor.Selection.SelectionStart - 1, 1);
+                mirrorModification((Tab tab, int[] args) =>
+                {
+                    int selectionStart = args[0];
+                    int sectionHead = findSectionHead(selectionStart, tab);
+                    tab.RemoveBeats(sectionHead, 1);
+                }, editor.Selection.SelectionStart);
+                editor.Selection = new Selection(sectionHeadVal, 1);
                 editor.Refresh();
                 Fretboard.Refresh();
                 History.PushState(Song, editor.Selection);
             }
         }
+        private void renameSectionClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => renameSectionClick();
         private void renameSectionClick()
         {
             using (SectionName sectionNameForm = new SectionName())
             {
-                SectionHead head = (SectionHead)Song.Tab[findSectionHead(editor.Selection.SelectionStart)];
-                sectionNameForm.Name = head.Name;
+                SectionHead focusedHead = (SectionHead)Song.FocusedTab[findSectionHead(editor.Selection.SelectionStart)];
+                sectionNameForm.Name = focusedHead.Name;
                 sectionNameForm.ShowDialog();
-                if (head.Name != sectionNameForm.Name)
+                string newName = sectionNameForm.Name;
+                if (focusedHead.Name != newName)
                 {
-                    head.Name = sectionNameForm.Name;
+                    mirrorModification((Tab tab, int[] args) =>
+                    {
+                        int selectionStart = args[0];
+                        SectionHead head = (SectionHead)tab[findSectionHead(selectionStart, tab)];
+                        head.Name = newName;
+                    }, editor.Selection.SelectionStart);
                     editor.Refresh();
                     History.PushState(Song, editor.Selection);
                 }
             }
         }
-        private void setMeasureDivision(MusicalTimespan newDivision)
+        private bool setMeasureDivision(MusicalTimespan newDivision)
         {
-            int currentMeasure = findFirstBeatInMeasure(editor.Selection.SelectionStart, false);
-            MusicalTimespan oldDivision = ((Beat)Song.Tab[currentMeasure]).BeatDivision;
+            if (!Song.TimeSignature.MeasureLength.IsDivisibleBy(newDivision))
+            {
+                using (GenericMessage message = new GenericMessage())
+                {
+                    message.Text = "Set measure division";
+                    message.Message = "Division is not available in this time signature.";
+                    message.ShowDialog();
+                    return false;
+                }
+            }
+            int currentMeasure = findRelativeMeasure(editor.Selection.SelectionStart, RelativeMeasureMode.ReturnLastMeasureBeforeStartPoint);
+            MusicalTimespan oldDivision = ((Beat)Song.FocusedTab[currentMeasure]).BeatDivision;
             int oldMeasureLength = Song.TimeSignature.MeasureLength / oldDivision;
             int newMeasureLength = Song.TimeSignature.MeasureLength / newDivision;
             float sourceMapFactor = oldDivision.DivideByF(newDivision);
@@ -333,7 +410,7 @@ namespace QuickTabs.Controls
             {
                 bool lossCounted = false;
                 int scaledI = (int)Math.Floor(i * sourceMapFactor);
-                Beat copy = ((Beat)Song.Tab[currentMeasure + i]).Copy();
+                Beat copy = ((Beat)Song.FocusedTab[currentMeasure + i]).Copy();
                 copy.BeatDivision = newDivision;
                 MusicalTimespan originalPosition = (oldDivision * i);
                 MusicalTimespan newPosition = (newDivision * scaledI);
@@ -351,11 +428,32 @@ namespace QuickTabs.Controls
                     {
                         lostOrMovedSteps++;
                     }
+                    if (QTPersistence.Current.ScaleMergeSteps)
+                    {
+                        Beat inTheWay = newMeasureBeats[scaledI];
+                        Beat mergeBeat = new Beat();
+                        mergeBeat.BeatDivision = newDivision;
+                        bool[] setStrings = new bool[Song.FocusedTab.Tuning.Count];
+                        foreach (KeyValuePair<Fret, MusicalTimespan> held in inTheWay)
+                        {
+                            mergeBeat[held.Key] = held.Value;
+                            setStrings[held.Key.String] = true;
+                        }
+                        foreach (KeyValuePair<Fret, MusicalTimespan> held in copy)
+                        {
+                            if (setStrings[held.Key.String])
+                            {
+                                continue;
+                            }
+                            mergeBeat[held.Key] = held.Value;
+                        }
+                        newMeasureBeats[scaledI] = mergeBeat;
+                    }
                 }
             }
             if (lostOrMovedSteps > 0)
             {
-                if (QTSettings.Current.ScaleAskAboutLoss)
+                if (QTPersistence.Current.ScaleAskAboutLoss)
                 {
                     using (PersistentAreYouSure areYouSure = new PersistentAreYouSure())
                     {
@@ -364,13 +462,13 @@ namespace QuickTabs.Controls
                         areYouSure.ShowDialog();
                         if (!areYouSure.Continue)
                         {
-                            return;
+                            return false;
                         } else
                         {
                             if (areYouSure.StopAsking)
                             {
-                                QTSettings.Current.ScaleAskAboutLoss = false;
-                                QTSettings.Current.Save();
+                                QTPersistence.Current.ScaleAskAboutLoss = false;
+                                QTPersistence.Current.Save();
                             }
                         }
                     }
@@ -379,28 +477,28 @@ namespace QuickTabs.Controls
             int measureLengthDifference = newMeasureLength - oldMeasureLength;
             if (measureLengthDifference > 0)
             {
-                Song.Tab.InsertBeats(currentMeasure, measureLengthDifference, newDivision);
+                Song.FocusedTab.InsertBeats(currentMeasure, measureLengthDifference, newDivision);
             } else if (measureLengthDifference < 0)
             {
-                Song.Tab.RemoveBeats(currentMeasure, -measureLengthDifference);
+                Song.FocusedTab.RemoveBeats(currentMeasure, -measureLengthDifference);
             }
             for (int i = 0; i < newMeasureLength; i++)
             {
                 if (newMeasureBeats[i] != null)
                 {
-                    Song.Tab[currentMeasure + i] = newMeasureBeats[i];
+                    Song.FocusedTab[currentMeasure + i] = newMeasureBeats[i];
                 } else
                 {
                     Beat beat = new Beat();
                     beat.BeatDivision = newDivision;
-                    beat.SustainTime = newDivision;
-                    Song.Tab[currentMeasure + i] = beat;
+                    Song.FocusedTab[currentMeasure + i] = beat;
                 }
             }
             editor.Selection = new Selection(currentMeasure, 1);
             editor.Refresh();
             Fretboard.Refresh();
             History.PushState(Song, editor.Selection);
+            return true;
         }
     }
 }

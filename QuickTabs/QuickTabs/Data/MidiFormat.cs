@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Data
 {
-    /*internal class MidiFormat : FileFormat // note: midi is biiiiiig endian
+    /*public class MidiFormat : FileFormat // note: midi is biiiiiig endian
     {
         public override string Extension => ".mid";
 

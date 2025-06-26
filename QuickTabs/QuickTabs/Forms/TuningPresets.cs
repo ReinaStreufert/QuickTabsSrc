@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace QuickTabs.Forms
 {
-    internal partial class TuningPresets : Form
+    public partial class TuningPresets : Form
     {
         public TuningPicker TuningPicker { get; set; }
 

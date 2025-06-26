@@ -1,0 +1,1715 @@
+{
+  "name": "Example #1",
+  "tempo": 120,
+  "ts": [
+    4,
+    4
+  ],
+  "tuning": [
+    "E2",
+    "A2",
+    "D3",
+    "G3",
+    "B3",
+    "E4"
+  ],
+  "steps": [
+    {
+      "type": "sh",
+      "name": "Section #1"
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          6.0
+        ],
+        [
+          5,
+          8.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          2.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          2,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        [
+          3,
+          8.0
+        ],
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          8.0
+        ],
+        [
+          5,
+          8.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          2.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          2,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        [
+          3,
+          8.0
+        ],
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "sh",
+      "name": "Section #2"
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          0,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          2,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        [
+          3,
+          8.0
+        ],
+        [
+          4,
+          8.0
+        ],
+        [
+          5,
+          8.0
+        ],
+        [
+          3,
+          8.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          0,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ]
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        [
+          3,
+          3.0
+        ],
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        [
+          4,
+          2.0
+        ],
+        [
+          5,
+          2.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        [
+          3,
+          8.0
+        ],
+        [
+          4,
+          8.0
+        ],
+        [
+          5,
+          8.0
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "type": "b",
+      "div": 8,
+      "states": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  ]
+}

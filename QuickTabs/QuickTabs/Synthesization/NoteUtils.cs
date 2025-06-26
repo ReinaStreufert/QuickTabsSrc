@@ -11,7 +11,7 @@ namespace QuickTabs.Synthesization
         public const float StandardTuning = 440F;
         public static float GetMidiNoteFrequency(int MidiNoteNumber, float Tuning = NoteUtils.StandardTuning)
         {
-            return (440F / 32F) * (float)(Math.Pow(2, (MidiNoteNumber - 9F) / 12F));
+            return (float)((440F / 32D) * (Math.Pow(2, (MidiNoteNumber - 9D) / 12D)));
         }
     }
 }

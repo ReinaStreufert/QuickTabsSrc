@@ -14,7 +14,7 @@ using File = System.IO.File;
 
 namespace QuickTabs
 {
-    internal static class InstallOperations
+    public static class InstallOperations
     {
         public static event Action InstallStarted;          //  ]
         public static event Action<string> InstallComplete; //  ]
@@ -62,7 +62,7 @@ namespace QuickTabs
             }
             AudioEngine.Stop();
             Environment.Exit(0);
-            return true; // this technically exists for no reason
+            return true; // this technically exists for no reason (but to make the compiler happy)
         }
         public static void StartInstall(string installDir, bool createStartShortcut)
         {

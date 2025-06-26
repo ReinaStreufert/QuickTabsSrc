@@ -9,12 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Margins = System.Drawing.Printing.Margins;
 
 namespace QuickTabs.Forms
 {
-    internal partial class PrintTab : Form
+    public partial class PrintTab : Form
     {
         public Song Song { get; set; }
+        public bool FocusedTrackOnly { get; set; }
 
         private TabPrinter tabPrinter;
         private PrinterSettings printerSettings;
@@ -37,6 +39,7 @@ namespace QuickTabs.Forms
             tabPrinter.Song = Song;
             tabPrinter.Scale = 0.6F;
             tabPrinter.OnPageCountSet += TabPrinter_OnPageCountSet;
+            tabPrinter.FocusedTrackOnly = FocusedTrackOnly;
             this.Cursor = Cursors.WaitCursor;
             printPreview = new QTPrintPreview(tabPrinter.GeneratePreview());
             this.Cursor = Cursors.Default;

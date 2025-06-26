@@ -96,7 +96,7 @@
             this.discardCloseButton.Name = "discardCloseButton";
             this.discardCloseButton.Size = new System.Drawing.Size(276, 56);
             this.discardCloseButton.TabIndex = 8;
-            this.discardCloseButton.Text = "Discard and close";
+            this.discardCloseButton.Text = "Ignore and close";
             this.discardCloseButton.UseVisualStyleBackColor = false;
             this.discardCloseButton.Click += new System.EventHandler(this.discardCloseButton_Click);
             // 

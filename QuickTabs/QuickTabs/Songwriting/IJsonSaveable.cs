@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal interface IJsonSaveable
+    public interface IJsonSaveable
     {
         public JObject SaveAsJObject(Song Song);
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal partial class ContextMenu
+    public partial class ContextMenu
     {
         private class ContextMenuDropdown : Control
         {
@@ -37,6 +37,10 @@ namespace QuickTabs.Controls
             protected override void OnMouseMove(MouseEventArgs e)
             {
                 base.OnMouseMove(e);
+                if (this.Parent == null) // windows forms will occasionally send mouse events even after a control has been removed, causing issues.
+                {
+                    return;
+                }
                 int newHover = getItemFromY(e.Y);
                 if (newHover >= Section.Count())
                 {
@@ -88,6 +92,10 @@ namespace QuickTabs.Controls
             protected override void OnMouseDown(MouseEventArgs e)
             {
                 base.OnMouseDown(e);
+                if (this.Parent == null)
+                {
+                    return;
+                }
                 if (hoveredItem >= 0 && hoveredItem < Section.Count())
                 {
                     ContextItem item = Section[hoveredItem];
@@ -159,7 +167,7 @@ namespace QuickTabs.Controls
                             usedBrush = contrast;
                         } else
                         {
-                            if (Section.ToggleType == ToggleType.NotTogglable)
+                            if (Section.ToggleType == ToggleType.NotTogglable || item.ExcludeFromToggle)
                             {
                                 usedBrush = fadedGray;
                             } else
@@ -168,7 +176,7 @@ namespace QuickTabs.Controls
                             }
                         }
                         g.DrawString(item.CollapsedText, font, usedBrush, textStartX, centerY - textSize.Height / 2);
-                        if (item.Selected && Section.ToggleType != ToggleType.NotTogglable)
+                        if (item.Selected && Section.ToggleType != ToggleType.NotTogglable && !item.ExcludeFromToggle)
                         {
                             g.DrawImage(DrawingIcons.Check[DrawingConstants.ContrastColor], centerCheckX - DrawingConstants.MediumIconSize / 2, centerY - DrawingConstants.MediumIconSize / 2, DrawingConstants.MediumIconSize, DrawingConstants.MediumIconSize);
                         } else if (item.Selected && item.Submenu != null)

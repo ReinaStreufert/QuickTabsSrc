@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuickTabs.Songwriting
 {
-    internal struct Tuning
+    public struct Tuning
     {
         public static readonly Tuning StandardGuitar = new Tuning("E4", "B3", "G3", "D3", "A2", "E2");
         public static readonly Tuning DropD = new Tuning("E4", "B3", "G3", "D3", "A2", "D2");
@@ -43,6 +44,31 @@ namespace QuickTabs.Songwriting
         public Note GetMusicalNote(int stringIndex)
         {
             return tuning[stringIndex];
+        }
+
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            if (obj.GetType() != typeof(Tuning))
+            {
+                return false;
+            } else
+            {
+                Tuning compareTuning = (Tuning)obj;
+                if (compareTuning.Count != this.Count)
+                {
+                    return false;
+                } else
+                {
+                    for (int i = 0; i < this.Count; i++)
+                    {
+                        if (compareTuning.tuning[i].ToString() != this.tuning[i].ToString())
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
         }
     }
 }

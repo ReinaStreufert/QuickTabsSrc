@@ -14,6 +14,7 @@ namespace QuickTabs.Forms
     public partial class CrashRecovery : Form
     {
         public bool AttemptRecover { get; private set; }
+        public CrashManager.CrashReport Report { get; set; } = null;
 
         public CrashRecovery()
         {
@@ -28,8 +29,12 @@ namespace QuickTabs.Forms
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            exceptionBox.Text = CrashManager.LastCrashReport.ExceptionInfo;
-            if (!CrashManager.LastCrashReport.UnsavedSongAvailable)
+            if (Report == null)
+            {
+                Report = CrashManager.LastCrashReport;
+            }
+            exceptionBox.Text = Report.ExceptionInfo;
+            if (!Report.UnsavedSongAvailable)
             {
                 recoveryAvailableLabel.Text = "Data recovery: unavailable";
                 discardCloseButton.Visible = false;
@@ -39,7 +44,7 @@ namespace QuickTabs.Forms
 
         private void recoverCloseButton_Click(object sender, EventArgs e)
         {
-            if (CrashManager.LastCrashReport.UnsavedSongAvailable)
+            if (Report.UnsavedSongAvailable)
             {
                 AttemptRecover = true;
             } else
@@ -53,7 +58,7 @@ namespace QuickTabs.Forms
         {
             using (UnsavedChanges unsavedChanges = new UnsavedChanges())
             {
-                unsavedChanges.CustomMessage = "QuickTabs recovered unsaved data. Are you sure you would like to discard the recovered song?";
+                unsavedChanges.CustomMessage = "Are you sure you would not like to open the recovered song? You can always find it in the crashes section in Config->Preferences.";
                 unsavedChanges.ShowDialog();
                 if (unsavedChanges.Continue)
                 {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal class ToolMenu : Control
+    public class ToolMenu : Control
     {
         public ControlCollection Tools { get; set; }
         public List<MultiColorBitmap> Icons { get; set; }
@@ -19,7 +19,6 @@ namespace QuickTabs.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            Console.WriteLine(this.Size);
         }
     }
 }

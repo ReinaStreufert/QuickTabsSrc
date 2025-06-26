@@ -40,11 +40,10 @@
             this.label6 = new System.Windows.Forms.Label();
             this.saveButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.tuningPickerContainer = new System.Windows.Forms.Panel();
             this.ts1DisabledLabel = new System.Windows.Forms.Label();
             this.ts2DisabledLabel = new System.Windows.Forms.Label();
-            this.tuningPresetLink = new System.Windows.Forms.LinkLabel();
             this.tapTempoLink = new System.Windows.Forms.LinkLabel();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.tempoInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ts1Input)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ts2Input)).BeginInit();
@@ -215,7 +214,7 @@
             this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.saveButton.Location = new System.Drawing.Point(688, 315);
+            this.saveButton.Location = new System.Drawing.Point(688, 244);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(272, 56);
             this.saveButton.TabIndex = 11;
@@ -229,20 +228,13 @@
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.cancelButton.Location = new System.Drawing.Point(405, 315);
+            this.cancelButton.Location = new System.Drawing.Point(405, 244);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(272, 56);
             this.cancelButton.TabIndex = 12;
             this.cancelButton.Text = "Discard Changes";
             this.cancelButton.UseVisualStyleBackColor = false;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
-            // 
-            // tuningPickerContainer
-            // 
-            this.tuningPickerContainer.Location = new System.Drawing.Point(28, 200);
-            this.tuningPickerContainer.Name = "tuningPickerContainer";
-            this.tuningPickerContainer.Size = new System.Drawing.Size(932, 109);
-            this.tuningPickerContainer.TabIndex = 13;
             // 
             // ts1DisabledLabel
             // 
@@ -266,19 +258,6 @@
             this.ts2DisabledLabel.Text = "4";
             this.ts2DisabledLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // tuningPresetLink
-            // 
-            this.tuningPresetLink.AutoSize = true;
-            this.tuningPresetLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tuningPresetLink.LinkColor = System.Drawing.Color.White;
-            this.tuningPresetLink.Location = new System.Drawing.Point(137, 164);
-            this.tuningPresetLink.Name = "tuningPresetLink";
-            this.tuningPresetLink.Size = new System.Drawing.Size(95, 29);
-            this.tuningPresetLink.TabIndex = 16;
-            this.tuningPresetLink.TabStop = true;
-            this.tuningPresetLink.Text = "Presets";
-            this.tuningPresetLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.tuningPresetLink_LinkClicked);
-            // 
             // tapTempoLink
             // 
             this.tapTempoLink.ActiveLinkColor = System.Drawing.Color.DodgerBlue;
@@ -293,17 +272,27 @@
             this.tapTempoLink.Text = "Tap";
             this.tapTempoLink.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tapTempoLink_LinkClicked);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label7.Location = new System.Drawing.Point(28, 198);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(593, 29);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Tuning is now set per-track in Track->Track properties";
+            // 
             // DocumentProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(985, 398);
+            this.ClientSize = new System.Drawing.Size(985, 332);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.tapTempoLink);
-            this.Controls.Add(this.tuningPresetLink);
             this.Controls.Add(this.ts2DisabledLabel);
             this.Controls.Add(this.ts1DisabledLabel);
-            this.Controls.Add(this.tuningPickerContainer);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.label6);
@@ -345,10 +334,9 @@
         private Label label6;
         private Button saveButton;
         private Button cancelButton;
-        private Panel tuningPickerContainer;
         private Label ts1DisabledLabel;
         private Label ts2DisabledLabel;
-        private LinkLabel tuningPresetLink;
         private LinkLabel tapTempoLink;
+        private Label label7;
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs
 {
-    internal class TapTempo
+    public class TapTempo
     {
         public delegate void SetTempo(int bpm);
 

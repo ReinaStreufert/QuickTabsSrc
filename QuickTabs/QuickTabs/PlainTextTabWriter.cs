@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace QuickTabs
 {
-    internal class PlainTextTabWriter
+    public class PlainTextTabWriter
     {
         public StaffWriter StaffWriter { get; set; } = new QuickTabsStyleStaffWriter();
         public TabMetadataComponents IncludedMetadata { get; set; } = TabMetadataComponents.None;
         public int MeasureWrap { get; set; } = 0; // 0 = dont wrap, otherwise value is max measures per line
+        public bool FocusedTrackOnly { get; set; } = false;
 
         private Song source;
-        private List<Section> sections = new List<Section>();
+        private List<StaffRow> rows = new List<StaffRow>();
 
         public PlainTextTabWriter(Song source)
         {
@@ -23,7 +24,13 @@ namespace QuickTabs
         }
         public string WriteTab()
         {
-            splitSections();
+            if (FocusedTrackOnly)
+            {
+                splitSectionsFocusedTrack();
+            } else
+            {
+                splitSectionsAllTracks();
+            }
             StringBuilder result = new StringBuilder();
             if (IncludedMetadata != TabMetadataComponents.None)
             {
@@ -47,57 +54,113 @@ namespace QuickTabs
                 if (IncludedMetadata.HasFlag(TabMetadataComponents.ExactTuning))
                 {
                     result.Append("Tuning:");
-                    for (int i = source.Tab.Tuning.Count - 1; i >= 0; i--)
+                    for (int i = source.FocusedTab.Tuning.Count - 1; i >= 0; i--)
                     {
                         result.Append(" ");
-                        result.Append(source.Tab.Tuning.GetMusicalNote(i).ToString());
+                        result.Append(source.FocusedTab.Tuning.GetMusicalNote(i).ToString());
                     }
                     result.AppendLine();
                 }
                 result.AppendLine();
             }
-            foreach (Section section in sections)
+            foreach (StaffRow row in rows)
             {
-                if (section.Name != "")
+                if (row.Name != "")
                 {
-                    result.Append("Section: ");
-                    result.AppendLine(section.Name);
+                    result.AppendLine(row.Name);
                 }
-                result.Append(StaffWriter.WriteStaff(section.Beats, source.TimeSignature, source.Tab.Tuning));
+                result.Append(StaffWriter.WriteStaff(row.Beats, source.TimeSignature, source.FocusedTab.Tuning));
                 result.AppendLine();
             }
             return result.ToString();
         }
-        private void splitSections()
+        private void splitSectionsAllTracks()
         {
-            sections.Clear();
+            if (source.Tracks.Count <= 1)
+            {
+                splitSectionsFocusedTrack();
+                return;
+            }
+            rows.Clear();
+
+            MusicalTimespan measureLength = source.TimeSignature.MeasureLength;
+
+            Section[] sectionGraph = source.GetSectionGraph();
+            foreach (Section section in sectionGraph)
+            {
+                Dictionary<Track, Beat[]> content = section.Content;
+                foreach (KeyValuePair<Track, Beat[]> sectionTrackBeats in content)
+                {
+                    Track track = sectionTrackBeats.Key;
+                    Beat[] trackBeats = sectionTrackBeats.Value;
+                    StaffRow currentRow = new StaffRow();
+                    currentRow.Name = "Section: " + section.SectionName + " | Track: " + track.Name;
+                    currentRow.Tuning = track.Tab.Tuning;
+                    if (MeasureWrap > 0)
+                    {
+                        MusicalTimespan beatCounter = new MusicalTimespan();
+                        int measureCounter = 0;
+                        foreach (Beat beat in trackBeats)
+                        {
+                            currentRow.Beats.Add(beat);
+                            beatCounter += beat.BeatDivision;
+                            if (beatCounter >= measureLength)
+                            {
+                                beatCounter = MusicalTimespan.Zero;
+                                measureCounter++;
+                                if (measureCounter >= MeasureWrap)
+                                {
+                                    measureCounter = 0;
+                                    rows.Add(currentRow);
+                                    currentRow = new StaffRow();
+                                    currentRow.Tuning = track.Tab.Tuning;
+                                    currentRow.Name = "";
+                                }
+                            }
+                        }
+                    } else
+                    {
+                        currentRow.Beats = trackBeats.ToList(); // i cant think of any reason why this would be wrong
+                    }
+                    if (currentRow.Beats.Count > 0)
+                    {
+                        rows.Add(currentRow);
+                    }
+                }
+            }
+        }
+        private void splitSectionsFocusedTrack()
+        {
+            rows.Clear();
 
             MusicalTimespan measureLength = source.TimeSignature.MeasureLength;
             MusicalTimespan beatCount = MusicalTimespan.Zero;
             int measureCount = 0;
 
-            Section currentSection = new Section();
-            Tab sourceTab = source.Tab;
+            StaffRow currentRow = new StaffRow();
+            Tab sourceTab = source.FocusedTab;
+            currentRow.Tuning = sourceTab.Tuning;
             for (int i = 0; i < sourceTab.Count; i++)
             {
                 if (sourceTab[i].Type == Enums.StepType.SectionHead)
                 {
                     SectionHead sectionHead = (SectionHead)sourceTab[i];
-                    if (currentSection.Beats.Count == 0)
+                    if (currentRow.Beats.Count == 0)
                     {
-                        currentSection.Name = sectionHead.Name;
+                        currentRow.Name = sectionHead.Name;
                     } else
                     {
-                        sections.Add(currentSection);
-                        currentSection = new Section();
-                        currentSection.Name = sectionHead.Name;
+                        rows.Add(currentRow);
+                        currentRow = new StaffRow();
+                        currentRow.Name = "Section: " + sectionHead.Name;
+                        currentRow.Tuning = sourceTab.Tuning;
                         beatCount = MusicalTimespan.Zero;
                         measureCount = 0;
                     }
                 } else if (sourceTab[i].Type == Enums.StepType.Beat)
                 {
                     Beat beat = (Beat)sourceTab[i];
-                    currentSection.Beats.Add(beat);
+                    currentRow.Beats.Add(beat);
                     if (MeasureWrap > 0)
                     {
                         beatCount += beat.BeatDivision;
@@ -108,30 +171,32 @@ namespace QuickTabs
                             if (measureCount >= MeasureWrap)
                             {
                                 measureCount = 0;
-                                sections.Add(currentSection);
-                                currentSection = new Section();
-                                currentSection.Name = "";
+                                rows.Add(currentRow);
+                                currentRow = new StaffRow();
+                                currentRow.Tuning = sourceTab.Tuning;
+                                currentRow.Name = "";
                             }
                         }
                     }
                 }
             }
-            if (currentSection.Beats.Count > 0)
+            if (currentRow.Beats.Count > 0)
             {
-                sections.Add(currentSection);
+                rows.Add(currentRow);
             }
         }
-        private class Section
+        private class StaffRow
         {
             public string Name { get; set; }
             public List<Beat> Beats { get; set; } = new List<Beat>();
+            public Tuning Tuning { get; set; }
         }
     }
-    internal abstract class StaffWriter
+    public abstract class StaffWriter
     {
         public abstract string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning);
     }
-    internal class QuickTabsStyleStaffWriter : StaffWriter
+    public class QuickTabsStyleStaffWriter : StaffWriter
     {
         public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
@@ -156,23 +221,23 @@ namespace QuickTabs
             {
                 bool[] stringsSet = new bool[strings.Count];
                 int spaceSize = 1;
-                foreach (Fret heldFret in beat)
+                foreach (KeyValuePair<Fret,MusicalTimespan> heldFret in beat)
                 {
-                    string fretNumberString = heldFret.Space.ToString();
+                    string fretNumberString = heldFret.Key.Space.ToString();
                     if (fretNumberString.Length > spaceSize)
                     {
                         spaceSize = fretNumberString.Length;
                     }
-                    strings[heldFret.String].Append(fretNumberString);
+                    strings[heldFret.Key.String].Append(fretNumberString);
                     if (fretNumberString.Length < spaceSize)
                     {
                         for (int i = 0; i < spaceSize - fretNumberString.Length; i++)
                         {
-                            strings[heldFret.String].Append(' ');
+                            strings[heldFret.Key.String].Append(' ');
                         }
                     }
-                    stringsSet[heldFret.String] = true;
-                    holds[heldFret.String] = beat.SustainTime;
+                    stringsSet[heldFret.Key.String] = true;
+                    holds[heldFret.Key.String] = heldFret.Value;
                 }
                 for (int i = 0; i < stringsSet.Length; i++)
                 {
@@ -220,7 +285,7 @@ namespace QuickTabs
             return result.ToString();
         }
     }
-    internal class StandardStyleStaffWriter : StaffWriter
+    public class StandardStyleStaffWriter : StaffWriter
     {
         public override string WriteStaff(List<Beat> beats, TimeSignature timeSignature, Tuning tuning)
         {
@@ -239,13 +304,13 @@ namespace QuickTabs
             foreach (Beat beat in beats)
             {
                 bool[] stringsSet = new bool[strings.Count];
-                foreach (Fret fret in beat)
+                foreach (KeyValuePair<Fret,MusicalTimespan> fret in beat)
                 {
-                    stringsSet[fret.String] = true;
-                    strings[fret.String].Append(fret.Space.ToString());
-                    if (fret.Space < 10)
+                    stringsSet[fret.Key.String] = true;
+                    strings[fret.Key.String].Append(fret.Key.Space.ToString());
+                    if (fret.Key.Space < 10)
                     {
-                        strings[fret.String].Append("-");
+                        strings[fret.Key.String].Append("-");
                     }
                 }
                 for (int i = 0; i < stringsSet.Length; i++)

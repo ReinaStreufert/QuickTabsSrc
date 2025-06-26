@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal partial class QuickTabsContextMenu : ContextMenu
+    public partial class QuickTabsContextMenu : ContextMenu
     {
         private ContextSection historySection;
         private ContextItem undo;
@@ -59,6 +59,7 @@ namespace QuickTabs.Controls
                 this.Invalidate();
             }
         }
+        private void undoClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => undoClick();
         private void undoClick()
         {
             if (!History.CanUndo)
@@ -69,6 +70,7 @@ namespace QuickTabs.Controls
             History.Undo(Song, out newSelection);
             refreshState(newSelection);
         }
+        private void redoClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => redoClick();
         private void redoClick()
         {
             if (!History.CanRedo)
@@ -79,6 +81,7 @@ namespace QuickTabs.Controls
             History.Redo(Song, out newSelection);
             refreshState(newSelection);
         }
+        private void redoAlternateClick(ContextItem sender, ContextItem.ContextItemClickEventArgs e) => redoAlternateClick();
         private void redoAlternateClick()
         {
             if (!History.CanAlternateRedo)
@@ -94,6 +97,7 @@ namespace QuickTabs.Controls
             editor.QuietlySelect(newSelection);
             Fretboard.Refresh();
             editor.Refresh();
+            editor.RefreshTrackView();
             editor.Selection = newSelection;
         }
     }

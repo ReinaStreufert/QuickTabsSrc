@@ -1,19 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Margins = System.Drawing.Printing.Margins;
 
 namespace QuickTabs.Controls
 {
-    internal class TabPrinter : TabEditor
+    public class TabPrinter : TabEditor
     {
+        protected override bool PrintMode => true;
+        protected override bool PrintFocusedTrackOnly
+        {
+            get
+            {
+                return FocusedTrackOnly;
+            }
+        }
+
         public delegate void PageCountSet(int count);
 
         public PrintDocument Document { get; } = new PrintDocument();
         public float Scale { get; set; } = 1.0F;
         public bool IncludeCover { get; set; } = false;
+        public bool FocusedTrackOnly { get; set; } = false;
         public event PageCountSet OnPageCountSet;
 
         private PageSettings pageSettings;
@@ -43,11 +55,6 @@ namespace QuickTabs.Controls
             return docPreview;
         }
 
-        protected override void OnControlAdded(ControlEventArgs e)
-        {
-            throw new InvalidOperationException("TabPrinter cannot be added to a control. It is not a real control.");
-        }
-
         private void Document_BeginPrint(object sender, PrintEventArgs e)
         {
             currentPageIndex = -1;
@@ -64,12 +71,12 @@ namespace QuickTabs.Controls
             updateUI();
 
             int rowY = 0;
-            int tallRowHeight = DrawingConstants.RowHeight * (Song.Tab.Tuning.Count + 2); // +2 is for heading + spacing line
             pages = new List<List<UIRow>>();
             List<UIRow> currentPage = new List<UIRow>();
             for (int i = 0; i < tabUI.Count; i++)
             {
                 UIRow currentRow = tabUI[i];
+                int tallRowHeight = tuningRowHeight(currentRow.Track.Tab.Tuning);
                 rowY += tallRowHeight;
                 if (rowY < printAreaHeight)
                 {
@@ -140,10 +147,14 @@ namespace QuickTabs.Controls
                 int height = e.MarginBounds.Height;
                 g.TranslateTransform(e.MarginBounds.X, e.MarginBounds.Y);
                 string headText = Song.Name;
-                string subText = Song.TimeSignature.T1 + "/" + Song.TimeSignature.T2 + " • " + Song.Tempo + " BPM •";
-                for (int i = Song.Tab.Tuning.Count - 1; i >= 0; i--)
+                string subText = Song.TimeSignature.T1 + "/" + Song.TimeSignature.T2 + " • " + Song.Tempo + " BPM";
+                if (FocusedTrackOnly)
                 {
-                    subText += " " + Song.Tab.Tuning.GetMusicalNote(i).ToString();
+                    subText += " •";
+                    for (int i = Song.FocusedTab.Tuning.Count - 1; i >= 0; i--)
+                    {
+                        subText += " " + Song.FocusedTab.Tuning.GetMusicalNote(i).ToString();
+                    }
                 }
                 SizeF headSize;
                 SizeF subSize;
@@ -235,7 +246,7 @@ namespace QuickTabs.Controls
                 set
                 {
                     pageSettings = value;
-                    Margins margins = pageSettings.Margins;
+                    System.Drawing.Printing.Margins margins = pageSettings.Margins;
                     pageBounds = pageSettings.Bounds;
                     marginBounds = new Rectangle(margins.Left, margins.Top, pageBounds.Width - margins.Left - margins.Right, pageBounds.Height - margins.Top - margins.Bottom);
                 }

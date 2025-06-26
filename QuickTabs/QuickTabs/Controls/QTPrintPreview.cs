@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Controls
 {
-    internal class QTPrintPreview : Panel
+    public class QTPrintPreview : Panel
     {
         public override Color BackColor { get => DrawingConstants.UIControlBackColor; set => base.BackColor = value; }
 

@@ -12,12 +12,11 @@ using System.Windows.Forms;
 
 namespace QuickTabs.Forms
 {
-    internal partial class DocumentProperties : Form
+    public partial class DocumentProperties : Form
     {
         public Song Song { get; set; }
         public bool ChangesSaved { get; set; } = false;
 
-        private TuningPicker tuningPicker;
         private bool tsChanged = false;
         private int oldts2Value = 4;
         private bool ignoreTs2Changes = false;
@@ -28,12 +27,6 @@ namespace QuickTabs.Forms
             this.AutoScaleMode = AutoScaleMode.Dpi;
             DrawingConstants.ApplyThemeToUIForm(this);
 
-            tuningPicker = new TuningPicker();
-            tuningPicker.Tuning = Songwriting.Tuning.StandardGuitar;
-            tuningPicker.Location = new Point(0, 0);
-            tuningPicker.Size = tuningPickerContainer.Size;
-            tuningPickerContainer.Controls.Add(tuningPicker);
-
             tapTempo.OnSetTempo += TapTempo_OnSetTempo;
         }
 
@@ -42,7 +35,16 @@ namespace QuickTabs.Forms
             base.OnShown(e);
             nameInput.Text = Song.Name;
             tempoInput.Value = Song.Tempo;
-            if (isTabEmpty(Song.Tab))
+            bool songEmpty = true;
+            foreach (Track track in Song.Tracks)
+            {
+                if (!isTabEmpty(track.Tab))
+                {
+                    songEmpty = false;
+                    break;
+                }
+            }
+            if (songEmpty)
             {
                 ts1DisabledLabel.Visible = false;
                 ts2DisabledLabel.Visible = false;
@@ -58,8 +60,6 @@ namespace QuickTabs.Forms
                 ts2DisabledLabel.Text = Song.TimeSignature.T2.ToString();
             }
             tapTempo.TimeSignature = Song.TimeSignature;
-            tuningPicker.Tuning = Song.Tab.Tuning;
-            tuningPicker.Refresh();
         }
 
         private bool isTabEmpty(Tab tab)
@@ -97,32 +97,13 @@ namespace QuickTabs.Forms
             {
                 Song.TimeSignature = new Songwriting.TimeSignature((int)ts1Input.Value, (int)ts2Input.Value);
                 int beatsPerMeasure = Song.TimeSignature.MeasureLength / Song.TimeSignature.DefaultDivision;
-                Song.Tab.SetLength(1, MusicalTimespan.Zero);
-                Song.Tab.SetLength(beatsPerMeasure * 2 + 1, Song.TimeSignature.DefaultDivision);
-            }
-            if (Song.Tab.Tuning.Count != tuningPicker.Tuning.Count)
-            {
-                for (int i = 0; i < Song.Tab.Count; i++)
+                foreach (Track track in Song.Tracks)
                 {
-                    if (Song.Tab[i].Type == Enums.StepType.Beat)
-                    {
-                        Beat srcBeat = (Beat)Song.Tab[i];
-                        Beat newBeat = new Beat();
-                        newBeat.BeatDivision = srcBeat.BeatDivision;
-                        newBeat.SustainTime = srcBeat.SustainTime;
-                        foreach (Fret fret in srcBeat)
-                        {
-                            int newString = fret.String + tuningPicker.StringShift;
-                            if (newString >= 0 && newString < tuningPicker.Tuning.Count)
-                            {
-                                newBeat[new Fret(newString, fret.Space)] = true;
-                            }
-                        }
-                        Song.Tab[i] = newBeat;
-                    }
+                    Tab tab = track.Tab;
+                    tab.SetLength(1, MusicalTimespan.Zero);
+                    tab.SetLength(beatsPerMeasure * 2 + 1, Song.TimeSignature.DefaultDivision);
                 }
             }
-            Song.Tab.Tuning = tuningPicker.Tuning;
             this.Close();
         }
 
@@ -179,16 +160,6 @@ namespace QuickTabs.Forms
         private void tapTempoLink_LinkClicked(object sender, MouseEventArgs e)
         {
             tapTempo.Tap();
-        }
-
-        private void tuningPresetLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            using (TuningPresets tuningPresets = new TuningPresets())
-            {
-                tuningPresets.TuningPicker = tuningPicker;
-                tuningPresets.ShowDialog();
-                tuningPicker.Refresh();
-            }
         }
     }
 }

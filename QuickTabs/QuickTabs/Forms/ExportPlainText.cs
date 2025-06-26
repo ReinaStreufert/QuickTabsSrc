@@ -12,9 +12,10 @@ using System.Windows.Forms;
 
 namespace QuickTabs.Forms
 {
-    internal partial class ExportPlainText : Form
+    public partial class ExportPlainText : Form
     {
         public Song Song { get; set; }
+        public bool FocusedTrackOnly { get; set; }
 
         private PlainTextTabWriter tabWriter = null;
 
@@ -34,6 +35,7 @@ namespace QuickTabs.Forms
         {
             base.OnShown(e);
             tabWriter = new PlainTextTabWriter(Song);
+            tabWriter.FocusedTrackOnly = FocusedTrackOnly;
             OnSizeChanged(null);
             updatePreview();
         }

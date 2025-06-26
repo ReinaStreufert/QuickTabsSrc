@@ -1,4 +1,5 @@
-﻿using QuickTabs.Controls;
+﻿using QuickTabs.Configuration;
+using QuickTabs.Controls;
 using QuickTabs.Properties;
 using QuickTabs.Synthesization;
 using System;
@@ -59,7 +60,7 @@ namespace QuickTabs.Forms
         {
             get 
             { 
-                if (QTSettings.Current.ViewDarkMode)
+                if (QTPersistence.Current.ViewDarkMode)
                 {
                     return darkGray;
                 } else
@@ -99,7 +100,6 @@ namespace QuickTabs.Forms
             switch (m.Msg)
             {
                 case WM_NCPAINT:                        // box shadow
-                    Console.WriteLine("H!!");
                     if (m_aeroEnabled)
                     {
                         var v = 2;
@@ -141,7 +141,7 @@ namespace QuickTabs.Forms
             startAnyway.Visible = false;
             updatingLabel.Visible = false;
             exit.Visible = false;
-            if (!QTSettings.Current.ViewDarkMode)
+            if (!QTPersistence.Current.ViewDarkMode)
             {
                 failedLabel.ForeColor = Color.Black;
                 startAnyway.LinkColor = Color.Black;
@@ -251,7 +251,7 @@ namespace QuickTabs.Forms
             base.OnPaint(e);
             Graphics g = e.Graphics;
             Bitmap logo;
-            if (QTSettings.Current.ViewDarkMode)
+            if (QTPersistence.Current.ViewDarkMode)
             {
                 logo = logoSource[Color.White];
             } else

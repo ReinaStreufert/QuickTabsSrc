@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Enums
 {
-    internal enum Theme
+    public enum Theme
     {
         DarkMode = 0,
         LightMode = 1

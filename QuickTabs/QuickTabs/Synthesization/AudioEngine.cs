@@ -1,4 +1,5 @@
 ﻿using NAudio.Wave;
+using QuickTabs.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuickTabs.Synthesization
 {
-    internal static class AudioEngine
+    public static class AudioEngine
     {
         public delegate void AudioEngineTick(DateTime timestamp, float bufferDurationMs);
 
@@ -23,9 +24,20 @@ namespace QuickTabs.Synthesization
 
         public static void Initialize()
         {
+            if (Enabled)
+            {
+                throw new InvalidOperationException();
+            }
             if (AsioOut.isSupported())
             {
-                asioOut = new AsioOut();
+                long drivIndex = QTPersistence.Current.AsioOutputDevice;
+                if (drivIndex == (long)0)
+                {
+                    asioOut = new AsioOut("ASIO4ALL v2");
+                } else
+                {
+                    asioOut = new AsioOut((int)(drivIndex - 1));
+                }
                 oscillator = new SquareOscillator();
                 asioOut.Init(oscillator);
                 oscillator.InitializeBuffer(asioOut.FramesPerBuffer);
@@ -33,8 +45,18 @@ namespace QuickTabs.Synthesization
                 oscillator.BeforeBufferFill += Oscillator_BeforeBufferFill;
                 asioOut.Play();
                 Enabled = true;
-                ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.A, asioOut.ShowControlPanel);
             }
+        }
+
+        public static void OpenControlPanel()
+        {
+            asioOut.ShowControlPanel();
+        }
+
+        public static void Reinitialize() // this is likely a terrible idea
+        {
+            Stop();
+            Initialize();
         }
 
         public static void Stop()
@@ -43,12 +65,19 @@ namespace QuickTabs.Synthesization
             {
                 return;
             }
+            if (asioOut == null)
+            {
+                Enabled = false;
+                return;
+            }
             asioOut.Stop();
             asioOut.Dispose();
+            Enabled = false;
         }
 
-        public static void PlayNote(Songwriting.Note note, int duration, float volume, bool simulatePluck = true)
+        public static void PlayNote(Songwriting.Note note, int duration, IVolumeProvider volume, bool simulatePluck = true)
         {
+            const float noteLevel = 0.25F;
             if (!Enabled)
             {
                 return;
@@ -60,10 +89,10 @@ namespace QuickTabs.Synthesization
             {
                 float startFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber + 4);
                 float endFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber);
-                playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, volume, volume / 4F, duration);
+                playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, noteLevel, noteLevel / 4F, duration, volume);
             } else
             {
-                playingNote.Frequency = oscillator.AddFrequency(NoteUtils.GetMidiNoteFrequency(note.MidiNumber), volume);
+                playingNote.Frequency = oscillator.AddFrequency(NoteUtils.GetMidiNoteFrequency(note.MidiNumber), noteLevel, volume);
             }
             
             playingNotes.Add(playingNote);
@@ -80,7 +109,7 @@ namespace QuickTabs.Synthesization
             playingNote.StartTime = DateTime.Now;
             float startFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber + 12);
             float endFrequency = NoteUtils.GetMidiNoteFrequency(note.MidiNumber);
-            playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, volume, 0F, 50F);
+            playingNote.Frequency = oscillator.AddFrequency(startFrequency, endFrequency, 25F, volume, 0F, 50F, new ConstantVolume(1.0F));
             playingNotes.Add(playingNote);
         }
 
@@ -120,22 +149,27 @@ namespace QuickTabs.Synthesization
             {
                 // unhandled exceptions on the audio rendering thread do not get handled by the
                 // crash manager as they should; hence this.
+                oscillator.BeforeBufferFill -= Oscillator_BeforeBufferFill;
                 try
                 {
                     if (asioOut.PlaybackState == PlaybackState.Playing || asioOut.PlaybackState == PlaybackState.Paused)
                     {
                         if (Application.OpenForms.Count > 0)
                         {
-                            Application.OpenForms[0].Invoke(new MethodInvoker(() =>
+                            Application.OpenForms[0].BeginInvoke(new MethodInvoker(() =>
                             {
-                                asioOut.Stop(); // AsioOut.Stop does NOT like being called from its own callback.
-                                asioOut.Dispose();
+                                if (asioOut != null && asioOut.PlaybackState == PlaybackState.Playing || asioOut.PlaybackState == PlaybackState.Paused)
+                                {
+                                    asioOut.Stop(); // AsioOut.Stop does NOT like being called from its own callback.
+                                    asioOut.Dispose();
+                                    asioOut = null;
+                                }
+                                Enabled = false;
+                                CrashManager.FailHard(ex);
                             }));
                         }
                     }
                 } catch { }
-                Enabled = false;
-                CrashManager.FailHard(ex);
             }
         }
 

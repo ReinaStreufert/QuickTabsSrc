@@ -1,10 +1,11 @@
+using QuickTabs.Configuration;
 using QuickTabs.Controls;
 using QuickTabs.Synthesization;
 using System.Windows;
 
 namespace QuickTabs
 {
-    internal static class Program
+    public static class Program
     {
         /// <summary>
         ///  The main entry point for the application.
@@ -13,10 +14,11 @@ namespace QuickTabs
         static void Main()
         {
             CrashManager.Initialize();
+            QTPersistence.Current.Initialize();
+            CrashManager.NotifyPersistenceUpdate();
             ApplicationConfiguration.Initialize();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
-            QTSettings.Current.Initialize();
 
             Environment.CurrentDirectory = Path.GetDirectoryName(InstallOperations.SelfExe);
             if (!Directory.Exists("icons") || !Directory.Exists("fonts"))
@@ -36,7 +38,10 @@ namespace QuickTabs
                 Task iconLoader = new Task(DrawingIcons.LoadAll);
                 iconLoader.Start();
                 Forms.Splash splash = new Forms.Splash(iconLoader);
-                Updater.Initialize();
+                if (QTPersistence.Current.EnableAutoUpdate)
+                {
+                    Updater.Initialize();
+                }
                 Application.Run(splash);
             }
         }
