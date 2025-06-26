@@ -24,11 +24,11 @@ namespace QuickTabs.Controls
             removeTrack.Click += removeTrackClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, (Keys)189, removeTrackClick);
             trackSection.AddItem(removeTrack);
-            ContextItem addAnnotationTrack = new ContextItem(DrawingIcons.Dots, "Add annotation track");
+            /*ContextItem addAnnotationTrack = new ContextItem(DrawingIcons.Dots, "Add annotation track");
             addTrack.Selected = true;
             addTrack.Click += addAnnotationTrackClick;
             ShortcutManager.AddShortcut(Keys.Control | Keys.Shift, Keys.Oemplus, addTrackClick);
-            trackSection.AddItem(addTrack);
+            trackSection.AddItem(addTrack);*/
             trackProperties = new ContextItem(DrawingIcons.EditDocumentProperties, "Edit track properties");
             trackProperties.Selected = true;
             trackProperties.Click += trackPropertiesClick;
